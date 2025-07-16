@@ -2500,11 +2500,21 @@
         "Volume": 66004900,
         "Dividends": 0.0,
         "Stock Splits": 0.0
+      },
+      {
+        "Date": "2025-07-16 00:00:00-04:00",
+        "Open": 22.989999771118164,
+        "High": 23.1299991607666,
+        "Low": 22.639999389648438,
+        "Close": 22.657400131225586,
+        "Volume": 6409124,
+        "Dividends": 0.0,
+        "Stock Splits": 0.0
       }
     ],
-    "retrieval_timestamp": "2025-07-16T13:08:42.930389+00:00",
+    "retrieval_timestamp": "2025-07-16T13:46:19.670366+00:00",
     "symbol": "INTC",
-    "cached_at": "2025-07-16T13:08:43.271836+00:00",
+    "cached_at": "2025-07-16T13:46:20.078482+00:00",
     "period": "1y",
     "index": [
       "2024-07-16",
@@ -2756,15 +2766,16 @@
       "2025-07-10",
       "2025-07-11",
       "2025-07-14",
-      "2025-07-15"
+      "2025-07-15",
+      "2025-07-16"
     ]
   },
-  "cached_at": "2025-07-16T13:08:43.272631+00:00",
+  "cached_at": "2025-07-16T13:46:20.079195+00:00",
   "data_type": "stock_data",
   "identifier": "INTC",
-  "market_session_when_cached": "pre_post_market",
+  "market_session_when_cached": "market_hours",
   "cache_key": "d9585cb6cfa317129d9e396d77934dfe",
-  "expiration_minutes": 10,
+  "expiration_minutes": 2,
   "kwargs": {
     "period": "1y"
   }

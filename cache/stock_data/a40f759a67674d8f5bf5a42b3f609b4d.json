@@ -2500,11 +2500,21 @@
         "Volume": 1769900,
         "Dividends": 0.0,
         "Stock Splits": 0.0
+      },
+      {
+        "Date": "2025-07-16 00:00:00-04:00",
+        "Open": 8.859999656677246,
+        "High": 8.930000305175781,
+        "Low": 8.824999809265137,
+        "Close": 8.854999542236328,
+        "Volume": 119451,
+        "Dividends": 0.0,
+        "Stock Splits": 0.0
       }
     ],
-    "retrieval_timestamp": "2025-07-16T12:52:28.158311+00:00",
+    "retrieval_timestamp": "2025-07-16T13:46:55.088475+00:00",
     "symbol": "RUM",
-    "cached_at": "2025-07-16T12:52:28.293226+00:00",
+    "cached_at": "2025-07-16T13:46:55.248849+00:00",
     "period": "1y",
     "index": [
       "2024-07-16",
@@ -2756,15 +2766,16 @@
       "2025-07-10",
       "2025-07-11",
       "2025-07-14",
-      "2025-07-15"
+      "2025-07-15",
+      "2025-07-16"
     ]
   },
-  "cached_at": "2025-07-16T12:52:28.293988+00:00",
+  "cached_at": "2025-07-16T13:46:55.249610+00:00",
   "data_type": "stock_data",
   "identifier": "RUM",
-  "market_session_when_cached": "pre_post_market",
+  "market_session_when_cached": "market_hours",
   "cache_key": "a40f759a67674d8f5bf5a42b3f609b4d",
-  "expiration_minutes": 10,
+  "expiration_minutes": 2,
   "kwargs": {
     "period": "1y"
   }

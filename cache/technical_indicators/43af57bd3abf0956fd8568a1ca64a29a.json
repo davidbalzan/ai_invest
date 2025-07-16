@@ -1,0 +1,32 @@
+{
+  "data": {
+    "current_price": 22.657400131225586,
+    "rsi": 53.474305447500704,
+    "ma_20": 22.463869953155516,
+    "ma_50": 21.431347923278807,
+    "macd": 0.5597279624772789,
+    "signal": 0.5682159326816234,
+    "volatility": 0.45333384452314723,
+    "volume_ratio": 0.08002895301346458,
+    "price_momentum": 0.057208357231466375,
+    "trend_strength": 0.057208357231466375,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30,
+    "data_timestamp": "2025-07-16T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-16T13:46:19.670366+00:00",
+    "calculation_timestamp": "2025-07-16T13:46:20.092969+00:00",
+    "symbol": "INTC",
+    "cached": false
+  },
+  "cached_at": "2025-07-16T13:46:20.093032+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "INTC",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "43af57bd3abf0956fd8568a1ca64a29a",
+  "expiration_minutes": 2,
+  "kwargs": {
+    "last_date": "2025-07-16",
+    "data_length": 251,
+    "last_price": 22.657400131225586
+  }
+}

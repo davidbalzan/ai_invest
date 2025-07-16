@@ -29,6 +29,7 @@ class CacheManager:
             os.path.join(self.cache_dir, "sentiment_data"),
             os.path.join(self.cache_dir, "ai_recommendations"),
             os.path.join(self.cache_dir, "technical_indicators"),
+            os.path.join(self.cache_dir, "processed_news"),
             os.path.join(self.cache_dir, "metadata")
         ]
         
@@ -68,6 +69,13 @@ class CacheManager:
                 'market_closed': 30,        # 30 minutes when market is closed
                 'weekend': 480,             # 8 hours on weekends 
                 'holiday': 480              # 8 hours on holidays
+            },
+            'processed_news': {
+                'market_hours': 30,         # 30 minutes during market hours (processed news can be cached longer)
+                'pre_post_market': 60,      # 1 hour during pre/post market
+                'market_closed': 120,       # 2 hours when market is closed
+                'weekend': 720,             # 12 hours on weekends
+                'holiday': 720              # 12 hours on holidays
             }
         }
         
@@ -337,7 +345,7 @@ class CacheManager:
                         removed_count += 1
         else:
             # Invalidate all cache
-            for data_type_name in ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators']:
+            for data_type_name in ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators', 'processed_news']:
                 data_type_dir = os.path.join(self.cache_dir, data_type_name)
                 if os.path.exists(data_type_dir):
                     for filename in os.listdir(data_type_dir):
@@ -360,7 +368,7 @@ class CacheManager:
             'technical_indicators': 24
         }
         
-        data_types = [data_type] if data_type else ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators']
+        data_types = [data_type] if data_type else ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators', 'processed_news']
         
         for data_type_name in data_types:
             data_type_dir = os.path.join(self.cache_dir, data_type_name)
@@ -400,7 +408,7 @@ class CacheManager:
         removed_count = 0
         current_time = datetime.now(timezone.utc)
         
-        for data_type_name in ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators']:
+        for data_type_name in ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators', 'processed_news']:
             data_type_dir = os.path.join(self.cache_dir, data_type_name)
             if not os.path.exists(data_type_dir):
                 continue
@@ -443,7 +451,7 @@ class CacheManager:
         current_time = datetime.now(timezone.utc)
         total_size = 0
         
-        for data_type_name in ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators']:
+        for data_type_name in ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators', 'processed_news']:
             data_type_dir = os.path.join(self.cache_dir, data_type_name)
             if not os.path.exists(data_type_dir):
                 stats['by_type'][data_type_name] = {'count': 0, 'expired': 0, 'size_mb': 0}

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Improvements Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: visible;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+            overflow: visible;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+            position: relative;
+            overflow: visible;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+        
+        .value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .positive { color: #28a745; }
+        .neutral { color: #ffc107; }
+        .negative { color: #dc3545; }
+        .warning { color: #fd7e14; }
+        
+        .label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+        
+        /* Improved dropdown styles */
+        .metric-value-clickable {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+        }
+        
+        .metric-value-clickable:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .symbol-dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 280px;
+            max-width: 380px;
+            width: max-content;
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .symbol-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+            z-index: 10000;
+        }
+        
+        .symbol-dropdown::after {
+            content: '';
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-bottom: 9px solid #e1e5e9;
+            z-index: 9999;
+        }
+        
+        .symbol-dropdown.active {
+            display: block;
+            animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes dropdownFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateX(-50%) translateY(-15px) scale(0.95);
+                filter: blur(2px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(-50%) translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+        
+        .dropdown-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        
+        .dropdown-content {
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 8px 0;
+        }
+        
+        .symbol-item {
+            padding: 14px 18px;
+            margin: 0 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .symbol-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+        
+        .symbol-name {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 6px;
+            font-size: 1.05em;
+            letter-spacing: 0.5px;
+        }
+        
+        .symbol-details {
+            font-size: 0.88em;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .symbol-dropdown {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 85vw !important;
+                max-width: 340px !important;
+                min-width: 280px !important;
+                z-index: 99999 !important;
+                max-height: 70vh;
+                overflow: hidden;
+            }
+            
+            .symbol-dropdown::before {
+                display: none;
+            }
+            
+            .dropdown-content {
+                max-height: calc(70vh - 140px);
+                padding: 4px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dropdown Improvements Demo</h1>
+        <p>Click on the colored metrics below to test the improved dropdowns with better proportions and z-index handling.</p>
+        
+        <h3>Sentiment Distribution</h3>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="value positive metric-value-clickable" data-assets='[{"symbol":"NVDA","value":"Sentiment: Positive, Score: 0.800"},{"symbol":"GOOGL","value":"Sentiment: Positive, Score: 0.600"},{"symbol":"META","value":"Sentiment: Positive, Score: 0.700"}]'>3</div>
+                <div class="label">Positive Sentiment</div>
+            </div>
+            <div class="metric-card">
+                <div class="value neutral metric-value-clickable" data-assets='[]'>0</div>
+                <div class="label">Neutral Sentiment</div>
+            </div>
+            <div class="metric-card">
+                <div class="value negative metric-value-clickable" data-assets='[{"symbol":"INTC","value":"Sentiment: Negative, Score: -0.200"}]'>1</div>
+                <div class="label">Negative Sentiment</div>
+            </div>
+        </div>
+        
+        <h3>Technical Overview</h3>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="value">59.3</div>
+                <div class="label">Average RSI</div>
+            </div>
+            <div class="metric-card">
+                <div class="value warning metric-value-clickable" data-assets='[{"symbol":"NVDA","value":"RSI: 81.60"},{"symbol":"GOOGL","value":"RSI: 74.60"}]'>2</div>
+                <div class="label">Overbought Positions</div>
+            </div>
+            <div class="metric-card">
+                <div class="value warning metric-value-clickable" data-assets='[]'>0</div>
+                <div class="label">Oversold Positions</div>
+            </div>
+        </div>
+        
+        <h3>AI Recommendations Summary</h3>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="value positive metric-value-clickable" data-assets='[{"symbol":"NVDA","value":"Recommendation: BUY, Confidence: 85.5%"},{"symbol":"META","value":"Recommendation: BUY, Confidence: 78.3%"}]'>2</div>
+                <div class="label">BUY Signals</div>
+            </div>
+            <div class="metric-card">
+                <div class="value neutral metric-value-clickable" data-assets='[{"symbol":"GOOGL","value":"Recommendation: HOLD, Confidence: 72.1%"}]'>1</div>
+                <div class="label">HOLD Signals</div>
+            </div>
+            <div class="metric-card">
+                <div class="value negative metric-value-clickable" data-assets='[{"symbol":"INTC","value":"Recommendation: SELL, Confidence: 68.9%"}]'>1</div>
+                <div class="label">SELL Signals</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let currentDropdown = null;
+            
+            function closeAllDropdowns() {
+                document.querySelectorAll('.symbol-dropdown').forEach(function(dropdown) {
+                    dropdown.remove();
+                });
+                
+                // Reset metric card styles
+                document.querySelectorAll('.metric-card').forEach(function(card) {
+                    card.style.overflow = '';
+                    card.style.zIndex = '';
+                });
+                
+                currentDropdown = null;
+            }
+            
+            function createDropdown(assets, title) {
+                if (!assets || assets.length === 0) {
+                    return '<div class="symbol-dropdown">' +
+                           '<div class="dropdown-header">' + title + '</div>' +
+                           '<div style="padding: 24px 18px; text-align: center; color: #8e9aaf; font-style: italic;">No assets in this category</div>' +
+                           '</div>';
+                }
+                
+                let symbolsHtml = '';
+                assets.forEach(function(asset) {
+                    symbolsHtml += '<div class="symbol-item" data-symbol="' + asset.symbol + '">' +
+                                   '<div class="symbol-name">' + asset.symbol + '</div>' +
+                                   '<div class="symbol-details">' + asset.value + '</div>' +
+                                   '</div>';
+                });
+                
+                return '<div class="symbol-dropdown">' +
+                       '<div class="dropdown-header">' + title + '</div>' +
+                       '<div class="dropdown-content">' + symbolsHtml + '</div>' +
+                       '</div>';
+            }
+            
+            function scrollToSymbol(symbol) {
+                alert('Would navigate to: ' + symbol + ' (demo mode)');
+            }
+            
+            document.querySelectorAll('.metric-value-clickable').forEach(function(metric) {
+                metric.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    if (currentDropdown === this) {
+                        closeAllDropdowns();
+                        return;
+                    }
+                    
+                    closeAllDropdowns();
+                    
+                    const assetsData = this.getAttribute('data-assets');
+                    if (!assetsData) return;
+                    
+                    let assets;
+                    try {
+                        assets = JSON.parse(assetsData);
+                    } catch (err) {
+                        console.error('Error parsing assets data:', err);
+                        return;
+                    }
+                    
+                    const label = this.nextElementSibling.textContent;
+                    const title = label + ' (' + this.textContent + ')';
+                    
+                    const dropdown = document.createElement('div');
+                    dropdown.innerHTML = createDropdown(assets, title);
+                    const dropdownElement = dropdown.firstElementChild;
+                    
+                    this.style.position = 'relative';
+                    
+                    // Ensure parent metric card allows overflow
+                    const metricCard = this.closest('.metric-card');
+                    if (metricCard) {
+                        metricCard.style.overflow = 'visible';
+                        metricCard.style.zIndex = '10000';
+                    }
+                    
+                    this.appendChild(dropdownElement);
+                    
+                    // Adjust position if dropdown would go off-screen
+                    setTimeout(function() {
+                        const rect = dropdownElement.getBoundingClientRect();
+                        const viewportWidth = window.innerWidth;
+                        const viewportHeight = window.innerHeight;
+                        
+                        // Check if dropdown goes off right edge
+                        if (rect.right > viewportWidth - 20) {
+                            dropdownElement.style.left = 'auto';
+                            dropdownElement.style.right = '0';
+                            dropdownElement.style.transform = 'translateX(0)';
+                        }
+                        // Check if dropdown goes off left edge  
+                        else if (rect.left < 20) {
+                            dropdownElement.style.left = '0';
+                            dropdownElement.style.transform = 'translateX(0)';
+                        }
+                        
+                        // Check if dropdown goes off bottom edge
+                        if (rect.bottom > viewportHeight - 20) {
+                            dropdownElement.style.top = 'auto';
+                            dropdownElement.style.bottom = 'calc(100% + 12px)';
+                            dropdownElement.classList.add('arrow-bottom');
+                        }
+                    }, 50);
+                    
+                    setTimeout(function() {
+                        dropdownElement.classList.add('active');
+                    }, 10);
+                    
+                    dropdownElement.querySelectorAll('.symbol-item').forEach(function(item) {
+                        item.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const symbol = this.getAttribute('data-symbol');
+                            scrollToSymbol(symbol);
+                            closeAllDropdowns();
+                        });
+                    });
+                    
+                    currentDropdown = this;
+                });
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.metric-value-clickable') && !e.target.closest('.symbol-dropdown')) {
+                    closeAllDropdowns();
+                }
+            });
+            
+            window.addEventListener('scroll', function() {
+                closeAllDropdowns();
+            });
+            
+            window.addEventListener('resize', function() {
+                closeAllDropdowns();
+            });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeAllDropdowns();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

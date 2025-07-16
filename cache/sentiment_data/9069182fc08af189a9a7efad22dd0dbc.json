@@ -1,19 +1,19 @@
 {
   "data": {
     "sentiment": "positive",
-    "score": 0.23321999999999998,
+    "score": 0.25951,
     "articles_analyzed": 10,
-    "retrieval_timestamp": "2025-07-16T13:08:44.290533+00:00",
-    "latest_news_timestamp": "2025-07-16T05:37:00+00:00",
-    "news_age_minutes": 451,
+    "retrieval_timestamp": "2025-07-16T13:46:21.095866+00:00",
+    "latest_news_timestamp": "2025-07-16T13:05:00+00:00",
+    "news_age_minutes": 41,
     "symbol": "INTC",
     "cached": false
   },
-  "cached_at": "2025-07-16T13:08:45.726827+00:00",
+  "cached_at": "2025-07-16T13:46:21.714037+00:00",
   "data_type": "sentiment_data",
   "identifier": "INTC",
-  "market_session_when_cached": "pre_post_market",
+  "market_session_when_cached": "market_hours",
   "cache_key": "9069182fc08af189a9a7efad22dd0dbc",
-  "expiration_minutes": 20,
+  "expiration_minutes": 10,
   "kwargs": {}
 }

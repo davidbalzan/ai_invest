@@ -179,11 +179,11 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Duration</th>
-                        <th>Actions</th>
+                        <th class="sortable">Date</th>
+                        <th class="sortable">Type</th>
+                        <th class="sortable">Status</th>
+                        <th class="sortable">Duration</th>
+                        <th class="sortable">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -192,26 +192,26 @@
                         <td>
                             {% if session.started_at %}
                                 {% if session.started_at is string %}
-                                    {{ session.started_at[:19].replace('T', ' ') }}
+                                    <span class="datetime">{{ session.started_at[:19].replace('T', ' ') }}</span>
                                 {% else %}
-                                    {{ session.started_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                                    <span class="datetime">{{ session.started_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
                                 {% endif %}
                             {% else %}
-                                N/A
+                                <span style="color: #6c757d;">N/A</span>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge badge-info">{{ session.analysis_type.title() }}</span>
+                            <span class="analysis-type">{{ session.analysis_type.title() }}</span>
                         </td>
                         <td>
                             {% if session.status == 'COMPLETED' %}
-                                <span class="badge badge-success">✅ Completed</span>
+                                <span class="status-badge completed">✅ Completed</span>
                             {% elif session.status == 'RUNNING' %}
-                                <span class="badge badge-warning">🔄 Running</span>
+                                <span class="status-badge pending">🔄 Running</span>
                             {% elif session.status == 'FAILED' %}
-                                <span class="badge badge-error">❌ Failed</span>
+                                <span class="status-badge failed">❌ Failed</span>
                             {% else %}
-                                <span class="badge">{{ session.status.title() }}</span>
+                                <span class="status-badge">{{ session.status.title() }}</span>
                             {% endif %}
                         </td>
                         <td>
@@ -220,20 +220,20 @@
                                     {% set completed_time = session.completed_at[:19] | strptime('%Y-%m-%dT%H:%M:%S') %}
                                     {% set started_time = session.started_at[:19] | strptime('%Y-%m-%dT%H:%M:%S') %}
                                     {% set duration = (completed_time - started_time).total_seconds() %}
-                                    {{ "%.1f" | format(duration) }}s
+                                    <span class="datetime">{{ "%.1f" | format(duration) }}s</span>
                                 {% elif session.completed_at is string or session.started_at is string %}
-                                    -
+                                    <span style="color: #6c757d;">-</span>
                                 {% else %}
                                     {% set duration = (session.completed_at - session.started_at).total_seconds() %}
-                                    {{ "%.1f" | format(duration) }}s
+                                    <span class="datetime">{{ "%.1f" | format(duration) }}s</span>
                                 {% endif %}
                             {% else %}
-                                -
+                                <span style="color: #6c757d;">-</span>
                             {% endif %}
                         </td>
                         <td>
                             {% if session.status == 'COMPLETED' %}
-                                <a href="/portfolio/{{ portfolio.id }}/analysis/results/{{ session.id }}" class="btn btn-secondary">
+                                <a href="/portfolio/{{ portfolio.id }}/analysis/results/{{ session.id }}" class="action-btn">
                                     📊 View Results
                                 </a>
                             {% elif session.status == 'RUNNING' %}

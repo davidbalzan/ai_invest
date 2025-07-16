@@ -1,0 +1,32 @@
+{
+  "data": {
+    "current_price": 88.50499725341797,
+    "rsi": 52.18013404623842,
+    "ma_20": 88.62225074768067,
+    "ma_50": 84.87618881225586,
+    "macd": 1.3221519994073248,
+    "signal": 1.683481871282609,
+    "volatility": 0.15421445931232577,
+    "volume_ratio": 0.03773975151904545,
+    "price_momentum": 0.04275413978812063,
+    "trend_strength": 0.04275413978812063,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30,
+    "data_timestamp": "2025-07-16T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-16T13:46:38.217243+00:00",
+    "calculation_timestamp": "2025-07-16T13:46:38.521736+00:00",
+    "symbol": "NDAQ",
+    "cached": false
+  },
+  "cached_at": "2025-07-16T13:46:38.521814+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "3d9dab57a37bc3bb72e76bf96c8890cc",
+  "expiration_minutes": 2,
+  "kwargs": {
+    "last_date": "2025-07-16",
+    "data_length": 251,
+    "last_price": 88.50499725341797
+  }
+}

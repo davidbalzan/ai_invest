@@ -1,0 +1,32 @@
+{
+  "data": {
+    "current_price": 708.8300170898438,
+    "rsi": 50.071283981694684,
+    "ma_20": 715.0530029296875,
+    "ma_50": 676.6316589355469,
+    "macd": 11.842632839704265,
+    "signal": 16.282103415924347,
+    "volatility": 0.22094086379218023,
+    "volume_ratio": 0.1192592997479664,
+    "price_momentum": 0.047586242424645375,
+    "trend_strength": 0.047586242424645375,
+    "rsi_overbought": 65,
+    "rsi_oversold": 35,
+    "data_timestamp": "2025-07-16T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-16T13:46:28.587597+00:00",
+    "calculation_timestamp": "2025-07-16T13:46:28.854166+00:00",
+    "symbol": "META",
+    "cached": false
+  },
+  "cached_at": "2025-07-16T13:46:28.854223+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "META",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "7fa9cf03c184b431c3beed3722c17444",
+  "expiration_minutes": 2,
+  "kwargs": {
+    "last_date": "2025-07-16",
+    "data_length": 251,
+    "last_price": 708.8300170898438
+  }
+}

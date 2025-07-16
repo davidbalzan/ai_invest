@@ -12,7 +12,6 @@ matplotlib = "*"
 reportlab = "*"
 pytz = "*"
 python-dotenv = "*"
-vaderSentiment = "*"
 fastapi = ">=0.104.1"
 uvicorn = {extras = ["standard"], version = ">=0.24.0"}
 jinja2 = ">=3.1.2"
@@ -34,6 +33,7 @@ scikit-learn = "*"
 plotly = "*"
 newsapi-python = "*"
 feedparser = "*"
+vadersentiment = "*"
 
 [dev-packages]
 pytest = "*"

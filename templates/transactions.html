@@ -67,38 +67,38 @@
         <table class="table" id="transactions-table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Symbol</th>
-                    <th>Type</th>
-                    <th>Shares</th>
-                    <th>Price</th>
-                    <th>Total Amount</th>
-                    <th>Fees</th>
-                    <th>Settlement Date</th>
-                    <th>Notes</th>
+                    <th class="sortable">Date</th>
+                    <th class="sortable">Symbol</th>
+                    <th class="sortable">Type</th>
+                    <th class="sortable">Shares</th>
+                    <th class="sortable">Price</th>
+                    <th class="sortable">Total Amount</th>
+                    <th class="sortable">Fees</th>
+                    <th class="sortable">Settlement Date</th>
+                    <th class="sortable">Notes</th>
                 </tr>
             </thead>
             <tbody>
                 {% for transaction in transactions %}
-                <tr class="transaction-row" data-type="{{ transaction.transaction_type }}">
-                    <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
-                    <td><strong>{{ transaction.symbol }}</strong></td>
+                <tr>
+                    <td class="datetime">{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
+                    <td><span class="symbol">{{ transaction.symbol }}</span></td>
                     <td>
-                        <span class="badge {{ 'positive' if transaction.transaction_type == 'BUY' else 'negative' if transaction.transaction_type == 'SELL' else 'neutral' if transaction.transaction_type == 'DIVIDEND' else '' }}">
+                        <span class="analysis-type">
                             {{ transaction.transaction_type }}
                         </span>
                     </td>
                     <td>{{ "%.6f"|format(transaction.shares or 0) }}</td>
-                    <td>${{ "%.4f"|format(transaction.price or 0) }}</td>
-                    <td class="{{ 'negative' if transaction.transaction_type == 'BUY' else 'positive' if transaction.transaction_type in ['SELL', 'DIVIDEND'] else '' }}">
+                    <td class="currency">${{ "%.4f"|format(transaction.price or 0) }}</td>
+                    <td class="currency {{ 'negative' if transaction.transaction_type == 'BUY' else 'positive' if transaction.transaction_type in ['SELL', 'DIVIDEND'] else '' }}">
                         ${{ "%.2f"|format(transaction.total_amount or 0) }}
                     </td>
-                    <td>${{ "%.2f"|format(transaction.fees or 0) }}</td>
-                    <td>
+                    <td class="currency">${{ "%.2f"|format(transaction.fees or 0) }}</td>
+                    <td class="datetime">
                         {% if transaction.settlement_date %}
                             {{ transaction.settlement_date.strftime('%Y-%m-%d') }}
                         {% else %}
-                            N/A
+                            <span style="color: #6c757d;">--</span>
                         {% endif %}
                     </td>
                     <td>{{ transaction.notes or "" }}</td>

@@ -1,19 +1,19 @@
 {
   "data": {
     "sentiment": "positive",
-    "score": 0.23650000000000002,
+    "score": 0.26409,
     "articles_analyzed": 10,
-    "retrieval_timestamp": "2025-07-16T12:35:45.664372+00:00",
-    "latest_news_timestamp": "2025-07-16T08:15:58+00:00",
-    "news_age_minutes": 259,
+    "retrieval_timestamp": "2025-07-16T13:46:47.695737+00:00",
+    "latest_news_timestamp": "2025-07-16T12:38:00+00:00",
+    "news_age_minutes": 68,
     "symbol": "NVDA",
     "cached": false
   },
-  "cached_at": "2025-07-16T12:35:46.439901+00:00",
+  "cached_at": "2025-07-16T13:46:48.180021+00:00",
   "data_type": "sentiment_data",
   "identifier": "NVDA",
-  "market_session_when_cached": "pre_post_market",
+  "market_session_when_cached": "market_hours",
   "cache_key": "08e41f1e100f6c044462c133bbc95af2",
-  "expiration_minutes": 20,
+  "expiration_minutes": 10,
   "kwargs": {}
 }

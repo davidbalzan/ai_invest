@@ -91,43 +91,43 @@
     <h2>📈 Current Holdings</h2>
     {% if holdings %}
     <div class="table-container">
-        <table>
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Symbol</th>
-                    <th>Shares</th>
-                    <th>Avg Cost</th>
-                    <th>Current Price</th>
-                    <th>Market Value</th>
-                    <th>Gain/Loss</th>
-                    <th>Return %</th>
-                    <th>Last Updated</th>
+                    <th class="sortable">Symbol</th>
+                    <th class="sortable">Shares</th>
+                    <th class="sortable">Avg Cost</th>
+                    <th class="sortable">Current Price</th>
+                    <th class="sortable">Market Value</th>
+                    <th class="sortable">Gain/Loss</th>
+                    <th class="sortable">Return %</th>
+                    <th class="sortable">Last Updated</th>
                 </tr>
             </thead>
             <tbody>
                 {% for holding in holdings %}
                 <tr>
-                    <td><strong>{{ holding.symbol }}</strong></td>
-                    <td>{{ holding.shares }}</td>
-                    <td>${{ holding.average_cost | round(2) }}</td>
+                    <td><span class="symbol">{{ holding.symbol }}</span></td>
+                    <td>{{ "%.6f"|format(holding.shares) }}</td>
+                    <td class="currency">${{ "%.2f"|format(holding.average_cost) }}</td>
                     <td>
                         {% if holding.current_price %}
-                            ${{ holding.current_price | round(2) }}
+                            <span class="currency">${{ "%.2f"|format(holding.current_price) }}</span>
                         {% else %}
                             <span style="color: #6c757d;">N/A</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if holding.market_value %}
-                            ${{ holding.market_value | round(2) }}
+                            <span class="currency">${{ "%.2f"|format(holding.market_value) }}</span>
                         {% else %}
                             <span style="color: #6c757d;">--</span>
                         {% endif %}
                     </td>
                     <td>
                         {% if holding.unrealized_gain_loss %}
-                            <span class="{{ 'positive' if holding.unrealized_gain_loss > 0 else 'negative' }}">
-                                ${{ holding.unrealized_gain_loss | round(2) }}
+                            <span class="currency {{ 'positive' if holding.unrealized_gain_loss > 0 else 'negative' }}">
+                                ${{ "%.2f"|format(holding.unrealized_gain_loss) }}
                             </span>
                         {% else %}
                             <span style="color: #6c757d;">--</span>
@@ -135,8 +135,8 @@
                     </td>
                     <td>
                         {% if holding.unrealized_gain_loss_percent %}
-                            <span class="{{ 'positive' if holding.unrealized_gain_loss_percent > 0 else 'negative' }}">
-                                {{ holding.unrealized_gain_loss_percent | round(2) }}%
+                            <span class="percentage {{ 'positive' if holding.unrealized_gain_loss_percent > 0 else 'negative' }}">
+                                {{ "%.2f"|format(holding.unrealized_gain_loss_percent) }}%
                             </span>
                         {% else %}
                             <span style="color: #6c757d;">--</span>
@@ -144,7 +144,7 @@
                     </td>
                     <td>
                         {% if holding.updated_at %}
-                            {{ holding.updated_at.strftime('%m-%d %H:%M') }}
+                            <span class="datetime">{{ holding.updated_at.strftime('%m-%d %H:%M') }}</span>
                         {% else %}
                             <span style="color: #6c757d;">N/A</span>
                         {% endif %}

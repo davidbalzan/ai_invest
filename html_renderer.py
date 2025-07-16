@@ -88,6 +88,7 @@ class HTMLReportRenderer:
             margin-bottom: 20px;
             border-radius: 15px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: visible;
         }
         
         .header {
@@ -137,6 +138,7 @@ class HTMLReportRenderer:
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 25px;
+            overflow: visible;
         }
         
         .metric-card {
@@ -405,6 +407,204 @@ class HTMLReportRenderer:
             100% { box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3); }
         }
         
+        /* Clickable metrics dropdown styles */
+        .metric-value-clickable {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+        }
+        
+        .metric-value-clickable:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        .metric-card {
+            position: relative;
+            overflow: visible;
+        }
+        
+        .symbol-dropdown {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+            min-width: 280px;
+            max-width: 380px;
+            width: max-content;
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        .symbol-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+            z-index: 10000;
+        }
+        
+        .symbol-dropdown::after {
+            content: '';
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 9px solid transparent;
+            border-right: 9px solid transparent;
+            border-bottom: 9px solid #e1e5e9;
+            z-index: 9999;
+        }
+        
+        /* Bottom arrow variant */
+        .symbol-dropdown.arrow-bottom::before {
+            top: auto;
+            bottom: -8px;
+            border-bottom: none;
+            border-top: 8px solid white;
+        }
+        
+        .symbol-dropdown.arrow-bottom::after {
+            top: auto;
+            bottom: -9px;
+            border-bottom: none;
+            border-top: 9px solid #e1e5e9;
+        }
+        
+        .symbol-dropdown.active {
+            display: block;
+            animation: dropdownFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes dropdownFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateX(-50%) translateY(-15px) scale(0.95);
+                filter: blur(2px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(-50%) translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+        
+        .dropdown-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-align: center;
+            letter-spacing: 0.2px;
+        }
+        
+        .dropdown-content {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 6px 0;
+        }
+        
+        .dropdown-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .dropdown-content::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 3px;
+        }
+        
+        .dropdown-content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
+        }
+        
+        .symbol-item {
+            padding: 10px 14px;
+            margin: 0 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .symbol-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+        }
+        
+        .symbol-name {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+            letter-spacing: 0.3px;
+        }
+        
+        .symbol-details {
+            font-size: 0.78em;
+            color: #6c757d;
+            line-height: 1.3;
+        }
+        
+        .dropdown-actions {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            border-radius: 0 0 8px 8px;
+            text-align: center;
+        }
+        
+        .dropdown-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            margin: 0 4px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .dropdown-btn:hover {
+            background: #5a67d8;
+        }
+        
+        .dropdown-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .dropdown-btn.secondary:hover {
+            background: #545b62;
+        }
+        
+        .no-symbols {
+            padding: 18px 14px;
+            text-align: center;
+            color: #8e9aaf;
+            font-style: italic;
+            font-size: 0.8em;
+            border-radius: 0 0 12px 12px;
+        }
+        
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -413,6 +613,7 @@ class HTMLReportRenderer:
             
             .metrics-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .header h1 {
@@ -421,6 +622,62 @@ class HTMLReportRenderer:
             
             .stock-table {
                 font-size: 0.9em;
+            }
+            
+            .symbol-dropdown {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                width: 85vw !important;
+                max-width: 340px !important;
+                min-width: 280px !important;
+                z-index: 99999 !important;
+                max-height: 70vh;
+                overflow: hidden;
+            }
+            
+            .symbol-dropdown::before {
+                display: none;
+            }
+            
+            .dropdown-content {
+                max-height: calc(70vh - 140px);
+                padding: 4px 0;
+            }
+            
+            .symbol-item {
+                padding: 12px 16px;
+                margin: 0 4px;
+            }
+            
+            .metric-value-clickable:hover {
+                transform: scale(1.01);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .symbol-dropdown {
+                width: 90vw !important;
+                max-width: none !important;
+                min-width: 260px !important;
+            }
+            
+            .dropdown-header {
+                padding: 12px 16px;
+                font-size: 0.9em;
+            }
+            
+            .symbol-item {
+                padding: 10px 14px;
+            }
+            
+            .symbol-name {
+                font-size: 1em;
+            }
+            
+            .symbol-details {
+                font-size: 0.85em;
             }
         }
     </style>
@@ -670,15 +927,15 @@ class HTMLReportRenderer:
             <h3>Sentiment Distribution</h3>
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="value positive metric-value" data-assets='{json.dumps(positive_assets)}'>{sentiment_dist.get('positive', 0)}</div>
+                    <div class="value positive metric-value-clickable" data-assets='{json.dumps(positive_assets)}'>{sentiment_dist.get('positive', 0)}</div>
                     <div class="label">Positive Sentiment</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value neutral metric-value" data-assets='{json.dumps(neutral_assets)}'>{sentiment_dist.get('neutral', 0)}</div>
+                    <div class="value neutral metric-value-clickable" data-assets='{json.dumps(neutral_assets)}'>{sentiment_dist.get('neutral', 0)}</div>
                     <div class="label">Neutral Sentiment</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value negative metric-value" data-assets='{json.dumps(negative_assets)}'>{sentiment_dist.get('negative', 0)}</div>
+                    <div class="value negative metric-value-clickable" data-assets='{json.dumps(negative_assets)}'>{sentiment_dist.get('negative', 0)}</div>
                     <div class="label">Negative Sentiment</div>
                 </div>
             </div>
@@ -690,11 +947,11 @@ class HTMLReportRenderer:
                     <div class="label">Average RSI</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value warning metric-value" data-assets='{json.dumps(overbought_assets)}'>{technical.get('overbought_count', 0)}</div>
+                    <div class="value warning metric-value-clickable" data-assets='{json.dumps(overbought_assets)}'>{technical.get('overbought_count', 0)}</div>
                     <div class="label">Overbought Positions</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value warning metric-value" data-assets='{json.dumps(oversold_assets)}'>{technical.get('oversold_count', 0)}</div>
+                    <div class="value warning metric-value-clickable" data-assets='{json.dumps(oversold_assets)}'>{technical.get('oversold_count', 0)}</div>
                     <div class="label">Oversold Positions</div>
                 </div>
             </div>
@@ -702,15 +959,15 @@ class HTMLReportRenderer:
             <h3>AI Recommendations Summary</h3>
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="value positive metric-value" data-assets='{json.dumps(buy_assets)}'>{recommendations.get('buy_signals', 0)}</div>
+                    <div class="value positive metric-value-clickable" data-assets='{json.dumps(buy_assets)}'>{recommendations.get('buy_signals', 0)}</div>
                     <div class="label">BUY Signals</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value neutral metric-value" data-assets='{json.dumps(hold_assets)}'>{recommendations.get('hold_signals', 0)}</div>
+                    <div class="value neutral metric-value-clickable" data-assets='{json.dumps(hold_assets)}'>{recommendations.get('hold_signals', 0)}</div>
                     <div class="label">HOLD Signals</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value negative metric-value" data-assets='{json.dumps(sell_assets)}'>{recommendations.get('sell_signals', 0)}</div>
+                    <div class="value negative metric-value-clickable" data-assets='{json.dumps(sell_assets)}'>{recommendations.get('sell_signals', 0)}</div>
                     <div class="label">SELL Signals</div>
                 </div>
             </div>
@@ -1264,273 +1521,387 @@ class HTMLReportRenderer:
                     y_min = None
                     y_max = None
                 
-                stock_charts_js += f"""
-                // {symbol} stock chart with volume
-                const {symbol.lower()}Ctx = document.getElementById('stockChart_{symbol}');
-                if ({symbol.lower()}Ctx) {{
-                    new Chart({symbol.lower()}Ctx, {{
+                stock_charts_js += """
+                // %s stock chart with volume
+                const %sCtx = document.getElementById('stockChart_%s');
+                if (%sCtx) {
+                    new Chart(%sCtx, {
                         type: 'line',
-                        data: {{
-                            labels: {json.dumps(chart_data['dates'])},
+                        data: {
+                            labels: %s,
                             datasets: [
-                                // Price line
-                                {{
-                                    label: 'Price',
-                                    data: {json.dumps(chart_data['prices'])},
-                                    borderColor: '#2563eb',
-                                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                {
+                                    label: 'Price ($)',
+                                    data: %s,
+                                    borderColor: '#667eea',
+                                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
                                     borderWidth: 2,
-                                    fill: false,
                                     tension: 0.1,
-                                    yAxisID: 'price'
-                                }},
-                                // 20-day MA
-                                {{
+                                    yAxisID: 'y',
+                                    pointRadius: 1,
+                                    pointHoverRadius: 4
+                                },
+                                {
                                     label: '20-day MA',
-                                    data: {json.dumps(chart_data['ma_20'])},
-                                    borderColor: '#f59e0b',
-                                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                    data: %s,
+                                    borderColor: '#ffc107',
+                                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
                                     borderWidth: 1,
-                                    fill: false,
                                     tension: 0.1,
-                                    borderDash: [5, 5],
-                                    yAxisID: 'price'
-                                }},
-                                // 50-day MA
-                                {{
+                                    yAxisID: 'y',
+                                    pointRadius: 0
+                                },
+                                {
                                     label: '50-day MA',
-                                    data: {json.dumps(chart_data['ma_50'])},
-                                    borderColor: '#ef4444',
-                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    data: %s,
+                                    borderColor: '#28a745',
+                                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
                                     borderWidth: 1,
-                                    fill: false,
                                     tension: 0.1,
-                                    borderDash: [10, 5],
-                                    yAxisID: 'price'
-                                }},
-                                // Volume bars
-                                {{
-                                    label: 'Volume',
-                                    data: {json.dumps(chart_data.get('volumes', []))},
-                                    type: 'bar',
-                                    backgroundColor: 'rgba(156, 163, 175, 0.6)',
-                                    borderColor: 'rgba(156, 163, 175, 0.8)',
-                                    borderWidth: 1,
-                                    yAxisID: 'volume',
-                                    order: 5
-                                }},
-                                // Profit/Loss zone (background fill)
-                                {{
-                                    label: '{'Profit Zone' if is_profitable else 'Loss Zone'}',
-                                    data: {json.dumps(background_data)},
-                                    backgroundColor: '{profit_loss_color}',
-                                    borderColor: 'transparent',
-                                    fill: {json.dumps(str(cost_basis))},
-                                    tension: 0.1,
-                                    pointRadius: 0,
-                                    pointHoverRadius: 0,
-                                    order: 10,
-                                    yAxisID: 'price'
-                                }}
+                                    yAxisID: 'y',
+                                    pointRadius: 0
+                                },
+                                {
+                                    label: 'Cost Basis',
+                                    data: Array(%d).fill(%f),
+                                    borderColor: '#dc3545',
+                                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    yAxisID: 'y',
+                                    pointRadius: 0
+                                }
                             ]
-                        }},
-                        options: {{
+                        },
+                        options: {
                             responsive: true,
                             maintainAspectRatio: false,
-                            plugins: {{
-                                title: {{
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                title: {
                                     display: true,
-                                    text: '{symbol} - Purchase: ${cost_basis:.2f} | Current: ${current_price:.2f} | P&L: {stock.get('profit_loss_percent', 0):+.1f}%',
-                                    font: {{ size: 14, weight: 'bold' }},
-                                    color: '{('#28a745' if is_profitable else '#dc3545')}'
-                                }},
-                                legend: {{
-                                    position: 'bottom',
-                                    labels: {{
-                                        usePointStyle: true,
-                                        padding: 15
-                                    }}
-                                }},
-                                tooltip: {{
-                                    mode: 'index',
-                                    intersect: false,
-                                    callbacks: {{
-                                        label: function(context) {{
-                                            let label = context.dataset.label || '';
-                                            if (label) {{
-                                                label += ': ';
-                                            }}
-                                            if (context.parsed.y !== null) {{
-                                                if (label.includes('Volume')) {{
-                                                    // Format volume numbers
-                                                    let volume = context.parsed.y;
-                                                    if (volume >= 1000000) {{
-                                                        label += (volume / 1000000).toFixed(1) + 'M';
-                                                    }} else if (volume >= 1000) {{
-                                                        label += (volume / 1000).toFixed(1) + 'K';
-                                                    }} else {{
-                                                        label += volume.toLocaleString();
-                                                    }}
-                                                }} else {{
-                                                    // Format price
-                                                    label += '$' + context.parsed.y.toFixed(2);
-                                                }}
-                                            }}
-                                            return label;
-                                        }}
-                                    }}
-                                }}
-                            }},
-                            scales: {{
-                                x: {{
+                                    text: '%s - Price & Volume Chart (90 Days)',
+                                    font: { size: 14 }
+                                },
+                                legend: {
+                                    position: 'top',
+                                    labels: { usePointStyle: true }
+                                }
+                            },
+                            scales: {
+                                x: {
                                     display: true,
-                                    title: {{
-                                        display: true,
-                                        text: 'Date'
-                                    }},
-                                    ticks: {{
-                                        maxTicksLimit: 8
-                                    }}
-                                }},
-                                price: {{
+                                    title: { display: true, text: 'Date' }
+                                },
+                                y: {
                                     type: 'linear',
                                     display: true,
                                     position: 'left',
-                                    title: {{
-                                        display: true,
-                                        text: 'Price ($)'
-                                    }},
-                                    beginAtZero: false,
-                                    {f'min: {y_min}, max: {y_max},' if y_min is not None and y_max is not None else ''}
-                                    grid: {{
-                                        color: 'rgba(75, 192, 192, 0.2)'
-                                    }}
-                                }},
-                                volume: {{
-                                    type: 'linear',
-                                    display: true,
-                                    position: 'right',
-                                    title: {{
-                                        display: true,
-                                        text: 'Volume'
-                                    }},
-                                    beginAtZero: true,
-                                    grid: {{
-                                        display: false
-                                    }},
-                                    ticks: {{
-                                        callback: function(value) {{
-                                            if (value >= 1000000) {{
-                                                return (value / 1000000).toFixed(1) + 'M';
-                                            }} else if (value >= 1000) {{
-                                                return (value / 1000).toFixed(1) + 'K';
-                                            }}
-                                            return value;
-                                        }}
-                                    }}
-                                }}
-                            }},
-                            elements: {{
-                                point: {{
-                                    radius: 1,
-                                    hoverRadius: 6
-                                }},
-                                bar: {{
-                                    barPercentage: 0.7,
-                                    categoryPercentage: 0.8
-                                }}
-                            }},
-                            interaction: {{
-                                mode: 'nearest',
-                                axis: 'x',
-                                intersect: false
-                            }}
-                        }}
-                    }});
-                }}
-                """
-        
-        return f"""
+                                    title: { display: true, text: 'Price ($)' },
+                                    min: %s,
+                                    max: %s
+                                }
+                            }
+                        }
+                    });
+                }
+                """ % (
+                    symbol, symbol.lower(), symbol, symbol.lower(), symbol.lower(),
+                    json.dumps(chart_data['dates'][-90:]),
+                    json.dumps(chart_data['prices'][-90:]),
+                    json.dumps(chart_data.get('ma_20', [])[-90:]),
+                    json.dumps(chart_data.get('ma_50', [])[-90:]),
+                    len(chart_data['dates'][-90:]), cost_basis,
+                    symbol,
+                    y_min if y_min is not None else "null",
+                    y_max if y_max is not None else "null"
+                )
+
+        # Return JavaScript content without f-strings
+        javascript_content = """
         <script>
             // Toggle collapsible content
-            function toggleContent(id) {{
+            function toggleContent(id) {
                 const content = document.getElementById(id);
                 content.classList.toggle('active');
                 
                 const parent = content.previousElementSibling;
                 const arrow = parent.querySelector('h3');
-                if (content.classList.contains('active')) {{
-                    arrow.innerHTML = arrow.innerHTML.replace('▼', '▲');
-                }} else {{
-                    arrow.innerHTML = arrow.innerHTML.replace('▲', '▼');
-                }}
-            }}
+                if (content.classList.contains('active')) {
+                    arrow.textContent = arrow.textContent.replace('▼', '▲');
+                } else {
+                    arrow.textContent = arrow.textContent.replace('▲', '▼');
+                }
+            }
             
-            // Portfolio pie chart
-            const portfolioCtx = document.getElementById('portfolioChart').getContext('2d');
-            new Chart(portfolioCtx, {{
-                type: 'doughnut',
-                data: {{
-                    labels: {json.dumps([item['symbol'] for item in portfolio_data])},
-                    datasets: [{{
-                        data: {json.dumps([item['value'] for item in portfolio_data])},
-                        backgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
-                            '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'
-                        ],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {{
-                        title: {{
-                            display: true,
-                            text: 'Portfolio Allocation by Value',
-                            font: {{ size: 16 }}
-                        }},
-                        legend: {{
-                            position: 'bottom'
-                        }}
-                    }}
-                }}
-            }});
+        document.addEventListener('DOMContentLoaded', function() {
+            // Portfolio chart
+            const ctx = document.getElementById('portfolioChart');
+            if (ctx) {
+                const ctxContext = ctx.getContext('2d');
+                new Chart(ctxContext, {
+                    type: 'doughnut',
+                    data: {
+                        labels: """ + json.dumps([stock['symbol'] for stock in portfolio_data]) + """,
+                        datasets: [{
+                            data: """ + json.dumps([stock['value'] for stock in portfolio_data]) + """,
+                            backgroundColor: [
+                                '#667eea', '#764ba2', '#f093fb', '#f5576c', 
+                                '#4facfe', '#43e97b', '#fa709a', '#fee140',
+                                '#a8edea', '#fed6e3', '#d299c2', '#fef9d7'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Portfolio Allocation by Value',
+                                font: { size: 16 }
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
             
             // Individual stock charts
-            {stock_charts_js}
+            """ + stock_charts_js + """
             
-            // Trends chart (placeholder)
-            const trendsCtx = document.getElementById('trendsChart').getContext('2d');
-            new Chart(trendsCtx, {{
-                type: 'line',
-                data: {{
-                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
-                    datasets: [{{
-                        label: 'Portfolio Value',
-                        data: [100, 102, 98, 105, 110],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        tension: 0.4
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {{
-                        title: {{
-                            display: true,
-                            text: 'Portfolio Performance Trend (Sample Data)',
-                            font: {{ size: 16 }}
-                        }}
-                    }},
-                    scales: {{
-                        y: {{
-                            beginAtZero: false
-                        }}
-                    }}
-                }}
-            }});
+            // Trends chart (placeholder)  
+            const trendsCtx = document.getElementById('trendsChart');
+            if (trendsCtx) {
+                const trendsContext = trendsCtx.getContext('2d');
+                new Chart(trendsContext, {
+                    type: 'line',
+                    data: {
+                        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5'],
+                        datasets: [{
+                            label: 'Portfolio Value',
+                            data: [100, 102, 98, 105, 110],
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Portfolio Performance Trend (Sample Data)',
+                                font: { size: 16 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Clickable metrics dropdown functionality
+            (function() {
+                let currentDropdown = null;
+                
+                function closeAllDropdowns() {
+                    document.querySelectorAll('.symbol-dropdown').forEach(function(dropdown) {
+                        dropdown.remove();
+                    });
+                    
+                    // Reset metric card styles
+                    document.querySelectorAll('.metric-card').forEach(function(card) {
+                        card.style.overflow = '';
+                        card.style.zIndex = '';
+                    });
+                    
+                    currentDropdown = null;
+                }
+                
+                function createDropdown(assets, title) {
+                    if (!assets || assets.length === 0) {
+                        return '<div class="symbol-dropdown">' +
+                               '<div class="dropdown-header">' + title + '</div>' +
+                               '<div class="no-symbols">No assets in this category</div>' +
+                               '</div>';
+                    }
+                    
+                    let symbolsHtml = '';
+                    assets.forEach(function(asset) {
+                        symbolsHtml += '<div class="symbol-item" data-symbol="' + asset.symbol + '">' +
+                                       '<div class="symbol-name">' + asset.symbol + '</div>' +
+                                       '<div class="symbol-details">' + asset.value + '</div>' +
+                                       '</div>';
+                    });
+                    
+                    return '<div class="symbol-dropdown">' +
+                           '<div class="dropdown-header">' + title + '</div>' +
+                           '<div class="dropdown-content">' + symbolsHtml + '</div>' +
+                           '</div>';
+                }
+                
+                function scrollToSymbol(symbol) {
+                    const headings = document.querySelectorAll('h3, h4');
+                    let targetElement = null;
+                    
+                    for (let i = 0; i < headings.length; i++) {
+                        if (headings[i].textContent.includes(symbol)) {
+                            targetElement = headings[i];
+                            break;
+                        }
+                    }
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                        targetElement.style.background = 'rgba(102, 126, 234, 0.2)';
+                        setTimeout(function() {
+                            targetElement.style.background = '';
+                        }, 2000);
+                    } else {
+                        const allElements = document.querySelectorAll('*');
+                        for (let i = 0; i < allElements.length; i++) {
+                            const element = allElements[i];
+                            if (element.textContent.includes(symbol + ' Analysis') || 
+                                element.textContent.includes(symbol + ':') ||
+                                (element.tagName === 'STRONG' && element.textContent === symbol)) {
+                                element.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                });
+                                element.style.background = 'rgba(102, 126, 234, 0.2)';
+                                setTimeout(function() {
+                                    element.style.background = '';
+                                }, 2000);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                document.querySelectorAll('.metric-value-clickable').forEach(function(metric) {
+                    metric.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        if (currentDropdown === this) {
+                            closeAllDropdowns();
+                            return;
+                        }
+                        
+                        closeAllDropdowns();
+                        
+                        const assetsData = this.getAttribute('data-assets');
+                        if (!assetsData) return;
+                        
+                        let assets;
+                        try {
+                            assets = JSON.parse(assetsData);
+                        } catch (err) {
+                            console.error('Error parsing assets data:', err);
+                            return;
+                        }
+                        
+                        const label = this.nextElementSibling.textContent;
+                        const title = label + ' (' + this.textContent + ')';
+                        
+                        const dropdown = document.createElement('div');
+                        dropdown.innerHTML = createDropdown(assets, title);
+                        const dropdownElement = dropdown.firstElementChild;
+                        
+                        this.style.position = 'relative';
+                        
+                        // Ensure parent metric card allows overflow
+                        const metricCard = this.closest('.metric-card');
+                        if (metricCard) {
+                            metricCard.style.overflow = 'visible';
+                            metricCard.style.zIndex = '10000';
+                        }
+                        
+                        this.appendChild(dropdownElement);
+                        
+                        // Adjust position if dropdown would go off-screen
+                        setTimeout(function() {
+                            const rect = dropdownElement.getBoundingClientRect();
+                            const viewportWidth = window.innerWidth;
+                            const viewportHeight = window.innerHeight;
+                            
+                            // Check if dropdown goes off right edge
+                            if (rect.right > viewportWidth - 20) {
+                                dropdownElement.style.left = 'auto';
+                                dropdownElement.style.right = '0';
+                                dropdownElement.style.transform = 'translateX(0)';
+                            }
+                            // Check if dropdown goes off left edge  
+                            else if (rect.left < 20) {
+                                dropdownElement.style.left = '0';
+                                dropdownElement.style.transform = 'translateX(0)';
+                            }
+                            
+                            // Check if dropdown goes off bottom edge
+                            if (rect.bottom > viewportHeight - 20) {
+                                dropdownElement.style.top = 'auto';
+                                dropdownElement.style.bottom = 'calc(100% + 12px)';
+                                dropdownElement.classList.add('arrow-bottom');
+                            }
+                        }, 50);
+                        
+                        setTimeout(function() {
+                            dropdownElement.classList.add('active');
+                        }, 10);
+                        
+                        dropdownElement.querySelectorAll('.symbol-item').forEach(function(item) {
+                            item.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                const symbol = this.getAttribute('data-symbol');
+                                scrollToSymbol(symbol);
+                                closeAllDropdowns();
+                            });
+                        });
+                        
+                        currentDropdown = this;
+                    });
+                });
+                
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.metric-value-clickable') && !e.target.closest('.symbol-dropdown')) {
+                        closeAllDropdowns();
+                    }
+                });
+                
+                window.addEventListener('scroll', function() {
+                    closeAllDropdowns();
+                });
+                
+                window.addEventListener('resize', function() {
+                    closeAllDropdowns();
+                });
+                
+                window.addEventListener('orientationchange', function() {
+                    setTimeout(closeAllDropdowns, 100);
+                });
+                
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        closeAllDropdowns();
+                    }
+                });
+            })();
+        });
         </script>
-        """ 
+        """
+        
+        return javascript_content 

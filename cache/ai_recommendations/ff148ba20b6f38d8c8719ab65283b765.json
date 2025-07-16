@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - While the overall sentiment for META is positive, the technical indicators are currently not bullish enough to warrant new position. The price is just below the 20-day MA and its RSI is in the neutral zone, suggesting that the stock could go in either direction. The current volatility is relatively low, which implies that there might not be a significant price movement in the immediate future. Considering the risk/reward assessment and the  current volatility, it would be best to wait for stronger signals before making a decision.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: EXCELLENT (Reliability: 85.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 33.1 hours old\n\n[AI Analysis: 13:08:53 UTC | Confidence: 70.0% | Data Quality: EXCELLENT]",
+  "cached_at": "2025-07-16T13:08:59.785842+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "META",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "ff148ba20b6f38d8c8719ab65283b765",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 710.3900146484375,
+    "rsi": 49.155706942762315,
+    "sentiment": "positive",
+    "sentiment_score": 0.24574,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}

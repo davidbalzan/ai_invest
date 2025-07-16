@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 import os
 import logging
+import asyncio
+import concurrent.futures
 from contextlib import asynccontextmanager
 
 from app.database import init_db, check_db_connection
@@ -26,6 +28,15 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
     logger.info("Starting AI Investment Tool server...")
+    
+    # Set up thread pool for CPU-intensive tasks
+    import multiprocessing
+    max_workers = min(multiprocessing.cpu_count() * 2, 16)
+    app.state.thread_pool = concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_workers,
+        thread_name_prefix="ai_investment_worker"
+    )
+    logger.info(f"Initialized thread pool with {max_workers} workers")
     
     # Check database connection
     if not check_db_connection():
@@ -62,6 +73,12 @@ async def lifespan(app: FastAPI):
     
     # Shutdown
     logger.info("Shutting down AI Investment Tool server...")
+    
+    # Shutdown thread pool
+    if hasattr(app.state, 'thread_pool'):
+        logger.info("Shutting down thread pool...")
+        app.state.thread_pool.shutdown(wait=True)
+        logger.info("Thread pool shutdown complete")
 
 # Create FastAPI app
 app = FastAPI(
