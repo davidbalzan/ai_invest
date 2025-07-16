@@ -27,7 +27,23 @@ def get_stock_data(symbol, period="1y", force_refresh=False):
         
         # Convert back to pandas DataFrame with proper attributes
         df = pd.DataFrame(cached_data['data'])
-        df.index = pd.to_datetime(df.index)
+        
+        # FIXED: Properly reconstruct the index using the stored date strings
+        if 'index' in cached_data and cached_data['index']:
+            df.index = pd.to_datetime(cached_data['index'])
+        else:
+            # Fallback: use the Date column if available
+            if 'Date' in df.columns:
+                df.index = pd.to_datetime(df['Date'])
+                df = df.drop('Date', axis=1)  # Remove duplicate Date column
+            else:
+                # Last resort: try to convert the existing index
+                df.index = pd.to_datetime(df.index)
+        
+        # Ensure proper timezone handling for the index
+        if df.index.tz is None:
+            df.index = df.index.tz_localize('UTC')
+        
         df.attrs['retrieval_timestamp'] = datetime.fromisoformat(cached_data['retrieval_timestamp'])
         df.attrs['symbol'] = cached_data['symbol']
         df.attrs['cached'] = True
@@ -154,6 +170,33 @@ def _calculate_technical_indicators_direct(stock_data):
         macd = exp1 - exp2
         signal = macd.ewm(span=9).mean()
         
+        # ENHANCED: Calculate volatility and market regime indicators
+        # 1. Historical volatility (20-day)
+        daily_returns = stock_data['Close'].pct_change()
+        volatility = daily_returns.rolling(window=20).std() * (252 ** 0.5)  # Annualized
+        
+        # 2. Volume analysis
+        avg_volume = stock_data['Volume'].rolling(window=20).mean()
+        volume_ratio = stock_data['Volume'].iloc[-1] / avg_volume.iloc[-1] if avg_volume.iloc[-1] > 0 else 1
+        
+        # 3. Market regime detection
+        price_momentum = (current_price - ma_50.iloc[-1]) / ma_50.iloc[-1] if ma_50.iloc[-1] > 0 else 0
+        trend_strength = abs(price_momentum)
+        
+        # 4. Volatility-adjusted RSI thresholds
+        vol_percentile = volatility.rank(pct=True).iloc[-1] if len(volatility.dropna()) > 0 else 0.5
+        
+        # Adjust RSI thresholds based on volatility
+        if vol_percentile > 0.8:  # High volatility
+            rsi_overbought = 75  # Higher threshold
+            rsi_oversold = 25   # Lower threshold
+        elif vol_percentile < 0.2:  # Low volatility
+            rsi_overbought = 65  # Lower threshold
+            rsi_oversold = 35   # Higher threshold
+        else:  # Normal volatility
+            rsi_overbought = 70
+            rsi_oversold = 30
+        
         # Get timestamps
         data_timestamp = stock_data.index[-1]  # Timestamp of the latest data point
         retrieval_timestamp = stock_data.attrs.get('retrieval_timestamp', datetime.now(timezone.utc))
@@ -166,6 +209,12 @@ def _calculate_technical_indicators_direct(stock_data):
             'ma_50': ma_50.iloc[-1],
             'macd': macd.iloc[-1],
             'signal': signal.iloc[-1],
+            'volatility': volatility.iloc[-1],
+            'volume_ratio': volume_ratio,
+            'price_momentum': price_momentum,
+            'trend_strength': trend_strength,
+            'rsi_overbought': rsi_overbought,
+            'rsi_oversold': rsi_oversold,
             # Timestamp tracking
             'data_timestamp': data_timestamp,           # When the stock data is from (last trading day)
             'retrieval_timestamp': retrieval_timestamp, # When we fetched the data

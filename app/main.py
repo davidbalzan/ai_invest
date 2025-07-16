@@ -42,6 +42,22 @@ async def lifespan(app: FastAPI):
         logger.error(f"Database initialization failed: {e}")
         raise
     
+    # Clean up stale running analysis sessions from previous server runs
+    try:
+        from app.services.database_service import DatabaseService
+        from app.database import SessionLocal
+        
+        db = SessionLocal()
+        try:
+            db_service = DatabaseService(db)
+            cleaned_count = db_service.clean_stale_running_sessions()
+            if cleaned_count > 0:
+                logger.info(f"Cleaned up {cleaned_count} stale running analysis sessions")
+        finally:
+            db.close()
+    except Exception as e:
+        logger.warning(f"Failed to clean stale sessions: {e}")
+    
     yield
     
     # Shutdown

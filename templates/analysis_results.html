@@ -3,14 +3,14 @@
 {% block title %}Analysis Results - {{ session.analysis_type.title() }}{% endblock %}
 
 {% block breadcrumb_items %}
-<span>▶</span>
 {% if portfolio %}
+<span class="breadcrumb-separator">▶</span>
 <a href="/portfolio/{{ portfolio.id }}">💼 {{ portfolio.name }}</a>
-<span>▶</span>
+<span class="breadcrumb-separator">▶</span>
 <a href="/portfolio/{{ portfolio.id }}/analysis">📈 Analysis</a>
-<span>▶</span>
+<span class="breadcrumb-separator">▶</span>
 {% endif %}
-<span class="current">📊 Results</span>
+<span class="breadcrumb-current">📊 Results</span>
 {% endblock %}
 
 {% block page_title %}📊 Analysis Results{% endblock %}
@@ -34,7 +34,6 @@
     {% if session.report_path %}
     <a href="/portfolio/{{ portfolio.id }}/analysis/results/{{ session.id }}/download" class="btn btn-success">📄 Download PDF</a>
     {% endif %}
-    <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">💼 Back to Portfolio</a>
     {% endif %}
 </div>
 {% endblock %}

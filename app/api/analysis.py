@@ -30,29 +30,34 @@ async def run_portfolio_analysis_background(
 ):
     """Background task to run portfolio analysis using existing analysis system"""
     try:
-        # Update session status to running
+        # Update session status to running and commit immediately
         session_update = schemas.AnalysisSessionUpdate(
             status=schemas.AnalysisStatus.RUNNING
         )
         db_service.update_analysis_session(session_id, session_update)
         
-        # Run the actual analysis using the existing system
+        # Commit the status change immediately so it's visible to progress polling
+        db_service.db.commit()
+        
+        # Run the actual analysis using the existing session
         result = analysis_service.run_portfolio_analysis(
             portfolio_id=str(portfolio_id),
             analysis_type=analysis_request.analysis_type,
             include_pdf=True,
-            user_id=None  # TODO: Get from authentication context
+            user_id=None,  # TODO: Get from authentication context
+            existing_session_id=str(session_id),  # Use existing session
+            force_refresh=analysis_request.force_refresh  # Pass force refresh parameter
         )
         
         if "error" in result:
-            # Update session as failed
+            # Update session as failed and commit immediately
             session_update = schemas.AnalysisSessionUpdate(
                 status=schemas.AnalysisStatus.FAILED,
                 completed_at=datetime.utcnow(),
                 error_message=result["error"]
             )
         else:
-            # Update session as completed
+            # Update session as completed and commit immediately
             session_update = schemas.AnalysisSessionUpdate(
                 status=schemas.AnalysisStatus.COMPLETED,
                 completed_at=datetime.utcnow(),
@@ -64,15 +69,19 @@ async def run_portfolio_analysis_background(
             )
         
         db_service.update_analysis_session(session_id, session_update)
+        # Commit the final status immediately
+        db_service.db.commit()
         
     except Exception as e:
-        # Update session as failed
+        # Update session as failed and commit immediately
         session_update = schemas.AnalysisSessionUpdate(
             status=schemas.AnalysisStatus.FAILED,
             completed_at=datetime.utcnow(),
             error_message=str(e)
         )
         db_service.update_analysis_session(session_id, session_update)
+        # Commit the error status immediately
+        db_service.db.commit()
 
 @router.post("/run", response_model=schemas.AnalysisSession, status_code=status.HTTP_202_ACCEPTED)
 async def run_analysis(
@@ -164,6 +173,20 @@ async def get_analysis_session(
         )
     return session
 
+@router.get("/sessions/{session_id}/progress")
+async def get_session_progress(
+    session_id: UUID,
+    analysis_service: AnalysisService = Depends(get_analysis_service)
+):
+    """Get real-time progress for an analysis session"""
+    progress = analysis_service.get_session_progress(str(session_id))
+    if "error" in progress:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=progress["error"]
+        )
+    return progress
+
 @router.get("/portfolio/{portfolio_id}/sessions", response_model=List[schemas.AnalysisSession])
 async def get_portfolio_analysis_sessions(
     portfolio_id: UUID,
@@ -194,24 +217,28 @@ def get_market_status(analysis_service: AnalysisService = Depends(get_analysis_s
     """Get current market status for analysis timing"""
     return analysis_service.get_market_status()
 
-@router.get("/cache/stats", response_model=schemas.CacheStats)
-async def get_cache_stats(
-    db_service: DatabaseService = Depends(get_db_service)
-):
-    """Get cache statistics"""
-    # TODO: Implement cache statistics from database
-    return schemas.CacheStats(
-        total_entries=0,
-        expired_entries=0,
-        cache_size_mb=0.0,
-        hit_rate=0.0,
-        most_accessed=[]
-    )
-
 @router.post("/cache/clean")
 async def clean_cache(
     db_service: DatabaseService = Depends(get_db_service)
 ):
     """Clean expired cache entries"""
     expired_count = db_service.clean_expired_cache()
-    return {"message": f"Cleaned {expired_count} expired cache entries"} 
+    return {"message": f"Cleaned {expired_count} expired cache entries", "expired_count": expired_count}
+
+@router.get("/cache/stats")
+async def get_cache_stats():
+    """Get cache statistics for monitoring data freshness"""
+    try:
+        from cache_manager import CacheManager
+        cache_manager = CacheManager()
+        stats = cache_manager.get_cache_stats()
+        return stats
+    except Exception as e:
+        return {
+            "error": str(e),
+            "total_entries": 0,
+            "total_size_mb": 0,
+            "expired_entries": 0,
+            "current_market_session": "unknown",
+            "by_type": {}
+        } 

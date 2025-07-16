@@ -39,35 +39,35 @@ class CacheManager:
         """Load cache policies with environment variable overrides"""
         import os
         
-        # Default policies
+        # Updated policies for more sensible fresh data handling
         default_policies = {
             'stock_data': {
-                'market_hours': 5,          # 5 minutes during market hours
-                'pre_post_market': 15,      # 15 minutes during pre/post market
-                'market_closed': 60,        # 1 hour when market is closed
-                'weekend': 1440,            # 24 hours on weekends
-                'holiday': 1440             # 24 hours on holidays
+                'market_hours': 2,          # 2 minutes during market hours (more responsive)
+                'pre_post_market': 10,      # 10 minutes during pre/post market  
+                'market_closed': 30,        # 30 minutes when market is closed (reduced from 60)
+                'weekend': 480,             # 8 hours on weekends (reduced from 24h)
+                'holiday': 480              # 8 hours on holidays
             },
             'sentiment_data': {
-                'market_hours': 30,         # 30 minutes during market hours
-                'pre_post_market': 60,      # 1 hour during pre/post market
-                'market_closed': 240,       # 4 hours when market is closed
-                'weekend': 1440,            # 24 hours on weekends
-                'holiday': 1440             # 24 hours on holidays
+                'market_hours': 10,         # 10 minutes during market hours (much fresher than 30)
+                'pre_post_market': 20,      # 20 minutes during pre/post market (reduced from 60)
+                'market_closed': 60,        # 1 hour when market is closed (reduced from 4h)
+                'weekend': 240,             # 4 hours on weekends (reduced from 24h)
+                'holiday': 240              # 4 hours on holidays (much fresher)
             },
             'ai_recommendations': {
-                'market_hours': 10,         # 10 minutes during market hours
-                'pre_post_market': 30,      # 30 minutes during pre/post market
-                'market_closed': 120,       # 2 hours when market is closed
-                'weekend': 720,             # 12 hours on weekends
-                'holiday': 720              # 12 hours on holidays
+                'market_hours': 5,          # 5 minutes during market hours (reduced from 10)
+                'pre_post_market': 15,      # 15 minutes during pre/post market (reduced from 30)
+                'market_closed': 60,        # 1 hour when market is closed (reduced from 2h)
+                'weekend': 240,             # 4 hours on weekends (reduced from 12h)
+                'holiday': 240              # 4 hours on holidays
             },
             'technical_indicators': {
-                'market_hours': 5,          # 5 minutes during market hours
-                'pre_post_market': 15,      # 15 minutes during pre/post market
-                'market_closed': 60,        # 1 hour when market is closed
-                'weekend': 1440,            # 24 hours on weekends
-                'holiday': 1440             # 24 hours on holidays
+                'market_hours': 2,          # 2 minutes during market hours (same as stock data)
+                'pre_post_market': 10,      # 10 minutes during pre/post market
+                'market_closed': 30,        # 30 minutes when market is closed
+                'weekend': 480,             # 8 hours on weekends 
+                'holiday': 480              # 8 hours on holidays
             }
         }
         
@@ -248,6 +248,45 @@ class CacheManager:
             print(f"Error reading cached data for {data_type}/{identifier}: {e}")
             return None
     
+    def should_force_refresh(self, data_type: str, identifier: str, **kwargs) -> bool:
+        """Check if data should be force refreshed based on user requests or data age"""
+        # For comprehensive analysis, prefer fresher data
+        if kwargs.get('force_refresh', False):
+            return True
+            
+        # If cached data is very old (beyond reasonable limits), force refresh
+        cache_key = self._get_cache_key(data_type, identifier, **kwargs)
+        filepath = self._get_cache_filepath(data_type, cache_key)
+        
+        if not os.path.exists(filepath):
+            return True
+            
+        try:
+            with open(filepath, 'r') as f:
+                cached_data = json.load(f)
+            
+            cached_time = datetime.fromisoformat(cached_data['cached_at'])
+            current_time = datetime.now(timezone.utc)
+            age_hours = (current_time - cached_time).total_seconds() / 3600
+            
+            # Force refresh if data is absurdly old
+            max_age_limits = {
+                'sentiment_data': 24,    # News should never be more than 24h old
+                'ai_recommendations': 12, # AI responses should be fresh
+                'stock_data': 48,        # Stock data can be a bit older
+                'technical_indicators': 48
+            }
+            
+            max_age = max_age_limits.get(data_type, 24)
+            if age_hours > max_age:
+                print(f"🔄 Force refreshing {data_type} for {identifier} - data is {age_hours:.1f}h old (max: {max_age}h)")
+                return True
+                
+        except Exception:
+            return True  # Force refresh on corrupted cache
+            
+        return False
+
     def cache_data(self, data_type: str, identifier: str, data: Any, **kwargs) -> bool:
         """Cache data with metadata"""
         cache_key = self._get_cache_key(data_type, identifier, **kwargs)
@@ -308,6 +347,54 @@ class CacheManager:
         
         return removed_count
     
+    def clear_stale_cache(self, data_type: str = None, max_age_hours: float = None) -> int:
+        """Clear cache entries older than specified age. Returns number of items removed."""
+        removed_count = 0
+        current_time = datetime.now(timezone.utc)
+        
+        # Default max ages for different data types
+        default_max_ages = {
+            'sentiment_data': 12,     # News data older than 12h
+            'ai_recommendations': 6,  # AI responses older than 6h  
+            'stock_data': 24,         # Stock data older than 24h
+            'technical_indicators': 24
+        }
+        
+        data_types = [data_type] if data_type else ['stock_data', 'sentiment_data', 'ai_recommendations', 'technical_indicators']
+        
+        for data_type_name in data_types:
+            data_type_dir = os.path.join(self.cache_dir, data_type_name)
+            if not os.path.exists(data_type_dir):
+                continue
+            
+            # Use provided max_age or default for this data type
+            max_age = max_age_hours if max_age_hours is not None else default_max_ages.get(data_type_name, 12)
+            max_age_timedelta = timedelta(hours=max_age)
+                
+            for filename in os.listdir(data_type_dir):
+                if not filename.endswith('.json'):
+                    continue
+                    
+                filepath = os.path.join(data_type_dir, filename)
+                try:
+                    with open(filepath, 'r') as f:
+                        cached_data = json.load(f)
+                    
+                    cached_time = datetime.fromisoformat(cached_data['cached_at'])
+                    
+                    if current_time - cached_time > max_age_timedelta:
+                        os.remove(filepath)
+                        removed_count += 1
+                        print(f"🗑️ Removed stale {data_type_name} cache: {filename}")
+                        
+                except Exception as e:
+                    print(f"Error processing cache file {filename}: {e}")
+                    # Remove corrupted cache files
+                    os.remove(filepath)
+                    removed_count += 1
+        
+        return removed_count
+
     def cleanup_expired_cache(self) -> int:
         """Remove expired cache entries. Returns number of items removed."""
         removed_count = 0

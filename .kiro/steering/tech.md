@@ -1,0 +1,2 @@
+- favor pipen over bare python since it works better on my ubuntu machine
+- break down files in smaller chunks where possible

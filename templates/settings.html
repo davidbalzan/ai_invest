@@ -3,19 +3,17 @@
 {% block title %}Settings - AI Investment Tool{% endblock %}
 
 {% block breadcrumb_items %}
-<li><a href="/dashboard">Dashboard</a></li>
-<li class="current">Settings</li>
+<span class="breadcrumb-separator">▶</span>
+<span class="breadcrumb-current">⚙️ Settings</span>
 {% endblock %}
+
+{% block page_title %}⚙️ Settings{% endblock %}
+{% block page_subtitle %}System configuration and preferences{% endblock %}
 
 {% block page_actions %}
 <div class="page-actions">
-    <a href="/dashboard" class="btn btn-secondary">
-        <i class="icon">←</i>
-        Back to Dashboard
-    </a>
     <button class="btn btn-primary" disabled>
-        <i class="icon">✎</i>
-        Edit Settings (Coming Soon)
+        ✎ Edit Settings (Coming Soon)
     </button>
 </div>
 {% endblock %}
@@ -28,7 +26,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="settings-container">
+<div class="card">
     <div class="settings-header">
         <h1>System Settings</h1>
         <p class="settings-description">
@@ -48,9 +46,11 @@
         <button class="tab-button" onclick="showTab('notification-config')">Notifications</button>
         <button class="tab-button" onclick="showTab('system-config')">System</button>
     </div>
+</div>
 
-    <!-- API Configuration -->
-    <div id="api-config" class="tab-content active">
+<!-- API Configuration -->
+<div id="api-config" class="tab-content active">
+    <div class="card">
         <div class="settings-section">
             <h2>API Configuration</h2>
             <div class="settings-grid">
@@ -71,9 +71,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Portfolio Configuration -->
-    <div id="portfolio-config" class="tab-content">
+<!-- Portfolio Configuration -->
+<div id="portfolio-config" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Portfolio Configuration</h2>
             <div class="settings-grid">
@@ -101,9 +103,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Portfolio Management -->
-    <div id="portfolio-management" class="tab-content">
+<!-- Portfolio Management -->
+<div id="portfolio-management" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Portfolio Management</h2>
             <p class="section-description">Create and manage multiple portfolios with different strategies and risk profiles.</p>
@@ -227,9 +231,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Backtesting -->
-    <div id="backtesting" class="tab-content">
+<!-- Backtesting -->
+<div id="backtesting" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Backtesting & Strategy Validation</h2>
             <p class="section-description">
@@ -550,9 +556,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Market & Scheduling Configuration -->
-    <div id="market-config" class="tab-content">
+<!-- Market & Scheduling Configuration -->
+<div id="market-config" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Market & Scheduling Configuration</h2>
             <div class="settings-grid">
@@ -601,9 +609,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Caching Configuration -->
-    <div id="cache-config" class="tab-content">
+<!-- Caching Configuration -->
+<div id="cache-config" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Caching Configuration</h2>
             <div class="settings-grid">
@@ -663,9 +673,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Risk Management -->
-    <div id="risk-config" class="tab-content">
+<!-- Risk Management -->
+<div id="risk-config" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Risk Management</h2>
             <div class="settings-grid">
@@ -714,9 +726,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Notifications -->
-    <div id="notification-config" class="tab-content">
+<!-- Notifications -->
+<div id="notification-config" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>Notification Settings</h2>
             <div class="settings-grid">
@@ -758,9 +772,11 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- System Configuration -->
-    <div id="system-config" class="tab-content">
+<!-- System Configuration -->
+<div id="system-config" class="tab-content">
+    <div class="card">
         <div class="settings-section">
             <h2>System Configuration</h2>
             <div class="settings-grid">
@@ -802,6 +818,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <style>

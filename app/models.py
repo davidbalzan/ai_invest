@@ -120,6 +120,7 @@ class AnalysisSession(Base):
     risk_metrics = Column(JSONB)                 # Risk assessment and metrics
     trading_signals = Column(JSONB)              # Generated buy/sell/hold signals
     backtesting_context = Column(JSONB)          # Additional context for backtesting
+    progress_logs = Column(JSONB)                # Real-time progress logging for UI
     
     # Relationships
     portfolio = relationship("Portfolio", back_populates="analysis_sessions")
@@ -177,4 +178,149 @@ class MarketSession(Base):
     market_close_time = Column(Time)
     is_trading_day = Column(Boolean, default=True)
     holiday_name = Column(String(100))
-    created_at = Column(DateTime(timezone=True), server_default=func.now()) 
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+# News-related models
+class NewsArticle(Base):
+    __tablename__ = "news_articles"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title = Column(String(500), nullable=False)
+    description = Column(Text)
+    content = Column(Text)
+    url = Column(String(1000), nullable=False)
+    url_to_image = Column(String(1000))
+    source_name = Column(String(100), nullable=False, index=True)
+    source_id = Column(String(50))
+    author = Column(String(200))
+    published_at = Column(DateTime(timezone=True), nullable=False, index=True)
+    content_hash = Column(String(64), unique=True, index=True)  # For deduplication
+    
+    # Additional metadata fields for enhanced functionality
+    word_count = Column(Integer)
+    reading_time_minutes = Column(Integer)
+    language = Column(String(10))  # ISO language code
+    country = Column(String(10))   # ISO country code
+    
+    # JSONB fields for flexible metadata storage
+    article_metadata = Column(JSONB)  # Additional article metadata
+    processing_metadata = Column(JSONB)  # Processing pipeline metadata
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    categories = relationship("NewsCategory", back_populates="article", cascade="all, delete-orphan")
+    sentiment = relationship("NewsSentiment", back_populates="article", uselist=False, cascade="all, delete-orphan")
+    stock_relevance = relationship("StockNewsRelevance", back_populates="article", cascade="all, delete-orphan")
+
+class NewsCategory(Base):
+    __tablename__ = "news_categories"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    article_id = Column(UUID(as_uuid=True), ForeignKey("news_articles.id", ondelete="CASCADE"), nullable=False, index=True)
+    category_type = Column(String(50), nullable=False)  # 'primary', 'sector', 'custom'
+    category_value = Column(String(100), nullable=False)  # 'earnings', 'technology', etc.
+    confidence_score = Column(Numeric(3, 2))  # 0.00 to 1.00
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    article = relationship("NewsArticle", back_populates="categories")
+
+class NewsSentiment(Base):
+    __tablename__ = "news_sentiment"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    article_id = Column(UUID(as_uuid=True), ForeignKey("news_articles.id", ondelete="CASCADE"), nullable=False, index=True)
+    sentiment = Column(String(20), nullable=False, index=True)  # 'positive', 'negative', 'neutral'
+    sentiment_score = Column(Numeric(4, 3))  # -1.000 to 1.000
+    confidence_score = Column(Numeric(3, 2))  # 0.00 to 1.00
+    impact_level = Column(String(20))  # 'high', 'medium', 'low'
+    keywords = Column(JSONB)  # Extracted keywords and their weights
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    article = relationship("NewsArticle", back_populates="sentiment")
+
+class StockNewsRelevance(Base):
+    __tablename__ = "stock_news_relevance"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    article_id = Column(UUID(as_uuid=True), ForeignKey("news_articles.id", ondelete="CASCADE"), nullable=False, index=True)
+    symbol = Column(String(20), nullable=False, index=True)
+    relevance_score = Column(Numeric(4, 3), nullable=False)  # 0.000 to 1.000
+    mention_count = Column(Integer, default=1)
+    context_type = Column(String(50))  # 'direct_mention', 'sector_related', 'competitor'
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    article = relationship("NewsArticle", back_populates="stock_relevance")
+
+class NewsSource(Base):
+    __tablename__ = "news_sources"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    source_id = Column(String(50), unique=True, nullable=False, index=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text)
+    url = Column(String(500))
+    category = Column(String(50))
+    language = Column(String(10))
+    country = Column(String(10))
+    quality_score = Column(Numeric(3, 2), default=0.50)  # 0.00 to 1.00
+    is_active = Column(Boolean, default=True)
+    api_provider = Column(String(50))  # 'newsapi', 'alpha_vantage', 'finnhub'
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+class UserNewsPreferences(Base):
+    __tablename__ = "user_news_preferences"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    categories = Column(JSONB)  # Preferred categories and weights
+    sources = Column(JSONB)  # Preferred/blocked sources
+    sentiment_threshold = Column(Numeric(3, 2), default=0.30)
+    impact_threshold = Column(String(20), default='medium')
+    notification_settings = Column(JSONB)
+    refresh_frequency = Column(Integer, default=60)  # minutes
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    # Relationships
+    user = relationship("User")
+
+class NewsFetchJob(Base):
+    __tablename__ = "news_fetch_jobs"
+    
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    job_type = Column(String(50), nullable=False)  # 'scheduled', 'manual', 'portfolio_triggered'
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
+    portfolio_id = Column(UUID(as_uuid=True), ForeignKey("portfolios.id"), index=True)
+    symbols = Column(JSONB)  # Array of symbols to fetch news for
+    status = Column(String(20), default='pending', index=True)  # 'pending', 'running', 'completed', 'failed'
+    api_provider = Column(String(50))
+    articles_fetched = Column(Integer, default=0)
+    api_calls_made = Column(Integer, default=0)
+    started_at = Column(DateTime(timezone=True))
+    completed_at = Column(DateTime(timezone=True))
+    error_message = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    user = relationship("User")
+    portfolio = relationship("Portfolio")
+
+# Add indexes for performance optimization
+from sqlalchemy import Index
+
+# Create indexes for news tables
+Index('idx_news_articles_published_at', NewsArticle.published_at.desc())
+Index('idx_news_articles_source', NewsArticle.source_name)
+Index('idx_news_articles_content_hash', NewsArticle.content_hash)
+Index('idx_stock_news_relevance_symbol', StockNewsRelevance.symbol)
+Index('idx_stock_news_relevance_score', StockNewsRelevance.relevance_score.desc())
+Index('idx_news_sentiment_sentiment', NewsSentiment.sentiment)
+Index('idx_news_categories_category', NewsCategory.category_type, NewsCategory.category_value)
+Index('idx_news_fetch_jobs_status', NewsFetchJob.status)
+Index('idx_user_news_preferences_user', UserNewsPreferences.user_id) 

@@ -2,9 +2,18 @@
 
 ## Overview
 
-This design document outlines the architecture for enhancing the AI Investment Tool with advanced portfolio analytics, real-time monitoring, and intelligent automation. The system will evolve from its current sophisticated foundation into a professional-grade investment management platform while maintaining backward compatibility and leveraging existing components.
+This design document outlines the architecture for enhancing the AI Investment Tool with advanced portfolio analytics, real-time monitoring, and intelligent automation. The system builds upon the current sophisticated foundation which includes:
 
-The enhancement builds upon the existing FastAPI web server, PostgreSQL database, intelligent caching system, and AI-powered analysis engine to add advanced portfolio optimization, real-time monitoring, automated rebalancing, and comprehensive risk management capabilities.
+**Current Architecture Foundation:**
+- FastAPI web server (v2.0.0) with comprehensive API endpoints
+- PostgreSQL database with rich models (Users, Portfolios, Holdings, Transactions, AnalysisSession)
+- Advanced caching system with StockDataCache, NewsSentimentCache, and AIAnalysisCache
+- Existing portfolio management with strategy and risk management fields
+- Multi-layer analysis sessions with JSONB storage for market data, AI recommendations, and backtesting context
+- Market session tracking and timezone support
+- Comprehensive transaction tracking with external reference support
+
+The enhancement will add advanced portfolio optimization, real-time monitoring, automated rebalancing, and comprehensive risk management capabilities while leveraging the existing robust foundation.
 
 ## Architecture
 
@@ -83,7 +92,16 @@ graph TB
 
 ### Enhanced Database Schema
 
-The existing database schema will be extended with new tables for advanced analytics:
+The existing database schema will be extended with new tables for advanced analytics, building upon the current comprehensive foundation:
+
+**Current Database Foundation:**
+- Users, Portfolios, Holdings, Transactions with full relationship mapping
+- AnalysisSession with rich JSONB storage for market data, AI recommendations, and backtesting context
+- Advanced caching tables: StockDataCache, NewsSentimentCache, AIAnalysisCache
+- MarketSession tracking with timezone support
+- Portfolio strategy and risk management fields already implemented
+
+**New Tables for Advanced Analytics:**
 
 ```sql
 -- Portfolio Optimization Tables

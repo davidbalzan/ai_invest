@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Start Major Task",
+  "description": "Creates a feature branch when starting work on major tasks from the advanced portfolio analytics specification",
+  "version": "1",
+  "when": {
+    "type": "manual"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "I'm about to start working on a major task from the advanced portfolio analytics specification. Please:\n\n1. Check the current git branch and status\n2. Look at the tasks.md file in .kiro/specs/advanced-portfolio-analytics/ to understand the available major tasks\n3. Ask me which task I want to work on from the list\n4. Create a descriptive feature branch name based on the selected task (e.g., 'feature/portfolio-optimization-engine' or 'feature/realtime-monitoring-system')\n5. Create and switch to the new feature branch\n6. Confirm the branch creation and provide a brief summary of what this task involves\n\nMake sure to use git commands that work well with the existing repository structure and follow good branching practices."
+  }
+}

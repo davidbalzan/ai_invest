@@ -1,0 +1,32 @@
+{
+  "data": {
+    "current_price": 8.789999961853027,
+    "rsi": 51.91740562352712,
+    "ma_20": 8.979999923706055,
+    "ma_50": 9.062199983596802,
+    "macd": 0.010670080481395061,
+    "signal": 0.04091459259887124,
+    "volatility": 0.5711781444164461,
+    "volume_ratio": 0.5502941286206425,
+    "price_momentum": -0.030036858846248713,
+    "trend_strength": 0.030036858846248713,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-16T12:35:52.633602+00:00",
+    "calculation_timestamp": "2025-07-16T12:35:52.855459+00:00",
+    "symbol": "RUM",
+    "cached": false
+  },
+  "cached_at": "2025-07-16T12:35:52.855515+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "RUM",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "8656111ae83645fe2f7e532234d3c127",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 250,
+    "last_price": 8.789999961853027
+  }
+}

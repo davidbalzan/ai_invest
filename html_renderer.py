@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import json
 import os
 from datetime import datetime
@@ -221,6 +221,78 @@ class HTMLReportRenderer:
             margin: 10px 0;
         }
         
+        .recommendation-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+        
+        .recommendation-buy {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+        
+        .recommendation-sell {
+            background: #ffcdd2;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        
+        .recommendation-hold {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ff9800;
+        }
+        
+        .confidence-score {
+            margin-top: 8px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+        .ai-reasoning {
+            margin-top: 12px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #007bff;
+            font-style: italic;
+            line-height: 1.4;
+        }
+        
+        .raw-response {
+            margin-top: 10px;
+        }
+        
+        .raw-response details {
+            cursor: pointer;
+        }
+        
+        .raw-response summary {
+            color: #007bff;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+        
+        .raw-response summary:hover {
+            text-decoration: underline;
+        }
+        
+        .ai-full-response {
+            background: #f1f3f4;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            margin-top: 5px;
+            border: 1px solid #e0e0e0;
+        }
+        
         .risk-alert {
             background: #ffebee;
             padding: 15px;
@@ -281,6 +353,56 @@ class HTMLReportRenderer:
         
         .collapsible-content.active {
             display: block;
+        }
+        
+        /* Attention level badges */
+        .attention-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        
+        .attention-badge.critical {
+            background: linear-gradient(135deg, #dc3545, #b02a37);
+            color: white;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+            animation: pulse-critical 2s infinite;
+        }
+        
+        .attention-badge.high {
+            background: linear-gradient(135deg, #fd7e14, #e8590c);
+            color: white;
+            box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
+        }
+        
+        .attention-badge.moderate {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+            color: #212529;
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+        }
+        
+        .attention-badge.low {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            color: white;
+            box-shadow: 0 2px 4px rgba(23, 162, 184, 0.3);
+        }
+        
+        .attention-badge.minimal {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+        }
+        
+        @keyframes pulse-critical {
+            0% { box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3); }
+            50% { box-shadow: 0 4px 8px rgba(220, 53, 69, 0.6); }
+            100% { box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3); }
         }
         
         @media (max-width: 768px) {
@@ -474,6 +596,73 @@ class HTMLReportRenderer:
         technical = market.get('technical_overview', {})
         recommendations = market.get('recommendations_summary', {})
         
+        # Get portfolio ID for links
+        portfolio_id = data.get('portfolio', {}).get('holdings_summary', {}).get('portfolio_id', 'unknown')
+        
+        # Prepare asset data for each metric
+        stocks = data.get('stocks', {})
+        
+        # Sentiment distribution asset data
+        positive_assets = []
+        neutral_assets = []
+        negative_assets = []
+        
+        for symbol, stock in stocks.items():
+            sentiment = stock.get('sentiment', {}).get('overall', 'neutral')
+            asset_data = {
+                'symbol': symbol,
+                'value': f"Sentiment: {sentiment.title()}, Score: {stock.get('sentiment', {}).get('score', 0):.3f}",
+                'portfolioUrl': f'/portfolio/{portfolio_id}#{symbol}',
+                'analysisUrl': f'/portfolio/{portfolio_id}/analysis?focus={symbol}'
+            }
+            
+            if sentiment == 'positive':
+                positive_assets.append(asset_data)
+            elif sentiment == 'negative':
+                negative_assets.append(asset_data)
+            else:
+                neutral_assets.append(asset_data)
+        
+        # Technical overview asset data
+        overbought_assets = []
+        oversold_assets = []
+        
+        for symbol, stock in stocks.items():
+            rsi = stock.get('technical', {}).get('rsi', 50)
+            asset_data = {
+                'symbol': symbol,
+                'value': f"RSI: {rsi:.2f}",
+                'portfolioUrl': f'/portfolio/{portfolio_id}#{symbol}',
+                'analysisUrl': f'/portfolio/{portfolio_id}/analysis?focus={symbol}'
+            }
+            
+            if rsi > 70:
+                overbought_assets.append(asset_data)
+            elif rsi < 30:
+                oversold_assets.append(asset_data)
+        
+        # AI recommendations asset data
+        buy_assets = []
+        hold_assets = []
+        sell_assets = []
+        
+        for symbol, stock in stocks.items():
+            recommendation = stock.get('ai_analysis', {}).get('recommendation_type', 'HOLD')
+            confidence = stock.get('ai_analysis', {}).get('confidence', 0)
+            asset_data = {
+                'symbol': symbol,
+                'value': f"Recommendation: {recommendation}, Confidence: {confidence:.1f}%",
+                'portfolioUrl': f'/portfolio/{portfolio_id}#{symbol}',
+                'analysisUrl': f'/portfolio/{portfolio_id}/analysis?focus={symbol}'
+            }
+            
+            if recommendation == 'BUY':
+                buy_assets.append(asset_data)
+            elif recommendation == 'SELL':
+                sell_assets.append(asset_data)
+            else:
+                hold_assets.append(asset_data)
+        
         return f"""
         <div class="section">
             <h2>Market Analysis & Strategic Outlook</h2>
@@ -481,15 +670,15 @@ class HTMLReportRenderer:
             <h3>Sentiment Distribution</h3>
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="value positive">{sentiment_dist.get('positive', 0)}</div>
+                    <div class="value positive metric-value" data-assets='{json.dumps(positive_assets)}'>{sentiment_dist.get('positive', 0)}</div>
                     <div class="label">Positive Sentiment</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value neutral">{sentiment_dist.get('neutral', 0)}</div>
+                    <div class="value neutral metric-value" data-assets='{json.dumps(neutral_assets)}'>{sentiment_dist.get('neutral', 0)}</div>
                     <div class="label">Neutral Sentiment</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value negative">{sentiment_dist.get('negative', 0)}</div>
+                    <div class="value negative metric-value" data-assets='{json.dumps(negative_assets)}'>{sentiment_dist.get('negative', 0)}</div>
                     <div class="label">Negative Sentiment</div>
                 </div>
             </div>
@@ -501,11 +690,11 @@ class HTMLReportRenderer:
                     <div class="label">Average RSI</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value warning">{technical.get('overbought_count', 0)}</div>
+                    <div class="value warning metric-value" data-assets='{json.dumps(overbought_assets)}'>{technical.get('overbought_count', 0)}</div>
                     <div class="label">Overbought Positions</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value warning">{technical.get('oversold_count', 0)}</div>
+                    <div class="value warning metric-value" data-assets='{json.dumps(oversold_assets)}'>{technical.get('oversold_count', 0)}</div>
                     <div class="label">Oversold Positions</div>
                 </div>
             </div>
@@ -513,15 +702,15 @@ class HTMLReportRenderer:
             <h3>AI Recommendations Summary</h3>
             <div class="metrics-grid">
                 <div class="metric-card">
-                    <div class="value positive">{recommendations.get('buy_signals', 0)}</div>
+                    <div class="value positive metric-value" data-assets='{json.dumps(buy_assets)}'>{recommendations.get('buy_signals', 0)}</div>
                     <div class="label">BUY Signals</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value neutral">{recommendations.get('hold_signals', 0)}</div>
+                    <div class="value neutral metric-value" data-assets='{json.dumps(hold_assets)}'>{recommendations.get('hold_signals', 0)}</div>
                     <div class="label">HOLD Signals</div>
                 </div>
                 <div class="metric-card">
-                    <div class="value negative">{recommendations.get('sell_signals', 0)}</div>
+                    <div class="value negative metric-value" data-assets='{json.dumps(sell_assets)}'>{recommendations.get('sell_signals', 0)}</div>
                     <div class="label">SELL Signals</div>
                 </div>
             </div>
@@ -529,24 +718,137 @@ class HTMLReportRenderer:
         """
     
     def _render_individual_stocks(self, data: Dict) -> str:
-        """Render individual stock analysis"""
+        """Render individual stock analysis ordered by attention urgency"""
         stocks = data.get('stocks', {})
         
         if not stocks:
             return ""
         
+        # Sort stocks by attention priority (most urgent first)
+        sorted_stocks = self._sort_stocks_by_attention(stocks)
+        
         stocks_html = """
         <div class="section">
             <h2>Individual Stock Analysis</h2>
+            <p style="color: #6c757d; font-style: italic; margin-bottom: 20px;">
+                📊 Stocks are ordered by priority - those needing most attention appear first
+            </p>
         """
         
-        for symbol, stock in stocks.items():
-            stocks_html += self._render_stock_card(symbol, stock)
+        for symbol, stock in sorted_stocks:
+            # Add attention indicator badge
+            attention_score = self._calculate_attention_score(stock)
+            attention_badge = self._get_attention_badge(attention_score)
+            stocks_html += self._render_stock_card(symbol, stock, attention_badge)
         
         stocks_html += "</div>"
         return stocks_html
     
-    def _render_stock_card(self, symbol: str, stock: Dict) -> str:
+    def _sort_stocks_by_attention(self, stocks: Dict) -> List:
+        """Sort stocks by attention urgency (highest priority first)"""
+        stock_items = []
+        
+        for symbol, stock in stocks.items():
+            attention_score = self._calculate_attention_score(stock)
+            stock_items.append((symbol, stock, attention_score))
+        
+        # Sort by attention score (descending - highest attention first)
+        stock_items.sort(key=lambda x: x[2], reverse=True)
+        
+        # Return as (symbol, stock) tuples
+        return [(symbol, stock) for symbol, stock, score in stock_items]
+    
+    def _calculate_attention_score(self, stock: Dict) -> float:
+        """Calculate urgency score for a stock (higher = needs more attention)"""
+        score = 0.0
+        
+        # 1. Risk factors (high weight)
+        technical = stock.get('technical', {})
+        rsi = technical.get('rsi', 50)
+        
+        # Extreme RSI values need immediate attention
+        if rsi > 80 or rsi < 20:
+            score += 100  # Critical
+        elif rsi > 70 or rsi < 30:
+            score += 60   # High attention
+        elif rsi > 65 or rsi < 35:
+            score += 30   # Moderate attention
+        
+        # 2. Performance factors
+        profit_loss_percent = stock.get('profit_loss_percent', 0)
+        
+        # Large losses need attention
+        if profit_loss_percent < -15:
+            score += 80   # Significant losses
+        elif profit_loss_percent < -10:
+            score += 50   # Notable losses
+        elif profit_loss_percent < -5:
+            score += 20   # Minor losses
+        
+        # Large gains may need profit-taking consideration
+        if profit_loss_percent > 25:
+            score += 40   # Consider profit-taking
+        elif profit_loss_percent > 15:
+            score += 20   # Monitor for profit-taking
+        
+        # 3. AI recommendation urgency
+        ai_analysis = stock.get('ai_analysis', {})
+        recommendation = ai_analysis.get('recommendation_type', 'HOLD')
+        confidence = ai_analysis.get('confidence', 0)
+        
+        if recommendation == 'SELL':
+            score += 70 + (confidence * 0.3)  # High urgency for sell signals
+        elif recommendation == 'BUY':
+            score += 50 + (confidence * 0.2)  # Moderate urgency for buy signals
+        
+        # 4. Sentiment factors
+        sentiment = stock.get('sentiment', {})
+        sentiment_overall = sentiment.get('overall', 'neutral')
+        sentiment_score = sentiment.get('score', 0)
+        
+        if sentiment_overall == 'negative':
+            score += 30 + abs(sentiment_score * 20)
+        elif sentiment_overall == 'positive':
+            score += 15 + (sentiment_score * 10)
+        
+        # 5. Risk level priority
+        risk = stock.get('risk', {})
+        risk_level = risk.get('risk_level', 'medium').lower()
+        
+        if risk_level == 'high':
+            score += 40
+        elif risk_level == 'medium':
+            score += 15
+        
+        # 6. Moving average signals
+        current_price = stock.get('current_price', 0)
+        ma_20 = technical.get('ma_20', 0)
+        ma_50 = technical.get('ma_50', 0)
+        
+        if current_price and ma_20 and ma_50:
+            # Price below both MAs suggests attention needed
+            if current_price < ma_20 and current_price < ma_50:
+                score += 25
+            # Death cross pattern (MA20 below MA50)
+            elif ma_20 < ma_50:
+                score += 20
+        
+        return score
+    
+    def _get_attention_badge(self, attention_score: float) -> str:
+        """Generate attention level badge based on score"""
+        if attention_score >= 200:
+            return '<span class="attention-badge critical">🚨 CRITICAL</span>'
+        elif attention_score >= 120:
+            return '<span class="attention-badge high">⚠️ HIGH</span>'
+        elif attention_score >= 60:
+            return '<span class="attention-badge moderate">📊 MODERATE</span>'
+        elif attention_score >= 20:
+            return '<span class="attention-badge low">💡 LOW</span>'
+        else:
+            return '<span class="attention-badge minimal">✅ MINIMAL</span>'
+    
+    def _render_stock_card(self, symbol: str, stock: Dict, attention_badge: str = "") -> str:
         """Render individual stock card"""
         technical = stock.get('technical', {})
         sentiment = stock.get('sentiment', {})
@@ -567,8 +869,8 @@ class HTMLReportRenderer:
         if chart_data and chart_data.get('dates') and chart_data.get('prices'):
             chart_section = f"""
             <div style="margin-top: 20px;">
-                <h4 style="text-align: center; margin-bottom: 10px;">📈 Price Chart (90 Days)</h4>
-                <div class="chart-container" style="height: 300px; margin-bottom: 10px;">
+                <h4 style="text-align: center; margin-bottom: 10px;">📈 Price & Volume Chart (90 Days)</h4>
+                <div class="chart-container" style="height: 450px; margin-bottom: 10px;">
                     <canvas id="stockChart_{symbol}"></canvas>
                 </div>
             </div>
@@ -576,7 +878,9 @@ class HTMLReportRenderer:
         
         return f"""
         <div class="metric-card" style="margin-bottom: 30px; text-align: left;">
-            <h3 style="color: #667eea; margin-bottom: 15px; text-align: center;">{symbol} Analysis</h3>
+            <h3 style="color: #667eea; margin-bottom: 15px; text-align: center;">
+                {symbol} Analysis {attention_badge}
+            </h3>
             
             <table class="stock-table" style="margin-bottom: 15px;">
                 <tr>
@@ -628,19 +932,93 @@ class HTMLReportRenderer:
             {chart_section}
             
             <div class="recommendation">
-                <strong>AI Recommendation:</strong> {ai_analysis.get('recommendation', 'N/A')}
+                <strong>AI Recommendation:</strong> 
+                <span class="recommendation-badge recommendation-{ai_analysis.get('recommendation', 'HOLD').lower()}">
+                    {ai_analysis.get('recommendation', 'N/A')}
+                </span>
+                
+                {f'''<div class="confidence-score">
+                    <strong>Confidence:</strong> {ai_analysis.get('confidence', 0):.0f}%
+                </div>''' if ai_analysis.get('confidence', 0) > 0 else ''}
+                
+                {f'''<div class="ai-reasoning">
+                    <strong>Analysis:</strong> {ai_analysis.get('reasoning', 'No detailed analysis available')}
+                </div>''' if ai_analysis.get('reasoning') and ai_analysis.get('reasoning') != 'No analysis available' else ''}
+                
+                {f'''<div class="raw-response">
+                    <details>
+                        <summary>Full AI Response</summary>
+                        <div class="ai-full-response">{ai_analysis.get('raw_response', '')}</div>
+                    </details>
+                </div>''' if ai_analysis.get('raw_response') and ai_analysis.get('raw_response') != ai_analysis.get('reasoning', '') else ''}
             </div>
         </div>
         """
     
     def _render_performance_metrics(self, data: Dict) -> str:
         """Render performance metrics and risk alerts"""
+        portfolio = data.get('portfolio', {})
+        stocks = data.get('stocks', {})
         performance = data.get('performance', {})
         risk_alerts = performance.get('risk_alerts', [])
         
+        # Calculate additional performance metrics
+        total_value = portfolio.get('total_value', 0)
+        total_invested = portfolio.get('total_invested', 0)
+        total_return_percent = portfolio.get('total_return_percent', 0)
+        position_count = portfolio.get('position_count', 0)
+        profitable_positions = portfolio.get('profitable_positions', 0)
+        
+        # Calculate risk metrics
+        high_risk_count = 0
+        volatile_stocks = []
+        underperforming_stocks = []
+        
+        for symbol, stock in stocks.items():
+            # Check for high-risk positions
+            profit_loss_percent = stock.get('profit_loss_percent', 0)
+            if profit_loss_percent < -10:
+                high_risk_count += 1
+                underperforming_stocks.append({
+                    'symbol': symbol,
+                    'return': profit_loss_percent
+                })
+            
+            # Check for volatile positions (high RSI values)
+            rsi = stock.get('technical', {}).get('rsi', 50)
+            if rsi > 70 or rsi < 30:
+                volatile_stocks.append({
+                    'symbol': symbol,
+                    'rsi': rsi
+                })
+        
+        # Performance metrics grid
+        metrics_html = f"""
+        <h3>Portfolio Performance Metrics</h3>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="value {'positive' if total_return_percent > 0 else 'negative'}">{total_return_percent:+.2f}%</div>
+                <div class="label">Total Return</div>
+            </div>
+            <div class="metric-card">
+                <div class="value {'positive' if profitable_positions > position_count/2 else 'negative'}">{profitable_positions}/{position_count}</div>
+                <div class="label">Profitable Positions</div>
+            </div>
+            <div class="metric-card">
+                <div class="value {'warning' if high_risk_count > 0 else 'positive'}">{high_risk_count}</div>
+                <div class="label">High Risk Positions</div>
+            </div>
+            <div class="metric-card">
+                <div class="value {'warning' if len(volatile_stocks) > 0 else 'positive'}">{len(volatile_stocks)}</div>
+                <div class="label">Volatile Positions</div>
+            </div>
+        </div>
+        """
+        
+        # Risk alerts section
         alerts_html = ""
         if risk_alerts:
-            alerts_html = "<h3>Risk Alerts</h3>"
+            alerts_html = "<h3>⚠️ Risk Alerts</h3>"
             for alert in risk_alerts:
                 alerts_html += f"""
                 <div class="risk-alert">
@@ -648,25 +1026,145 @@ class HTMLReportRenderer:
                     (Value: {alert.get('value', 0):.2f})
                 </div>
                 """
+        elif underperforming_stocks:
+            alerts_html = "<h3>⚠️ Underperforming Positions</h3>"
+            for stock in underperforming_stocks[:3]:  # Show top 3
+                alerts_html += f"""
+                <div class="risk-alert">
+                    <strong>{stock['symbol']}</strong>: Down {stock['return']:.1f}% - Consider reviewing position
+                </div>
+                """
+        
+        # Volatile positions section
+        volatile_html = ""
+        if volatile_stocks:
+            volatile_html = "<h3>📊 Technical Attention Required</h3>"
+            for stock in volatile_stocks[:3]:  # Show top 3
+                status = "Overbought" if stock['rsi'] > 70 else "Oversold"
+                volatile_html += f"""
+                <div class="recommendation">
+                    <strong>{stock['symbol']}</strong>: RSI {stock['rsi']:.1f} - {status} condition detected
+                </div>
+                """
         
         return f"""
         <div class="section">
             <h2>Performance Metrics & Risk Assessment</h2>
+            {metrics_html}
             {alerts_html}
+            {volatile_html}
         </div>
         """
     
     def _render_historical_trends(self, data: Dict) -> str:
-        """Render historical trends section (placeholder for future implementation)"""
+        """Render historical trends and portfolio composition analysis"""
+        stocks = data.get('stocks', {})
+        portfolio = data.get('portfolio', {})
+        
+        # Calculate sector distribution
+        sector_distribution = {}
+        total_value = 0
+        
+        for symbol, stock in stocks.items():
+            sector = stock.get('sector', 'Unknown')
+            value = stock.get('current_value', 0)
+            total_value += value
+            
+            if sector in sector_distribution:
+                sector_distribution[sector] += value
+            else:
+                sector_distribution[sector] = value
+        
+        # Calculate percentages and sort
+        sector_percentages = []
+        if total_value > 0:
+            for sector, value in sector_distribution.items():
+                percentage = (value / total_value) * 100
+                sector_percentages.append((sector, percentage, value))
+            sector_percentages.sort(key=lambda x: x[1], reverse=True)
+        
+        # Portfolio composition table
+        composition_html = """
+        <h3>📊 Portfolio Composition by Sector</h3>
+        <div class="stock-table" style="margin-bottom: 25px;">
+            <table class="stock-table">
+                <thead>
+                    <tr>
+                        <th>Sector</th>
+                        <th>Allocation</th>
+                        <th>Value</th>
+                        <th>Risk Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+        """
+        
+        for sector, percentage, value in sector_percentages:
+            risk_class = "high" if percentage > 40 else "moderate" if percentage > 25 else "low"
+            composition_html += f"""
+                    <tr>
+                        <td><strong>{sector}</strong></td>
+                        <td>{percentage:.1f}%</td>
+                        <td>${value:,.2f}</td>
+                        <td><span class="trend-indicator trend-{risk_class}">{risk_class.upper()}</span></td>
+                    </tr>
+            """
+        
+        composition_html += """
+                </tbody>
+            </table>
+        </div>
+        """
+        
+        # Portfolio allocation insights
+        insights_html = """
+        <h3>💡 Portfolio Insights</h3>
+        <div class="metrics-grid">
+        """
+        
+        if sector_percentages:
+            top_sector = sector_percentages[0]
+            concentration_risk = "High" if top_sector[1] > 50 else "Moderate" if top_sector[1] > 30 else "Low"
+            diversification = "Good" if len(sector_percentages) >= 4 else "Limited" if len(sector_percentages) >= 2 else "Poor"
+            
+            insights_html += f"""
+            <div class="metric-card">
+                <div class="value">{top_sector[0]}</div>
+                <div class="label">Largest Sector ({top_sector[1]:.1f}%)</div>
+            </div>
+            <div class="metric-card">
+                <div class="value {'warning' if concentration_risk == 'High' else 'positive' if concentration_risk == 'Low' else 'neutral'}">{concentration_risk}</div>
+                <div class="label">Concentration Risk</div>
+            </div>
+            <div class="metric-card">
+                <div class="value {'positive' if diversification == 'Good' else 'warning' if diversification == 'Limited' else 'negative'}">{diversification}</div>
+                <div class="label">Diversification</div>
+            </div>
+            <div class="metric-card">
+                <div class="value">{len(sector_percentages)}</div>
+                <div class="label">Sectors Represented</div>
+            </div>
+            """
+        
+        insights_html += "</div>"
+        
+        # Historical trend chart (improved)
+        chart_html = f"""
+        <h3>📈 Portfolio Trend Analysis</h3>
+        <div class="chart-container">
+            <canvas id="trendsChart"></canvas>
+        </div>
+        <p style="text-align: center; color: #6c757d; margin-top: 20px; font-style: italic;">
+            Chart shows portfolio composition by value. Historical performance tracking will improve with more data collection over time.
+        </p>
+        """
+        
         return f"""
         <div class="section">
-            <h2>Historical Trends</h2>
-            <div class="chart-container">
-                <canvas id="trendsChart"></canvas>
-            </div>
-            <p style="text-align: center; color: #6c757d; margin-top: 20px;">
-                Historical trend analysis will be available after collecting more data points.
-            </p>
+            <h2>Historical Trends & Portfolio Analysis</h2>
+            {composition_html}
+            {insights_html}
+            {chart_html}
         </div>
         """
     
@@ -754,8 +1252,20 @@ class HTMLReportRenderer:
                     else:
                         background_data.append(None)
                 
+                # Get price range for smart y-axis scaling
+                prices = [p for p in chart_data['prices'] if p is not None]
+                if prices:
+                    min_price = min(prices)
+                    max_price = max(prices)
+                    price_range = max_price - min_price
+                    y_min = max(0, min_price - (price_range * 0.05))  # 5% padding below
+                    y_max = max_price + (price_range * 0.05)  # 5% padding above
+                else:
+                    y_min = None
+                    y_max = None
+                
                 stock_charts_js += f"""
-                // {symbol} stock chart
+                // {symbol} stock chart with volume
                 const {symbol.lower()}Ctx = document.getElementById('stockChart_{symbol}');
                 if ({symbol.lower()}Ctx) {{
                     new Chart({symbol.lower()}Ctx, {{
@@ -771,7 +1281,8 @@ class HTMLReportRenderer:
                                     backgroundColor: 'rgba(37, 99, 235, 0.1)',
                                     borderWidth: 2,
                                     fill: false,
-                                    tension: 0.1
+                                    tension: 0.1,
+                                    yAxisID: 'price'
                                 }},
                                 // 20-day MA
                                 {{
@@ -782,7 +1293,8 @@ class HTMLReportRenderer:
                                     borderWidth: 1,
                                     fill: false,
                                     tension: 0.1,
-                                    borderDash: [5, 5]
+                                    borderDash: [5, 5],
+                                    yAxisID: 'price'
                                 }},
                                 // 50-day MA
                                 {{
@@ -793,7 +1305,19 @@ class HTMLReportRenderer:
                                     borderWidth: 1,
                                     fill: false,
                                     tension: 0.1,
-                                    borderDash: [10, 5]
+                                    borderDash: [10, 5],
+                                    yAxisID: 'price'
+                                }},
+                                // Volume bars
+                                {{
+                                    label: 'Volume',
+                                    data: {json.dumps(chart_data.get('volumes', []))},
+                                    type: 'bar',
+                                    backgroundColor: 'rgba(156, 163, 175, 0.6)',
+                                    borderColor: 'rgba(156, 163, 175, 0.8)',
+                                    borderWidth: 1,
+                                    yAxisID: 'volume',
+                                    order: 5
                                 }},
                                 // Profit/Loss zone (background fill)
                                 {{
@@ -805,7 +1329,8 @@ class HTMLReportRenderer:
                                     tension: 0.1,
                                     pointRadius: 0,
                                     pointHoverRadius: 0,
-                                    order: 10
+                                    order: 10,
+                                    yAxisID: 'price'
                                 }}
                             ]
                         }},
@@ -836,7 +1361,20 @@ class HTMLReportRenderer:
                                                 label += ': ';
                                             }}
                                             if (context.parsed.y !== null) {{
-                                                label += '$' + context.parsed.y.toFixed(2);
+                                                if (label.includes('Volume')) {{
+                                                    // Format volume numbers
+                                                    let volume = context.parsed.y;
+                                                    if (volume >= 1000000) {{
+                                                        label += (volume / 1000000).toFixed(1) + 'M';
+                                                    }} else if (volume >= 1000) {{
+                                                        label += (volume / 1000).toFixed(1) + 'K';
+                                                    }} else {{
+                                                        label += volume.toLocaleString();
+                                                    }}
+                                                }} else {{
+                                                    // Format price
+                                                    label += '$' + context.parsed.y.toFixed(2);
+                                                }}
                                             }}
                                             return label;
                                         }}
@@ -854,19 +1392,52 @@ class HTMLReportRenderer:
                                         maxTicksLimit: 8
                                     }}
                                 }},
-                                y: {{
+                                price: {{
+                                    type: 'linear',
                                     display: true,
+                                    position: 'left',
                                     title: {{
                                         display: true,
                                         text: 'Price ($)'
                                     }},
-                                    beginAtZero: false
+                                    beginAtZero: false,
+                                    {f'min: {y_min}, max: {y_max},' if y_min is not None and y_max is not None else ''}
+                                    grid: {{
+                                        color: 'rgba(75, 192, 192, 0.2)'
+                                    }}
+                                }},
+                                volume: {{
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    title: {{
+                                        display: true,
+                                        text: 'Volume'
+                                    }},
+                                    beginAtZero: true,
+                                    grid: {{
+                                        display: false
+                                    }},
+                                    ticks: {{
+                                        callback: function(value) {{
+                                            if (value >= 1000000) {{
+                                                return (value / 1000000).toFixed(1) + 'M';
+                                            }} else if (value >= 1000) {{
+                                                return (value / 1000).toFixed(1) + 'K';
+                                            }}
+                                            return value;
+                                        }}
+                                    }}
                                 }}
                             }},
                             elements: {{
                                 point: {{
                                     radius: 1,
                                     hoverRadius: 6
+                                }},
+                                bar: {{
+                                    barPercentage: 0.7,
+                                    categoryPercentage: 0.8
                                 }}
                             }},
                             interaction: {{

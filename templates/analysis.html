@@ -3,10 +3,10 @@
 {% block title %}Portfolio Analysis - {{ portfolio.name }}{% endblock %}
 
 {% block breadcrumb_items %}
-<span>▶</span>
+<span class="breadcrumb-separator">▶</span>
 <a href="/portfolio/{{ portfolio.id }}">💼 {{ portfolio.name }}</a>
-<span>▶</span>
-<span class="current">📈 Analysis</span>
+<span class="breadcrumb-separator">▶</span>
+<span class="breadcrumb-current">📈 Analysis</span>
 {% endblock %}
 
 {% block page_title %}📈 Portfolio Analysis{% endblock %}
@@ -14,8 +14,7 @@
 
 {% block page_actions %}
 <div class="page-actions">
-    <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">💼 Back to Portfolio</a>
-    <a href="/dashboard" class="btn btn-secondary">🏠 Dashboard</a>
+    <button id="runAnalysisBtn" class="btn btn-primary">🚀 Run New Analysis</button>
 </div>
 {% endblock %}
 
@@ -37,7 +36,7 @@
     <h2>📊 Market Status</h2>
     <div class="stats-grid">
         <div class="stat-item">
-            <div class="stat-value">{{ market_status.current_session.title() }}</div>
+            <div class="stat-value">{{ market_status.current_session.replace('_', ' ').title() }}</div>
             <div class="stat-label">Current Session</div>
         </div>
         <div class="stat-item">
@@ -48,6 +47,12 @@
             <div class="stat-value">{{ market_status.market_timezone }}</div>
             <div class="stat-label">Timezone</div>
         </div>
+        {% if market_status.get('current_time') %}
+        <div class="stat-item">
+            <div class="stat-value">{{ market_status.current_time.split(' ')[1] }}</div>
+            <div class="stat-label">Current Market Time</div>
+        </div>
+        {% endif %}
         {% if market_status.get('next_event') %}
         <div class="stat-item">
             <div class="stat-value">{{ market_status.time_to_next_event }}</div>
@@ -55,39 +60,71 @@
         </div>
         {% endif %}
     </div>
+    
+    <!-- Market Hours Information -->
+    {% if market_status.get('market_hours') %}
+    <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 8px;">
+        <h3 style="margin: 0 0 10px 0; color: #4fd1c7; font-size: 1.1em;">🕐 Market Hours ({{ market_status.market_timezone }})</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 0.9em;">
+            <div>
+                <strong>🌅 Pre-Market:</strong><br>
+                <span style="color: #a0aec0;">{{ market_status.market_hours.pre_market }}</span>
+            </div>
+            <div>
+                <strong>📈 Regular Hours:</strong><br>
+                <span style="color: #a0aec0;">{{ market_status.market_hours.regular }}</span>
+            </div>
+            <div>
+                <strong>🌆 Post-Market:</strong><br>
+                <span style="color: #a0aec0;">{{ market_status.market_hours.post_market }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <!-- Run Analysis -->
 <div class="card">
     <h2>🚀 Run New Analysis</h2>
-    <p>Generate a comprehensive AI-powered analysis of your portfolio with current market data and sentiment analysis.</p>
     
     <!-- Analysis Controls -->
-    <div id="analysisControls" style="margin-top: 20px;">
-        <div class="form-group">
-            <label class="form-label" for="analysis_type">Analysis Type</label>
-            <select name="analysis_type" id="analysis_type" class="form-select">
-                <option value="comprehensive">Comprehensive Analysis</option>
-                <option value="quick">Quick Overview</option>
-                <option value="technical">Technical Analysis</option>
-                <option value="sentiment">Sentiment Analysis</option>
-            </select>
+    <div id="analysisControls" style="margin-top: 15px;">
+        <!-- Primary Action Button -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button type="button" id="startAnalysisBtn" class="btn btn-primary" onclick="startAnalysis()" style="font-size: 1.1em; padding: 15px 30px; min-width: 200px;">
+                🔍 Start Analysis
+            </button>
         </div>
         
-        <div class="alert alert-info" style="margin: 15px 0;">
-            <strong>Analysis Features:</strong>
-            <ul style="margin: 10px 0 0 20px;">
-                <li>Real-time stock data and technical indicators</li>
-                <li>AI-powered news sentiment analysis</li>
-                <li>Risk assessment and recommendations</li>
-                <li>PDF report generation with charts</li>
-                <li>Intelligent caching to minimize API costs</li>
-            </ul>
+        <!-- Compact Controls -->
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 15px; align-items: center;">
+            <div class="form-group" style="margin: 0;">
+                <label class="form-label" for="analysis_type">Type</label>
+                <select name="analysis_type" id="analysis_type" class="form-select">
+                    <option value="comprehensive">Comprehensive</option>
+                    <option value="quick">Quick</option>
+                    <option value="technical">Technical</option>
+                    <option value="sentiment">Sentiment</option>
+                </select>
+            </div>
+            
+            <div class="form-group" style="margin: 0;">
+                <label class="checkbox-label" style="font-size: 0.9em;">
+                    <input type="checkbox" id="force_refresh" name="force_refresh">
+                    🔄 Fresh Data
+                </label>
+            </div>
         </div>
         
-        <button type="button" id="startAnalysisBtn" class="btn" onclick="startAnalysis()">
-            🔍 Start Analysis
-        </button>
+        <!-- Compact Action Buttons -->
+        <div style="display: flex; gap: 8px; margin-top: 15px; justify-content: center;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="clearCacheAndRefresh()">
+                🗑️ Clear Cache
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="showCacheStatus()">
+                📊 Cache Status
+            </button>
+        </div>
     </div>
 
     <!-- Progress Indicator -->
@@ -234,6 +271,12 @@
 </div>
 
 <style>
+.btn-sm {
+    padding: 8px 12px;
+    font-size: 0.85em;
+    min-height: auto;
+}
+
 .badge {
     padding: 4px 8px;
     border-radius: 12px;
@@ -349,10 +392,52 @@
 
 .log-entry.error {
     color: #fc8181;
+    background-color: rgba(252, 129, 129, 0.1);
+    border-left: 3px solid #fc8181;
+    padding-left: 8px;
 }
 
 .log-entry.warning {
     color: #f6e05e;
+    background-color: rgba(246, 224, 94, 0.1);
+    border-left: 3px solid #f6e05e;
+    padding-left: 8px;
+}
+
+.log-entry.success {
+    color: #68d391;
+    background-color: rgba(104, 211, 145, 0.1);
+    border-left: 3px solid #68d391;
+    padding-left: 8px;
+}
+
+.progress-log {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.progress-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+.progress-log::-webkit-scrollbar-track {
+    background: #2a2a2a;
+}
+
+.progress-log::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+.progress-log::-webkit-scrollbar-thumb:hover {
+    background: #777;
 }
 
 @keyframes pulse {
@@ -369,9 +454,12 @@
 let currentSessionId = null;
 let progressInterval = null;
 let startTime = null;
+let pollCount = 0;
+const maxPollAttempts = 600; // 10 minutes at 1-second intervals
 
 async function startAnalysis() {
     const analysisType = document.getElementById('analysis_type').value;
+    const forceRefresh = document.getElementById('force_refresh').checked;
     const btn = document.getElementById('startAnalysisBtn');
     
     // Disable button and show progress
@@ -380,6 +468,8 @@ async function startAnalysis() {
     
     try {
         // Start analysis via API
+        console.log('Starting analysis for portfolio {{ portfolio.id }} with type:', analysisType, 'force_refresh:', forceRefresh);
+        
         const response = await fetch('/api/v1/analysis/run', {
             method: 'POST',
             headers: {
@@ -387,28 +477,63 @@ async function startAnalysis() {
             },
             body: JSON.stringify({
                 portfolio_id: '{{ portfolio.id }}',
-                analysis_type: analysisType
+                analysis_type: analysisType,
+                force_refresh: forceRefresh
             })
         });
 
+        console.log('Response status:', response.status, response.statusText);
+
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            const errorText = await response.text();
+            console.error('API error response:', errorText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}\n${errorText}`);
         }
 
         const session = await response.json();
-        currentSessionId = session.id;
+        console.log('API Response:', session); // DEBUG: Log the full response
+        
+        // FIXED: Handle UUID serialization - try different field names
+        let sessionId = session.id || session.session_id;
+        if (!sessionId) {
+            console.error('No session ID found in response:', session);
+            throw new Error('Session ID missing from API response');
+        }
+        
+        // Convert UUID to string if needed
+        if (typeof sessionId === 'object' && sessionId.toString) {
+            sessionId = sessionId.toString();
+        }
+        
+        console.log('Session ID extracted:', sessionId);
+        currentSessionId = sessionId;
         startTime = new Date();
         
         // Show progress UI
         showProgress();
         
-        // Start polling for updates
-        progressInterval = setInterval(checkProgress, 2000);
+        // Reset poll counter
+        pollCount = 0;
+        
+        // Add session info for debugging
+        if (currentSessionId) {
+            addLogEntry(`🆔 Session ID: ${currentSessionId}`, 'info');
+            if (forceRefresh) {
+                addLogEntry('🔄 Force refresh enabled - fetching latest data', 'info');
+            }
+        }
+        
+        // Start polling for updates immediately and then every 1 second for real-time progress
+        checkProgress(); // Check immediately
+        progressInterval = setInterval(checkProgress, 1000); // Poll every 1 second for faster updates
         
     } catch (error) {
-        console.error('Failed to start analysis:', error);
-        showError('Failed to start analysis: ' + error.message);
-        resetAnalysis();
+        console.error('Error starting analysis:', error);
+        showError(error.message);
+        
+        // Re-enable button
+        btn.disabled = false;
+        btn.textContent = '🔍 Start Analysis';
     }
 }
 
@@ -418,37 +543,142 @@ function showProgress() {
     document.getElementById('analysisResults').style.display = 'none';
     document.getElementById('analysisError').style.display = 'none';
     
+    // Reset log count for new analysis
+    displayedLogCount = 0;
+    
     addLogEntry('📋 Analysis session created');
     addLogEntry('🔄 Starting portfolio analysis...');
+    
+    // Add session info for debugging
+    if (currentSessionId) {
+        addLogEntry(`🆔 Session ID: ${currentSessionId}`, 'info');
+    }
 }
 
 async function checkProgress() {
-    if (!currentSessionId) return;
+    if (!currentSessionId) {
+        console.warn('No current session ID for progress check');
+        return;
+    }
+    
+    // Check for timeout
+    pollCount++;
+    console.log(`🔍 Progress check #${pollCount} for session: ${currentSessionId}`);
+    
+    if (pollCount > maxPollAttempts) {
+        console.error('Polling timeout reached');
+        clearInterval(progressInterval);
+        showError('Analysis timeout - please try again or check if the analysis completed in the background');
+        return;
+    }
     
     try {
-        const response = await fetch(`/api/v1/analysis/sessions/${currentSessionId}`);
-        if (!response.ok) return;
+        // Get detailed progress with real-time logs
+        const progressResponse = await fetch(`/api/v1/analysis/sessions/${currentSessionId}/progress`);
+        console.log(`Progress response status: ${progressResponse.status}`);
         
-        const session = await response.json();
-        updateProgress(session);
-        
-        if (session.status === 'COMPLETED') {
-            clearInterval(progressInterval);
-            showResults(session);
-        } else if (session.status === 'FAILED') {
-            clearInterval(progressInterval);
-            showError(session.error_message || 'Analysis failed');
+        if (progressResponse.ok) {
+            const progressData = await progressResponse.json();
+            console.log(`Status: ${progressData.status}, Logs: ${(progressData.progress_logs || []).length}`);
+            
+            // Always update progress display
+            updateDetailedProgress(progressData);
+            
+            if (progressData.status === 'COMPLETED') {
+                console.log('✅ Analysis completed successfully');
+                clearInterval(progressInterval);
+                addLogEntry('✅ Analysis completed successfully!', 'success');
+                showResults(progressData);
+            } else if (progressData.status === 'FAILED') {
+                console.log('❌ Analysis failed:', progressData.error_message);
+                clearInterval(progressInterval);
+                addLogEntry('❌ Analysis failed', 'error');
+                showError(progressData.error_message || 'Analysis failed');
+            } else if (progressData.status === 'RUNNING') {
+                console.log(`🔄 Analysis running... ${(progressData.progress_logs || []).length} log entries`);
+                // Continue polling
+            } else {
+                console.log(`⏳ Analysis status: ${progressData.status}`);
+            }
+        } else {
+            console.warn(`Progress endpoint failed with status ${progressResponse.status}, trying fallback`);
+            // Fallback to basic session check
+            const response = await fetch(`/api/v1/analysis/sessions/${currentSessionId}`);
+            if (!response.ok) {
+                console.error(`Fallback session check failed with status ${response.status}`);
+                return;
+            }
+            
+            const session = await response.json();
+            console.log('Fallback session data:', session);
+            updateProgress(session);
+            
+            if (session.status === 'COMPLETED') {
+                console.log('Analysis completed (fallback)');
+                clearInterval(progressInterval);
+                showResults(session);
+            } else if (session.status === 'FAILED') {
+                console.log('Analysis failed (fallback):', session.error_message);
+                clearInterval(progressInterval);
+                showError(session.error_message || 'Analysis failed');
+            }
         }
         
     } catch (error) {
         console.error('Error checking progress:', error);
+        addLogEntry('❌ Error checking progress: ' + error.message, 'error');
     }
+}
+
+function updateDetailedProgress(progressData) {
+    const elapsed = startTime ? Math.floor((new Date() - startTime) / 1000) : 0;
+    
+    // Update progress based on status and actual progress logs
+    let progress = 0;
+    let statusText = '';
+    
+    switch (progressData.status) {
+        case 'PENDING':
+            progress = 5;
+            statusText = 'Waiting to start...';
+            break;
+        case 'RUNNING':
+            // Calculate progress based on log entries
+            const logs = progressData.progress_logs || [];
+            const totalExpectedSteps = 30; // Estimate based on typical analysis
+            progress = Math.min(90, Math.max(10, (logs.length / totalExpectedSteps) * 100));
+            statusText = logs.length > 0 ? logs[logs.length - 1].message : 'Running analysis...';
+            break;
+        case 'COMPLETED':
+            progress = 100;
+            statusText = 'Analysis complete!';
+            break;
+        case 'FAILED':
+            progress = 0;
+            statusText = 'Analysis failed';
+            break;
+    }
+    
+    // Update UI
+    document.getElementById('progressFill').style.width = progress + '%';
+    document.getElementById('progressText').textContent = Math.round(progress) + '%';
+    document.getElementById('progressStatus').textContent = statusText;
+    document.getElementById('progressTime').textContent = `Elapsed: ${elapsed}s`;
+    
+    // Estimate completion time
+    if (progress > 10 && progress < 100) {
+        const eta = Math.max(0, Math.round((100 - progress) * elapsed / progress));
+        document.getElementById('progressEta').textContent = `ETA: ${eta}s`;
+    }
+    
+    // Update progress logs with real-time data
+    updateProgressLogs(progressData.progress_logs || []);
 }
 
 function updateProgress(session) {
     const elapsed = startTime ? Math.floor((new Date() - startTime) / 1000) : 0;
     
-    // Update progress based on status
+    // Update progress based on status (fallback for when detailed progress is not available)
     let progress = 0;
     let statusText = '';
     
@@ -483,30 +713,27 @@ function updateProgress(session) {
         const eta = Math.max(0, Math.round((100 - progress) * elapsed / progress));
         document.getElementById('progressEta').textContent = `ETA: ${eta}s`;
     }
-    
-    // Add log entries for status changes
-    if (session.status === 'RUNNING' && elapsed > 10 && elapsed % 15 === 0) {
-        const messages = [
-            '📊 Fetching stock data...',
-            '🤖 Running AI analysis...',
-            '📈 Calculating technical indicators...',
-            '📰 Analyzing market sentiment...',
-            '📝 Generating recommendations...'
-        ];
-        const msg = messages[Math.floor(Math.random() * messages.length)];
-        addLogEntry(msg);
-    }
 }
 
 function showResults(session) {
     document.getElementById('analysisProgress').style.display = 'none';
     document.getElementById('analysisResults').style.display = 'block';
     
-    // Set up view results link
+    // Set up view results link - FIXED: Handle both session.id and session.session_id
     const viewBtn = document.getElementById('viewResultsBtn');
-    viewBtn.href = `/portfolio/{{ portfolio.id }}/analysis/results/${session.id}`;
+    const sessionId = session?.id || session?.session_id || currentSessionId;
     
-    addLogEntry('✅ Analysis completed successfully!', 'success');
+    if (sessionId) {
+        viewBtn.href = `/portfolio/{{ portfolio.id }}/analysis/results/${sessionId}`;
+        addLogEntry('✅ Analysis completed successfully!', 'success');
+        console.log(`Results ready for session: ${sessionId}`);
+    } else {
+        // Fallback if no session ID found
+        console.error('No session ID found in any format:', session);
+        viewBtn.href = `/portfolio/{{ portfolio.id }}/analysis`;
+        viewBtn.textContent = '📊 Back to Analysis';
+        addLogEntry('✅ Analysis completed! Session ID missing - redirecting to analysis page.', 'warning');
+    }
 }
 
 function showError(message) {
@@ -521,6 +748,7 @@ function resetAnalysis() {
     // Reset state
     currentSessionId = null;
     startTime = null;
+    pollCount = 0;
     if (progressInterval) {
         clearInterval(progressInterval);
         progressInterval = null;
@@ -540,6 +768,38 @@ function resetAnalysis() {
     document.getElementById('progressLog').innerHTML = '';
 }
 
+let displayedLogCount = 0;
+
+function updateProgressLogs(logs) {
+    const logContainer = document.getElementById('progressLog');
+    
+    // Only add new logs that we haven't displayed yet
+    const newLogs = logs.slice(displayedLogCount);
+    
+    newLogs.forEach(logEntry => {
+        const entry = document.createElement('div');
+        const levelClass = logEntry.level || 'info';
+        entry.className = `log-entry ${levelClass}`;
+        
+        // Format timestamp
+        const timestamp = new Date(logEntry.timestamp).toLocaleTimeString();
+        entry.textContent = `[${timestamp}] ${logEntry.message}`;
+        
+        // Add any additional data as a tooltip or subtitle
+        if (logEntry.data && Object.keys(logEntry.data).length > 0) {
+            entry.title = JSON.stringify(logEntry.data);
+        }
+        
+        logContainer.appendChild(entry);
+    });
+    
+    // Update displayed count
+    displayedLogCount = logs.length;
+    
+    // Auto-scroll to bottom
+    logContainer.scrollTop = logContainer.scrollHeight;
+}
+
 function addLogEntry(message, type = 'info') {
     const log = document.getElementById('progressLog');
     const entry = document.createElement('div');
@@ -547,6 +807,114 @@ function addLogEntry(message, type = 'info') {
     entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
     log.appendChild(entry);
     log.scrollTop = log.scrollHeight;
+}
+
+// Cache management functions
+async function clearCacheAndRefresh() {
+    if (!confirm('This will clear all cached data and may increase API usage costs. Continue?')) {
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.textContent;
+    
+    try {
+        btn.disabled = true;
+        btn.textContent = '🗑️ Clearing...';
+        
+        const response = await fetch('/api/v1/analysis/cache/clean', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            alert(`✅ Cache cleared successfully! Removed ${result.expired_count || 0} expired entries.`);
+            
+            // Also check the force refresh checkbox since we're getting fresh data
+            document.getElementById('force_refresh').checked = true;
+        } else {
+            const error = await response.text();
+            alert(`❌ Error clearing cache: ${error}`);
+        }
+        
+    } catch (error) {
+        console.error('Error clearing cache:', error);
+        alert(`❌ Error clearing cache: ${error.message}`);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+async function showCacheStatus() {
+    const btn = event.target;
+    const originalText = btn.textContent;
+    
+    try {
+        btn.disabled = true;
+        btn.textContent = '📊 Loading...';
+        
+        // We'll need to create this endpoint
+        const response = await fetch('/api/v1/analysis/cache/stats', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (response.ok) {
+            const stats = await response.json();
+            
+            const statsMessage = `
+📊 Cache Statistics:
+• Total entries: ${stats.total_entries || 0}
+• Cache size: ${(stats.total_size_mb || 0).toFixed(2)} MB
+• Expired entries: ${stats.expired_entries || 0}
+• Current market session: ${(stats.current_market_session || 'unknown').replace('_', ' ')}
+
+Data Types:
+${Object.entries(stats.by_type || {}).map(([type, info]) => 
+  `• ${type.replace('_', ' ')}: ${info.count} entries (${info.expired} expired)`
+).join('\n')}
+
+💡 Tip: Use "Force Fresh Data" for the latest information, or "Clear Cache" to start fresh.
+            `.trim();
+            
+            alert(statsMessage);
+        } else {
+            // Fallback message if endpoint doesn't exist yet
+            alert(`📊 Cache Status Feature
+            
+This feature shows cache statistics to help you understand data freshness.
+            
+Current Options:
+• ✅ Use "Force Fresh Data" checkbox to bypass cache
+• ✅ Use "Clear Cache" to remove all cached data
+• ✅ Cache is automatically managed by market hours
+
+Cache policies ensure fresh data:
+• Stock data: 2 min during trading, 8h on weekends
+• News data: 10 min during trading, 4h on weekends  
+• AI analysis: 5 min during trading, 4h on weekends`);
+        }
+        
+    } catch (error) {
+        console.error('Error getting cache status:', error);
+        alert(`📊 Cache Management Available
+        
+Use the checkbox "🔄 Force Fresh Data" to bypass cache and get the latest information.
+
+Current optimized cache policies:
+• Very responsive during market hours (2-10 min)
+• Reasonable freshness after hours (1-8 hours)
+• Never allows stale news (>24h automatically refreshed)`);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 }
 </script>
 {% endblock %} 

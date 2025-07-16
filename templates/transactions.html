@@ -3,10 +3,10 @@
 {% block title %}Transactions - {{ portfolio.name }}{% endblock %}
 
 {% block breadcrumb_items %}
-<span>▶</span>
+<span class="breadcrumb-separator">▶</span>
 <a href="/portfolio/{{ portfolio.id }}">💼 {{ portfolio.name }}</a>
-<span>▶</span>
-<span class="current">💳 Transactions</span>
+<span class="breadcrumb-separator">▶</span>
+<span class="breadcrumb-current">💳 Transactions</span>
 {% endblock %}
 
 {% block page_title %}💳 Transactions{% endblock %}
@@ -15,8 +15,6 @@
 {% block page_actions %}
 <div class="page-actions">
     <a href="/portfolio/{{ portfolio.id }}/analysis" class="btn btn-primary">📈 Run Analysis</a>
-    <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">💼 Back to Portfolio</a>
-    <a href="/dashboard" class="btn btn-secondary">🏠 Dashboard</a>
 </div>
 {% endblock %}
 

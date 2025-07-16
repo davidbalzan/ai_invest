@@ -1,0 +1,32 @@
+{
+  "data": {
+    "current_price": 170.6999969482422,
+    "rsi": 81.59648167907713,
+    "ma_20": 155.50400085449218,
+    "ma_50": 141.80787002563477,
+    "macd": 7.358073992594456,
+    "signal": 6.797045381845342,
+    "volatility": 0.274346690495495,
+    "volume_ratio": 1.239377475886036,
+    "price_momentum": 0.2037413503029455,
+    "trend_strength": 0.2037413503029455,
+    "rsi_overbought": 65,
+    "rsi_oversold": 35,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-16T12:35:44.431539+00:00",
+    "calculation_timestamp": "2025-07-16T12:35:44.662597+00:00",
+    "symbol": "NVDA",
+    "cached": false
+  },
+  "cached_at": "2025-07-16T12:35:44.662656+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "NVDA",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "1454a7ced2a1871425b16d1ed8d0f71f",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 250,
+    "last_price": 170.6999969482422
+  }
+}

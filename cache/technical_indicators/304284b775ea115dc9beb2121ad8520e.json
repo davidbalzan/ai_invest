@@ -1,0 +1,32 @@
+{
+  "data": {
+    "current_price": 182.0,
+    "rsi": 74.60419584694668,
+    "ma_20": 175.33849868774413,
+    "ma_50": 170.3999838256836,
+    "macd": 2.792839695176184,
+    "signal": 2.3926333766920744,
+    "volatility": 0.25618639132392085,
+    "volume_ratio": 0.8065513460709071,
+    "price_momentum": 0.06807521875226841,
+    "trend_strength": 0.06807521875226841,
+    "rsi_overbought": 70,
+    "rsi_oversold": 30,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-16T12:35:07.702417+00:00",
+    "calculation_timestamp": "2025-07-16T12:35:09.748096+00:00",
+    "symbol": "GOOGL",
+    "cached": false
+  },
+  "cached_at": "2025-07-16T12:35:09.748144+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "304284b775ea115dc9beb2121ad8520e",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 250,
+    "last_price": 182.0
+  }
+}

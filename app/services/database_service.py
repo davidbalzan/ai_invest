@@ -315,6 +315,33 @@ class DatabaseService:
         self.db.commit()
         return expired_count
 
+    def clean_stale_running_sessions(self) -> int:
+        """Clean up analysis sessions that are stuck in RUNNING status from previous server runs"""
+        try:
+            from datetime import datetime, timedelta
+            # Find sessions that have been running for more than 10 minutes (reduced from 30)
+            cutoff_time = datetime.utcnow() - timedelta(minutes=10)
+            
+            stale_sessions = self.db.query(models.AnalysisSession).filter(
+                models.AnalysisSession.status == "RUNNING",
+                models.AnalysisSession.started_at < cutoff_time
+            ).all()
+            
+            count = 0
+            for session in stale_sessions:
+                session.status = "FAILED"
+                session.completed_at = datetime.utcnow()
+                session.error_message = "Session interrupted by server restart"
+                count += 1
+            
+            if count > 0:
+                self.db.commit()
+                
+            return count
+        except Exception as e:
+            print(f"Error cleaning stale sessions: {e}")
+            return 0
+
     # Portfolio statistics
     def calculate_portfolio_value(self, portfolio_id: UUID) -> Decimal:
         """Calculate total portfolio value"""
