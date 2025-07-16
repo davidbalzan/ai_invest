@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - NDAQ's current trading price is in close proximity to its 20-day moving average, indicating a lack of clear upward or downward momentum. The RSI is neutral and the MACD line is below the signal line, neither suggesting a strong buying or selling signal. Moreover, volume is also not confirming any significant price movement. The positive news sentiment provides a supportive backdrop, but it doesn't convincingly tip the scale towards a buy signal. Therefore, the recommendation is to hold NDAQ, and watch for newer signals that might suggest an investment opportunity either way.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: EXCELLENT (Reliability: 85.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 32.9 hours old\n\n[AI Analysis: 12:52:11 UTC | Confidence: 60.0% | Data Quality: EXCELLENT]",
+  "cached_at": "2025-07-16T12:52:18.143251+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "ee84bb7b80d034f11cc36c7fbe3dfaa6",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 88.43000030517578,
+    "rsi": 51.48608496052176,
+    "sentiment": "positive",
+    "sentiment_score": 0.36349,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}

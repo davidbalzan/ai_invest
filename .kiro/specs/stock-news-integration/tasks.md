@@ -14,7 +14,7 @@
   - Add enum classes for news categories, sentiment types, and alert severities
   - _Requirements: 1.1, 1.3, 4.1, 4.2_
 
-- [ ] 3. News Provider Integration and API Gateway
+- [x] 3. News Provider Integration and API Gateway
   - Create app/services/news_providers/ directory with base NewsProvider abstract class
   - Implement NewsAPIProvider class using newsapi-python library for NewsAPI.org integration
   - Extract and refactor existing Finnhub news functionality from ai_analyzer.py into FinnhubProvider class

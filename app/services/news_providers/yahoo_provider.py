@@ -1,71 +1,75 @@
 """
-Yahoo Finance provider implementation.
+Yahoo Finance news provider implementation
 """
-
 import requests
-import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from .base import NewsProvider, NewsArticle, RateLimitStatus, NewsProviderError, RateLimitExceededError
 
 
 class YahooFinanceProvider(NewsProvider):
-    """Yahoo Finance news provider implementation."""
+    """Yahoo Finance news provider implementation"""
     
-    def __init__(self, api_key: Optional[str] = None):
-        # Yahoo Finance doesn't require API key for basic access
+    def __init__(self, api_key: str = None):
+        # Yahoo Finance doesn't require an API key for basic news access
         super().__init__(api_key or "", "Yahoo Finance")
-        self.base_url = "https://query1.finance.yahoo.com/v1/finance"
-        self.requests_per_minute = 100  # Conservative limit
-        self.last_request_time = None
-        
+        self.base_url = "https://query1.finance.yahoo.com/v1/finance/search"
+        self.news_url = "https://query2.finance.yahoo.com/v1/finance/search"
+        self.requests_per_minute = 100  # Conservative estimate
+    
     def fetch_news_for_symbol(self, symbol: str, limit: int = 50) -> List[NewsArticle]:
-        """Fetch news using Yahoo Finance search endpoint."""
-        try:
-            # Respect rate limits
-            self._respect_rate_limit()
+        """
+        Fetch news for a specific symbol using Yahoo Finance
+        
+        Args:
+            symbol: Stock symbol (e.g., 'AAPL')
+            limit: Maximum number of articles to fetch
             
+        Returns:
+            List of NewsArticle objects
+        """
+        try:
             # Yahoo Finance news endpoint
+            url = f"https://query1.finance.yahoo.com/v1/finance/search"
             params = {
                 'q': symbol.upper(),
-                'count': min(limit, 100),  # Reasonable limit
-                'start': 0
+                'lang': 'en-US',
+                'region': 'US',
+                'quotesCount': 1,
+                'newsCount': min(limit, 50),  # Yahoo typically returns up to 50 news items
+                'enableFuzzyQuery': False,
+                'quotesQueryId': 'tss_match_phrase_query',
+                'multiQuoteQueryId': 'multi_quote_single_token_query',
+                'newsQueryId': 'news_cie_vespa',
+                'enableCb': True,
+                'enableNavLinks': True,
+                'enableEnhancedTrivialQuery': True
             }
             
-            # Use the search endpoint for news
-            response = requests.get(
-                f"{self.base_url}/search",
-                params=params,
-                headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                },
-                timeout=10
-            )
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            
+            response = requests.get(url, params=params, headers=headers, timeout=10)
+            
+            # Update rate limit status
+            self._update_rate_limit_from_response(response)
             
             if response.status_code == 429:
                 raise RateLimitExceededError("Yahoo Finance rate limit exceeded")
             elif response.status_code != 200:
-                raise NewsProviderError(f"Yahoo Finance returned status {response.status_code}")
+                raise NewsProviderError(f"Yahoo Finance API returned status {response.status_code}")
             
             data = response.json()
             
-            # Yahoo Finance has a different structure - try news section
-            news_items = []
+            # Extract news from response
+            news_data = data.get('news', [])
             
-            # Try different possible structures
-            if 'news' in data:
-                news_items = data['news']
-            elif 'items' in data:
-                news_items = [item for item in data['items'] if item.get('type') == 'news']
-            
-            if not news_items:
-                # Fallback: try alternative Yahoo Finance RSS approach
-                return self._fetch_from_rss(symbol, limit)
-            
+            # Convert to NewsArticle objects
             articles = []
-            for article_data in news_items:
+            for item in news_data:
                 try:
-                    article = self._parse_article(article_data, symbol)
+                    article = self._parse_article(item, symbol)
                     if article:
                         articles.append(article)
                 except Exception as e:
@@ -74,129 +78,98 @@ class YahooFinanceProvider(NewsProvider):
             
             return articles
             
-        except RateLimitExceededError:
-            raise
+        except requests.RequestException as e:
+            raise NewsProviderError(f"Yahoo Finance request failed: {e}")
         except Exception as e:
-            # Fallback to RSS if API fails
-            try:
-                return self._fetch_from_rss(symbol, limit)
-            except:
-                raise NewsProviderError(f"Yahoo Finance fetch error: {e}")
-    
-    def _fetch_from_rss(self, symbol: str, limit: int) -> List[NewsArticle]:
-        """Fallback method using Yahoo Finance RSS feeds."""
-        try:
-            import feedparser
-            
-            # Yahoo Finance RSS URL for symbol
-            rss_url = f"https://feeds.finance.yahoo.com/rss/2.0/headline?s={symbol.upper()}&region=US&lang=en-US"
-            
-            response = requests.get(rss_url, timeout=10)
-            if response.status_code != 200:
-                return []
-            
-            feed = feedparser.parse(response.content)
-            articles = []
-            
-            for entry in feed.entries[:limit]:
-                try:
-                    # Parse published date
-                    published_at = datetime.now(timezone.utc)
-                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                        published_at = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
-                    
-                    article = NewsArticle(
-                        title=entry.title,
-                        description=getattr(entry, 'summary', ''),
-                        content=None,
-                        url=entry.link,
-                        url_to_image=None,
-                        source_name='Yahoo Finance',
-                        source_id=None,
-                        author=None,
-                        published_at=published_at,
-                        symbol=symbol
-                    )
-                    articles.append(article)
-                    
-                except Exception as e:
-                    print(f"Error parsing RSS entry: {e}")
-                    continue
-            
-            return articles
-            
-        except ImportError:
-            print("feedparser not available for Yahoo Finance RSS fallback")
-            return []
-        except Exception as e:
-            print(f"RSS fallback error: {e}")
-            return []
+            raise NewsProviderError(f"Yahoo Finance error: {e}")
     
     def get_rate_limit_status(self) -> RateLimitStatus:
-        """Get current rate limit status."""
+        """Get current rate limit status"""
         return self._rate_limit_status
     
     def is_healthy(self) -> bool:
-        """Check if Yahoo Finance is healthy."""
+        """Check if Yahoo Finance provider is healthy"""
         try:
-            # Simple health check with quote endpoint
-            response = requests.get(
-                f"https://query1.finance.yahoo.com/v8/finance/chart/AAPL",
-                timeout=5
-            )
-            return response.status_code == 200
-        except:
+            # Simple health check
+            url = "https://query1.finance.yahoo.com/v1/finance/search"
+            params = {
+                'q': 'AAPL',
+                'lang': 'en-US',
+                'region': 'US',
+                'quotesCount': 1,
+                'newsCount': 1
+            }
+            
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            
+            response = requests.get(url, params=params, headers=headers, timeout=5)
+            return response.status_code in [200, 429]
+            
+        except Exception:
             return False
     
-    def _respect_rate_limit(self):
-        """Ensure we don't exceed rate limits."""
-        if self.last_request_time:
-            time_since_last = time.time() - self.last_request_time
-            min_interval = 0.6  # ~100 requests per minute
-            if time_since_last < min_interval:
-                time.sleep(min_interval - time_since_last)
-        
-        self.last_request_time = time.time()
+    def _update_rate_limit_from_response(self, response):
+        """Update rate limit status from Yahoo Finance response"""
+        # Yahoo Finance doesn't provide detailed rate limit headers
+        # We'll estimate based on response status
+        if response.status_code == 429:
+            self._rate_limit_status = RateLimitStatus(
+                requests_remaining=0,
+                requests_limit=self.requests_per_minute,
+                reset_time=datetime.now(timezone.utc) + timedelta(minutes=1),
+                is_limited=True
+            )
+        else:
+            # Assume we have some requests remaining
+            self._rate_limit_status = RateLimitStatus(
+                requests_remaining=self.requests_per_minute - 1,
+                requests_limit=self.requests_per_minute,
+                reset_time=datetime.now(timezone.utc) + timedelta(minutes=1),
+                is_limited=False
+            )
     
-    def _parse_article(self, article_data: dict, symbol: str) -> Optional[NewsArticle]:
-        """Parse Yahoo Finance article data into NewsArticle object."""
+    def _parse_article(self, item: dict, symbol: str) -> Optional[NewsArticle]:
+        """Parse Yahoo Finance article data into NewsArticle object"""
         try:
-            # Skip articles with missing essential data
-            title = article_data.get('title', '')
-            url = article_data.get('link', '')
+            # Extract required fields
+            title = item.get('title', '')
+            summary = item.get('summary', '')
+            link = item.get('link', '')
             
-            if not title or not url:
+            if not title or not link:
                 return None
             
-            # Parse published date
-            published_at = datetime.now(timezone.utc)
-            if 'pubDate' in article_data:
-                try:
-                    # Try parsing various date formats
-                    pub_date = article_data['pubDate']
-                    if isinstance(pub_date, (int, float)):
-                        published_at = datetime.fromtimestamp(pub_date, tz=timezone.utc)
-                    elif isinstance(pub_date, str):
-                        # Try ISO format first
-                        try:
-                            published_at = datetime.fromisoformat(pub_date.replace('Z', '+00:00'))
-                        except:
-                            # Fallback to current time
-                            pass
-                except:
-                    pass
+            # Parse timestamp
+            provider_publish_time = item.get('providerPublishTime')
+            if provider_publish_time:
+                # Yahoo uses Unix timestamp
+                published_at = datetime.fromtimestamp(provider_publish_time, tz=timezone.utc)
+            else:
+                published_at = datetime.now(timezone.utc)
+            
+            # Extract source info
+            publisher = item.get('publisher', 'Yahoo Finance')
+            
+            # Extract thumbnail
+            thumbnail = None
+            if 'thumbnail' in item and 'resolutions' in item['thumbnail']:
+                resolutions = item['thumbnail']['resolutions']
+                if resolutions:
+                    thumbnail = resolutions[0].get('url')
             
             return NewsArticle(
                 title=title,
-                description=article_data.get('summary', ''),
-                content=None,
-                url=url,
-                url_to_image=article_data.get('thumbnail'),
-                source_name='Yahoo Finance',
-                source_id=None,
-                author=article_data.get('author'),
+                description=summary,
+                content=None,  # Yahoo Finance doesn't provide full content in search
+                url=link,
+                url_to_image=thumbnail,
+                source_name=publisher,
+                source_id=item.get('uuid'),
+                author=None,  # Yahoo Finance doesn't provide author in search results
                 published_at=published_at,
-                symbol=symbol
+                symbol=symbol.upper()
             )
             
         except Exception as e:

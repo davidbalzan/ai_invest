@@ -2502,9 +2502,9 @@
         "Stock Splits": 0.0
       }
     ],
-    "retrieval_timestamp": "2025-07-16T12:35:07.702417+00:00",
+    "retrieval_timestamp": "2025-07-16T13:08:32.582697+00:00",
     "symbol": "GOOGL",
-    "cached_at": "2025-07-16T12:35:09.739615+00:00",
+    "cached_at": "2025-07-16T13:08:34.094775+00:00",
     "period": "1y",
     "index": [
       "2024-07-16",
@@ -2759,7 +2759,7 @@
       "2025-07-15"
     ]
   },
-  "cached_at": "2025-07-16T12:35:09.740428+00:00",
+  "cached_at": "2025-07-16T13:08:34.095573+00:00",
   "data_type": "stock_data",
   "identifier": "GOOGL",
   "market_session_when_cached": "pre_post_market",

@@ -1,10 +1,7 @@
-"""
-News providers package for stock news integration.
-"""
-
-from .base import NewsProvider, NewsArticle, RateLimitStatus
-from .newsapi_provider import NewsAPIProvider
+# News providers package
+from .base import NewsProvider, NewsArticle, RateLimitStatus, NewsProviderError, RateLimitExceededError
 from .finnhub_provider import FinnhubProvider
+from .newsapi_provider import NewsAPIProvider
 from .alpha_vantage_provider import AlphaVantageProvider
 from .yahoo_provider import YahooFinanceProvider
 
@@ -12,8 +9,10 @@ __all__ = [
     'NewsProvider',
     'NewsArticle', 
     'RateLimitStatus',
-    'NewsAPIProvider',
+    'NewsProviderError',
+    'RateLimitExceededError',
     'FinnhubProvider',
+    'NewsAPIProvider',
     'AlphaVantageProvider',
     'YahooFinanceProvider'
 ]

@@ -14,9 +14,13 @@ load_dotenv()
 cache_manager = CacheManager()
 
 def get_news_sentiment(symbol):
-    """Get real news sentiment using Finnhub API and VADER sentiment analysis"""
+    """Get real news sentiment using the new FinnhubProvider and VADER sentiment analysis"""
     try:
         sentiment_retrieval_timestamp = datetime.now(timezone.utc)
+        
+        # Import the new FinnhubProvider
+        from app.services.news_providers.finnhub_provider import FinnhubProvider
+        from app.services.news_providers.base import NewsProviderError
         
         finnhub_api_key = os.getenv('FINNHUB_API_KEY')
         if not finnhub_api_key:
@@ -30,26 +34,13 @@ def get_news_sentiment(symbol):
                 "symbol": symbol
             }
         
-        # Finnhub company news endpoint (free tier: 60 calls/minute)
-        url = f"https://finnhub.io/api/v1/company-news"
+        # Use the new FinnhubProvider
+        provider = FinnhubProvider(finnhub_api_key)
         
-        # Use dynamic date range to get actually recent news
-        from datetime import timedelta
-        current_date = datetime.now()
-        start_date = (current_date - timedelta(days=30)).strftime('%Y-%m-%d')  # Last 30 days
-        end_date = current_date.strftime('%Y-%m-%d')  # Today
-        
-        params = {
-            'symbol': symbol,
-            'from': start_date,  # Dynamic: last 30 days
-            'to': end_date,      # Dynamic: today
-            'token': finnhub_api_key
-        }
-        
-        response = requests.get(url, params=params, timeout=10)
-        
-        if response.status_code != 200:
-            print(f"Warning: Finnhub API returned status {response.status_code} for {symbol}")
+        try:
+            articles = provider.fetch_news_for_symbol(symbol, limit=10)
+        except NewsProviderError as e:
+            print(f"Warning: Finnhub provider error for {symbol}: {e}")
             return {
                 "sentiment": "neutral", 
                 "score": 0.0, 
@@ -59,9 +50,7 @@ def get_news_sentiment(symbol):
                 "symbol": symbol
             }
         
-        news_data = response.json()
-        
-        if not news_data or len(news_data) == 0:
+        if not articles:
             print(f"No news found for {symbol}")
             return {
                 "sentiment": "neutral", 
@@ -75,23 +64,17 @@ def get_news_sentiment(symbol):
         # Initialize VADER sentiment analyzer
         analyzer = SentimentIntensityAnalyzer()
         
-        # Analyze sentiment of recent news (last 10 articles)
-        recent_news = news_data[:10]
+        # Analyze sentiment of articles
         sentiment_scores = []
         latest_news_timestamp = None
         
-        for article in recent_news:
-            headline = article.get('headline', '')
-            summary = article.get('summary', '')
-            
+        for article in articles:
             # Track the most recent news timestamp
-            if article.get('datetime'):
-                news_timestamp = datetime.fromtimestamp(article['datetime'], tz=timezone.utc)
-                if latest_news_timestamp is None or news_timestamp > latest_news_timestamp:
-                    latest_news_timestamp = news_timestamp
+            if latest_news_timestamp is None or article.published_at > latest_news_timestamp:
+                latest_news_timestamp = article.published_at
             
-            # Combine headline and summary for analysis
-            text_to_analyze = f"{headline} {summary}"
+            # Combine title and description for analysis
+            text_to_analyze = f"{article.title} {article.description or ''}"
             
             if text_to_analyze.strip():
                 scores = analyzer.polarity_scores(text_to_analyze)

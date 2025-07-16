@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - NVDA's current price is significantly above its 20-day and 50-day moving averages, indicating bullish sentiment. However, the stock is currently overbought as the RSI is well above the dynamic threshold of 65. The MACD is higher than the signal line, also suggesting a bullish trend but this needs to be considered with caution, due to the overbought status. The volatility is quite low, and despite a slightly positive price momentum and trend strength, there might not be much space left for upward movement in the near future. With respect to risk management, the current volatility situation offers a less rewarding scenario for new positions. The positive news sentiment provides some support for the stock, but it would be better to wait for the RSI to drop below the overbought zone or more conclusive news to emerge.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: EXCELLENT (Reliability: 85.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 32.9 hours old\n\n[AI Analysis: 12:52:18 UTC | Confidence: 70.0% | Data Quality: EXCELLENT]",
+  "cached_at": "2025-07-16T12:52:28.135372+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NVDA",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "00bcbd0323e0a37405a9570699302748",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 170.6999969482422,
+    "rsi": 81.59648167907713,
+    "sentiment": "positive",
+    "sentiment_score": 0.23650000000000002,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}

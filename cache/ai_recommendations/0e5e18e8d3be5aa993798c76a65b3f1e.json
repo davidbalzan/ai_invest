@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - Although the overall sentiment analysis is positive, the RSI of 74.60 indicates that GOOGL is currently overbought and could be due for a price adjustment soon. Furthermore, the current price is above both the 20-day and 50-day moving averages, which often signal a potential trend reversal. The volume ratio being below average is not confirming strong investor interest at the current price level. The risk/reward assessment based on current volatility levels also advise caution. Wait and observe the market for potential entry points in future.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: EXCELLENT (Reliability: 85.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 32.9 hours old\n\n[AI Analysis: 12:51:45 UTC | Confidence: 70.0% | Data Quality: EXCELLENT]",
+  "cached_at": "2025-07-16T12:51:53.638143+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "0e5e18e8d3be5aa993798c76a65b3f1e",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 182.0,
+    "rsi": 74.60419584694668,
+    "sentiment": "positive",
+    "sentiment_score": 0.42139,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}

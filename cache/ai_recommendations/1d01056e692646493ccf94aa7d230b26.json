@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical indicators suggest some overbought conditions with RSI over 70, indicating potential exhaustion in the upward trend. While the overall sentiment is positive, the low volume ratio and modest price momentum, combined with minimal trend strength, suggest a lack of strong conviction in this move. With the current level of low volatility, the risk/reward ratio may not appear attractive for new positions. Therefore, a HOLD status is recommended until stronger confirmation of a sustainable trend is available.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: EXCELLENT (Reliability: 85.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 33.1 hours old\n\n[AI Analysis: 13:08:36 UTC | Confidence: 70.0% | Data Quality: EXCELLENT]",
+  "cached_at": "2025-07-16T13:08:42.918645+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "1d01056e692646493ccf94aa7d230b26",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 182.0,
+    "rsi": 74.60419584694668,
+    "sentiment": "positive",
+    "sentiment_score": 0.53655,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}

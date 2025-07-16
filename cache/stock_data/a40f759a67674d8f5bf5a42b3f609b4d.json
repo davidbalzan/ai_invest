@@ -2502,9 +2502,9 @@
         "Stock Splits": 0.0
       }
     ],
-    "retrieval_timestamp": "2025-07-16T12:35:52.633602+00:00",
+    "retrieval_timestamp": "2025-07-16T12:52:28.158311+00:00",
     "symbol": "RUM",
-    "cached_at": "2025-07-16T12:35:52.846640+00:00",
+    "cached_at": "2025-07-16T12:52:28.293226+00:00",
     "period": "1y",
     "index": [
       "2024-07-16",
@@ -2759,7 +2759,7 @@
       "2025-07-15"
     ]
   },
-  "cached_at": "2025-07-16T12:35:52.847391+00:00",
+  "cached_at": "2025-07-16T12:52:28.293988+00:00",
   "data_type": "stock_data",
   "identifier": "RUM",
   "market_session_when_cached": "pre_post_market",

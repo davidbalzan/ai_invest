@@ -1,15 +1,15 @@
 {
   "data": {
     "sentiment": "positive",
-    "score": 0.42139,
+    "score": 0.53655,
     "articles_analyzed": 10,
-    "retrieval_timestamp": "2025-07-16T12:35:10.749216+00:00",
-    "latest_news_timestamp": "2025-07-16T08:08:38+00:00",
-    "news_age_minutes": 266,
+    "retrieval_timestamp": "2025-07-16T13:08:35.114021+00:00",
+    "latest_news_timestamp": "2025-07-16T11:48:00+00:00",
+    "news_age_minutes": 80,
     "symbol": "GOOGL",
     "cached": false
   },
-  "cached_at": "2025-07-16T12:35:12.144623+00:00",
+  "cached_at": "2025-07-16T13:08:36.028894+00:00",
   "data_type": "sentiment_data",
   "identifier": "GOOGL",
   "market_session_when_cached": "pre_post_market",

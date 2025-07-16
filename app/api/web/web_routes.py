@@ -1,18 +1,21 @@
 """
 Web routes for HTML interface
 """
-from fastapi import APIRouter, Depends, Request, HTTPException, Form
+from fastapi import APIRouter, Depends, Request, HTTPException, Form, BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from typing import Optional
 from uuid import UUID
+from datetime import datetime
 import os
+import threading
 
 from app.database import get_db
 from app.services.database_service import DatabaseService
 from app.services.analysis_service import AnalysisService
 from app.models import AnalysisSession
+from app.schemas import AnalysisSessionCreate, AnalysisStatus
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
@@ -184,12 +187,19 @@ async def portfolio_analysis(
         # Use simple approach like the working analysis route
         analysis_sessions = db_service.get_portfolio_analysis_sessions(portfolio_id, limit=20)
         
-        # Simple market status
+        # Simple market status - temporarily hardcoded to debug
         market_status = {
             "current_session": "market_closed",
             "is_trading_day": True,
             "market_timezone": "America/New_York",
-            "status": "operational"
+            "status": "operational",
+            "current_time": "15:00:00 EST",
+            "countdown_text": "Market opens in 18h 30m",
+            "schedule": {
+                "pre_market": "04:00 - 09:30",
+                "regular": "09:30 - 16:00", 
+                "post_market": "16:00 - 20:00"
+            }
         }
         
         return templates.TemplateResponse("analysis.html", {
@@ -199,38 +209,85 @@ async def portfolio_analysis(
             "market_status": market_status
         })
     except Exception as e:
+        print(f"DEBUG: Portfolio analysis error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return templates.TemplateResponse("error.html", {
             "request": request,
-            "error": str(e)
+            "error": f"Portfolio analysis error: {str(e)}"
         })
+
+def run_analysis_background(portfolio_id: str, analysis_type: str, session_id: str):
+    """Run portfolio analysis in background thread"""
+    try:
+        # Create a new database session for the background thread
+        from app.database import SessionLocal
+        db = SessionLocal()
+        
+        try:
+            analysis_service = AnalysisService(db)
+            
+            # Run the analysis using the existing session
+            result = analysis_service.run_portfolio_analysis(
+                portfolio_id=portfolio_id,
+                analysis_type=analysis_type,
+                include_pdf=True,
+                user_id=None,
+                existing_session_id=session_id
+            )
+            
+            print(f"Background analysis completed for session {session_id}: {result.get('status', 'unknown')}")
+            
+        finally:
+            db.close()
+            
+    except Exception as e:
+        print(f"Background analysis failed for session {session_id}: {e}")
+        # Update session status to failed
+        try:
+            from app.database import SessionLocal
+            db = SessionLocal()
+            try:
+                session = db.query(AnalysisSession).filter(AnalysisSession.id == session_id).first()
+                if session:
+                    session.status = AnalysisStatus.FAILED
+                    session.error_message = str(e)
+                    session.completed_at = datetime.utcnow()
+                    db.commit()
+            finally:
+                db.close()
+        except Exception as update_error:
+            print(f"Failed to update session status: {update_error}")
 
 @router.post("/portfolio/{portfolio_id}/analysis/run")
 async def run_portfolio_analysis_web(
     request: Request,
     portfolio_id: UUID,
+    background_tasks: BackgroundTasks,
     analysis_type: str = Form("comprehensive"),
-    db_service: DatabaseService = Depends(get_db_service),
-    analysis_service: AnalysisService = Depends(get_analysis_service)
+    db_service: DatabaseService = Depends(get_db_service)
 ):
     """Run portfolio analysis from web interface"""
     try:
-        # Run the analysis
-        result = analysis_service.run_portfolio_analysis(
-            portfolio_id=str(portfolio_id),
+        # Create analysis session immediately
+        session_create = AnalysisSessionCreate(
+            portfolio_id=portfolio_id,
             analysis_type=analysis_type,
-            include_pdf=True,
-            user_id=None
+            status=AnalysisStatus.PENDING
+        )
+        session = db_service.create_analysis_session(session_create)
+        
+        # Start analysis in background
+        background_tasks.add_task(
+            run_analysis_background,
+            str(portfolio_id),
+            analysis_type,
+            str(session.id)
         )
         
-        if "error" in result:
-            return templates.TemplateResponse("error.html", {
-                "request": request,
-                "error": result["error"]
-            })
-        
-        # Redirect to analysis results
+        # Redirect to analysis results immediately
         return RedirectResponse(
-            url=f"/portfolio/{portfolio_id}/analysis/results/{result['analysis_session_id']}", 
+            url=f"/portfolio/{portfolio_id}/analysis/results/{session.id}", 
             status_code=303
         )
     except Exception as e:
@@ -253,6 +310,26 @@ async def get_analysis_results_dynamic(portfolio_id: str, session_id: str, db: S
         if not session_data:
             raise HTTPException(status_code=404, detail="Analysis session not found")
         
+        # Handle FAILED status gracefully
+        if session_data["status"] == "FAILED":
+            error_html = f"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <title>Analysis Failed - AI Investment Tool</title>
+            </head>
+            <body>
+                <h1>Analysis Failed</h1>
+                <p>Status: {session_data["status"]}</p>
+                <p>Started: {session_data["started_at"]}</p>
+                <p>Error: {session_data.get("error_message", "Unknown error")}</p>
+                <a href="/portfolio/{portfolio_id}/analysis">Return to Analysis Page</a>
+            </body>
+            </html>
+            """
+            return HTMLResponse(content=error_html)
+        
+        # Original code for COMPLETED sessions
         if session_data["status"] != "COMPLETED":
             return HTMLResponse(content=f"""
             <!DOCTYPE html>

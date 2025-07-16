@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows that META is trading near its 20-day MA of $714.72 and above its 50-day MA of $674.39, which could indicate a bullish trend in the medium term. However, the MACD is below the signal line, which might suggest near term price consolidation, and the RSI is within neutral bounds, indicating the stock is not currently oversold or overbought. The low volatility and volume ratio close to one point towards stable pricing, without strong buy or sell indicators. Added to this, the current positive news sentiment supports sustaining the position, but it does not provide a strong signal to buy more or sell. Given the relatively low volatility, the risk/reward assessment does not produce a compelling argument for a new buy or sell position, thus, it may be wise to HOLD until more decisive signals emerge.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: EXCELLENT (Reliability: 85.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 32.9 hours old\n\n[AI Analysis: 12:52:00 UTC | Confidence: 70.0% | Data Quality: EXCELLENT]",
+  "cached_at": "2025-07-16T12:52:11.418289+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "META",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "0a34c8d830436939c805b6563c3b92c1",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 710.3900146484375,
+    "rsi": 49.155706942762315,
+    "sentiment": "positive",
+    "sentiment_score": 0.27407,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}

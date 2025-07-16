@@ -1,0 +1,18 @@
+{
+  "data": "RECOMMENDATION: HOLD - The stock, RUM, currently displays a neutral position according to the RSI and stands below the 20 and 50-day moving averages which suggests a bearish trend. The negative MACD further indicates possible downward pressure, yet, relatively low volatility suggests limited potential for substantial downside risk. Positive news sentiment may provide some upward momentum, but without strong volume support, significant gains appear unlikely. Hence, the risk/reward ratio remains relatively balanced and does not provide a compelling reason to either buy or sell. Monitor the stock's performance closely for any possible changes in market sentiment or technical signals.\n\n\ud83d\udd0d DATA QUALITY ASSESSMENT:\nStatus: GOOD (Reliability: 70.0%)\nWARNINGS:\n\u26a0\ufe0f Data is 32.9 hours old\n\u26a0\ufe0f News data is 30.4 hours old\n\n[AI Analysis: 12:52:28 UTC | Confidence: 50.0% | Data Quality: GOOD]",
+  "cached_at": "2025-07-16T12:52:36.431779+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "RUM",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "9984fdbdff5c1f86d4f87bf93cc5350e",
+  "expiration_minutes": 15,
+  "kwargs": {
+    "current_price": 8.789999961853027,
+    "rsi": 51.91740562352712,
+    "sentiment": "positive",
+    "sentiment_score": 0.60004,
+    "stop_loss_percent": 5.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15T00:00:00-04:00"
+  }
+}
