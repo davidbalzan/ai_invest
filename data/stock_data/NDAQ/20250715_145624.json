@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:56:24.833903+00:00",
+  "symbol": "NDAQ",
+  "current_price": 88.86000061035156,
+  "cost_basis": 82.3,
+  "quantity": 1.02,
+  "current_value": 90.6372006225586,
+  "total_cost": 83.946,
+  "profit_loss": 6.691200622558597,
+  "profit_loss_percent": 7.970839137729728,
+  "technical": {
+    "rsi": 53.699986495981975,
+    "ma_20": 88.55250091552735,
+    "ma_50": 84.67343078613281,
+    "macd": 1.513453173654412,
+    "signal": 1.7806747544836727
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.44528,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis shows a relatively stable price with an RSI at a neutral level and moving averages close to the current price. The positive news sentiment suggests a favorable outlook for the stock. With a stop-loss threshold of -10% and take-profit threshold of 20%, holding onto the shares at the current value could be a reasonable decision, especially considering the positive portfolio performance. However, investors could consider taking some profits if the stock continues to rise.\n[AI Analysis: 14:56:07 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

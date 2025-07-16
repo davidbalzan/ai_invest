@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 8.944999694824219,
+    "rsi": 54.18501894184464,
+    "ma_20": 8.987749910354614,
+    "ma_50": 9.065299978256226,
+    "macd": 0.023034732095924326,
+    "signal": 0.043387523675275014,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-15T14:56:21.211374+00:00",
+    "calculation_timestamp": "2025-07-15T14:56:21.367578+00:00",
+    "symbol": "RUM",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:56:21.367619+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "RUM",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "e73261c63dd3aad95f9c887ba12bffe4",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 251,
+    "last_price": 8.944999694824219
+  }
+}

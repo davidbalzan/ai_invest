@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:32:11.169975+00:00",
+  "symbol": "INTC",
+  "current_price": 23.405000686645508,
+  "cost_basis": 20.92,
+  "quantity": 2.1,
+  "current_value": 49.15050144195557,
+  "total_cost": 43.932,
+  "profit_loss": 5.218501441955567,
+  "profit_loss_percent": 11.878588368286367,
+  "technical": {
+    "rsi": 56.6849189474064,
+    "ma_20": 22.392249965667723,
+    "ma_50": 21.400299949645998,
+    "macd": 0.660867316776141,
+    "signal": 0.5780758206543795
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.20728,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis shows that INTC is currently in a positive trend with the RSI above 50 and the MACD indicating bullish momentum. The news sentiment is also positive, although the sentiment data is outdated. With a P&L of +11.88% and the stock trading above the cost basis, it may be prudent to hold onto the shares for now and monitor for any changes in market conditions or company news. The stop loss and take profit thresholds provide a clear risk management strategy if the stock's performance shifts.\n[AI Analysis: 14:32:00 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

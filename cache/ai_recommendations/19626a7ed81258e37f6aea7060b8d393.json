@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - \n\nThe technical indicators for RUM show a mixed picture with the RSI indicating a neutral position, the 20-day MA slightly below the current price, and the MACD showing a small positive value. The news sentiment is positive, albeit with slightly outdated data. Given the current market conditions and the negligible P&L on the current holdings, it may be prudent to hold onto the shares for now and reassess once more up-to-date sentiment data is available. It is important to continue monitoring the stock closely and consider setting a stop loss and take profit thresholds as a precautionary measure.\n[AI Analysis: 15:10:09 UTC]",
+  "cached_at": "2025-07-15T15:10:11.087875+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "RUM",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "19626a7ed81258e37f6aea7060b8d393",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 8.979999542236328,
+    "rsi": 54.651157632914185,
+    "sentiment": "positive",
+    "sentiment_score": 0.18144,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 8.5,
+    "quantity": 3.0
+  }
+}

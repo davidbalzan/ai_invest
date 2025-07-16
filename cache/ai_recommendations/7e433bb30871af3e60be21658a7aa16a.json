@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows that INTC is currently trading above both its 20-day and 50-day moving averages, indicating a positive trend. Additionally, the RSI is at a moderate level, suggesting room for potential upside. The news sentiment is also positive, although the sentiment data is quite outdated. Given the current market conditions and your risk tolerance, it may be prudent to hold onto your current holdings and monitor for any significant changes in technical indicators or news sentiment. Keep a close eye on the stop loss and take profit thresholds for risk management purposes.\n[AI Analysis: 14:56:17 UTC]",
+  "cached_at": "2025-07-15T14:56:21.210576+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "INTC",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "7e433bb30871af3e60be21658a7aa16a",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 23.364999771118164,
+    "rsi": 56.41227653937707,
+    "sentiment": "positive",
+    "sentiment_score": 0.20728,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 20.92,
+    "quantity": 2.1
+  }
+}

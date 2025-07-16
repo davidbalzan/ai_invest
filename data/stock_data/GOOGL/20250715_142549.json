@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:25:49.739601+00:00",
+  "symbol": "GOOGL",
+  "current_price": 182.57000732421875,
+  "cost_basis": 174.6,
+  "quantity": 1.0,
+  "current_value": 182.57000732421875,
+  "total_cost": 174.6,
+  "profit_loss": 7.970007324218756,
+  "profit_loss_percent": 4.564723553389895,
+  "technical": {
+    "rsi": 75.06345322034473,
+    "ma_20": 175.36699905395508,
+    "ma_50": 170.41138397216798,
+    "macd": 2.8383103585328513,
+    "signal": 2.4017275002858867
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.46682000000000007,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical indicators show that GOOGL is currently in overbought territory with a high RSI and positive MACD. However, the positive news sentiment and overall market trend are supportive of a hold position. Since the stock is currently trading above your cost basis with a moderate profit, it may be prudent to hold and reassess if the stop loss or take profit thresholds are reached.\n[AI Analysis: 14:25:27 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "MEDIUM"
+  }
+}

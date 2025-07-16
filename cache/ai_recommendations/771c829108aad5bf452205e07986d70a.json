@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows that the stock is currently trading near its 20-day and 50-day moving averages, with a neutral RSI and MACD. The positive news sentiment suggests potential upside, but the sentiment data is quite old. Considering your current portfolio context, it may be prudent to hold onto your existing shares for now and monitor for any significant developments before making a decision to buy or sell.\n[AI Analysis: 14:32:09 UTC]",
+  "cached_at": "2025-07-15T14:32:11.169480+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "RUM",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "771c829108aad5bf452205e07986d70a",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 8.9399995803833,
+    "rsi": 54.11764243894872,
+    "sentiment": "positive",
+    "sentiment_score": 0.18144,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 8.5,
+    "quantity": 3.0
+  }
+}

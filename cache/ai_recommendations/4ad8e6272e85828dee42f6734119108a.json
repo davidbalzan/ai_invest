@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - Despite the high RSI indicating potential overbought conditions, NVDA's positive news sentiment and strong technical indicators suggest further upside potential. The risk/reward assessment leans towards holding the position, with the stop loss and take profit thresholds in place for risk management. If already holding shares, it may be prudent to continue monitoring the stock closely for any signs of weakness.\n[AI Analysis: 14:25:43 UTC]",
+  "cached_at": "2025-07-15T14:25:45.236057+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NVDA",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "4ad8e6272e85828dee42f6734119108a",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 171.36000061035156,
+    "rsi": 81.92708586418007,
+    "sentiment": "positive",
+    "sentiment_score": 0.6592,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 137.76,
+    "quantity": 0.98
+  }
+}

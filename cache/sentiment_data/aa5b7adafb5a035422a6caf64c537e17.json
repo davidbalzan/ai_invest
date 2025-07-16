@@ -1,0 +1,19 @@
+{
+  "data": {
+    "sentiment": "positive",
+    "score": 0.62288,
+    "articles_analyzed": 10,
+    "retrieval_timestamp": "2025-07-15T14:56:10.558454+00:00",
+    "latest_news_timestamp": "2024-12-31T21:13:00+00:00",
+    "news_age_minutes": 281863,
+    "symbol": "META",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:56:11.156693+00:00",
+  "data_type": "sentiment_data",
+  "identifier": "META",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "aa5b7adafb5a035422a6caf64c537e17",
+  "expiration_minutes": 30,
+  "kwargs": {}
+}

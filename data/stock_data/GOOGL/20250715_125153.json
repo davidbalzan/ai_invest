@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T12:51:53.101661+00:00",
+  "symbol": "GOOGL",
+  "current_price": 181.55999755859375,
+  "cost_basis": 174.6,
+  "quantity": 1.0,
+  "current_value": 181.55999755859375,
+  "total_cost": 174.6,
+  "profit_loss": 6.959997558593756,
+  "profit_loss_percent": 3.9862528972472826,
+  "technical": {
+    "rsi": 75.50638358574452,
+    "ma_20": 174.9719985961914,
+    "ma_50": 169.98208312988282,
+    "macd": 2.6029712416080883,
+    "signal": 2.292581790144835
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.46682000000000007,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis shows a strong bullish momentum with the RSI at 75.51 and MACD above the signal line. The positive news sentiment also supports a hold position. Considering the risk management thresholds and current portfolio performance, it may be advisable to hold onto the existing shares for now. However, closely monitor the stock for any signs of reversal or volatility.\n[AI Analysis: 12:51:37 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "MEDIUM"
+  }
+}

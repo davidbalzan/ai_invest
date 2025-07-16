@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T12:21:50.439316+00:00",
+  "symbol": "INTC",
+  "current_price": 23.299999237060547,
+  "cost_basis": 20.92,
+  "quantity": 2.1,
+  "current_value": 48.92999839782715,
+  "total_cost": 43.932,
+  "profit_loss": 4.997998397827146,
+  "profit_loss_percent": 11.376669393214845,
+  "technical": {
+    "rsi": 63.79084188378238,
+    "ma_20": 22.228999900817872,
+    "ma_50": 21.331799926757814,
+    "macd": 0,
+    "signal": 0
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0,
+    "articles_analyzed": 0
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis indicates a positive trend with the stock trading above both the 20-day and 50-day moving averages, along with a strong MACD signal. The positive news sentiment also supports a hold position. However, with a relatively high RSI, there may be some near-term overbought conditions to consider. Given the risk management thresholds, it may be prudent to hold onto existing shares and consider taking profit if the stock reaches the 20% threshold.",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

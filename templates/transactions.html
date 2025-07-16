@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Transactions - {{ portfolio.name }}{% endblock %}
+
+{% block breadcrumb_items %}
+<span>▶</span>
+<a href="/portfolio/{{ portfolio.id }}">💼 {{ portfolio.name }}</a>
+<span>▶</span>
+<span class="current">💳 Transactions</span>
+{% endblock %}
+
+{% block page_title %}💳 Transactions{% endblock %}
+{% block page_subtitle %}{{ portfolio.name }} - Complete transaction history{% endblock %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <a href="/portfolio/{{ portfolio.id }}/analysis" class="btn btn-primary">📈 Run Analysis</a>
+    <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">💼 Back to Portfolio</a>
+    <a href="/dashboard" class="btn btn-secondary">🏠 Dashboard</a>
+</div>
+{% endblock %}
+
+{% block status_indicator %}
+<span class="status-indicator status-live">💳 {{ transactions|length }} Records</span>
+{% endblock %}
+
+{% block content %}
+<!-- Portfolio Info -->
+<div class="card">
+    <h2>📊 Portfolio: {{ portfolio.name }}</h2>
+    <p>{{ portfolio.description or "View all transactions for this portfolio" }}</p>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{ transactions|length }}</div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">${{ "%.2f"|format(portfolio.total_value) }}</div>
+            <div class="stat-label">Current Value</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">${{ "%.2f"|format(portfolio.cash_balance) }}</div>
+            <div class="stat-label">Cash Balance</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ portfolio.created_at.strftime('%Y-%m-%d') }}</div>
+            <div class="stat-label">Created</div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Filters -->
+<div class="card">
+    <h2>🔍 Filter Transactions</h2>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+        <button onclick="filterTransactions('all')" class="btn btn-secondary filter-btn active" data-filter="all">All</button>
+        <button onclick="filterTransactions('BUY')" class="btn btn-secondary filter-btn" data-filter="BUY">Buys</button>
+        <button onclick="filterTransactions('SELL')" class="btn btn-secondary filter-btn" data-filter="SELL">Sells</button>
+        <button onclick="filterTransactions('DIVIDEND')" class="btn btn-secondary filter-btn" data-filter="DIVIDEND">Dividends</button>
+        <button onclick="filterTransactions('SPLIT')" class="btn btn-secondary filter-btn" data-filter="SPLIT">Splits</button>
+    </div>
+</div>
+
+<!-- All Transactions -->
+{% if transactions %}
+<div class="card">
+    <h2>💰 Transaction History</h2>
+    <div class="table-responsive">
+        <table class="table" id="transactions-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Symbol</th>
+                    <th>Type</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Total Amount</th>
+                    <th>Fees</th>
+                    <th>Settlement Date</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr class="transaction-row" data-type="{{ transaction.transaction_type }}">
+                    <td>{{ transaction.transaction_date.strftime('%Y-%m-%d') }}</td>
+                    <td><strong>{{ transaction.symbol }}</strong></td>
+                    <td>
+                        <span class="badge {{ 'positive' if transaction.transaction_type == 'BUY' else 'negative' if transaction.transaction_type == 'SELL' else 'neutral' if transaction.transaction_type == 'DIVIDEND' else '' }}">
+                            {{ transaction.transaction_type }}
+                        </span>
+                    </td>
+                    <td>{{ "%.6f"|format(transaction.shares or 0) }}</td>
+                    <td>${{ "%.4f"|format(transaction.price or 0) }}</td>
+                    <td class="{{ 'negative' if transaction.transaction_type == 'BUY' else 'positive' if transaction.transaction_type in ['SELL', 'DIVIDEND'] else '' }}">
+                        ${{ "%.2f"|format(transaction.total_amount or 0) }}
+                    </td>
+                    <td>${{ "%.2f"|format(transaction.fees or 0) }}</td>
+                    <td>
+                        {% if transaction.settlement_date %}
+                            {{ transaction.settlement_date.strftime('%Y-%m-%d') }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.notes or "" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Transaction Summary -->
+    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+        <h3>📈 Transaction Summary</h3>
+        <div class="stats-grid">
+            {% set buy_transactions = transactions | selectattr("transaction_type", "equalto", "BUY") | list %}
+            {% set sell_transactions = transactions | selectattr("transaction_type", "equalto", "SELL") | list %}
+            {% set dividend_transactions = transactions | selectattr("transaction_type", "equalto", "DIVIDEND") | list %}
+            
+            <div class="stat-item">
+                <div class="stat-value positive">{{ buy_transactions|length }}</div>
+                <div class="stat-label">Buy Orders</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value negative">{{ sell_transactions|length }}</div>
+                <div class="stat-label">Sell Orders</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value neutral">{{ dividend_transactions|length }}</div>
+                <div class="stat-label">Dividends</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">
+                    ${{ "%.2f"|format(buy_transactions | sum(attribute="total_amount") or 0) }}
+                </div>
+                <div class="stat-label">Total Invested</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <h2>💰 No Transactions</h2>
+    <div class="alert alert-info">
+        <p>This portfolio doesn't have any transactions yet.</p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="card">
+    <h2>⚡ Quick Actions</h2>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="/portfolio/{{ portfolio.id }}" class="btn">📊 Portfolio Details</a>
+        <a href="/analysis/{{ portfolio.id }}" class="btn btn-secondary">🔬 Run Analysis</a>
+        <a href="/dashboard" class="btn btn-secondary">🏠 Back to Dashboard</a>
+        <a href="/api/docs" class="btn btn-secondary" target="_blank">📚 API Docs</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.table-responsive {
+    overflow-x: auto;
+}
+
+.transaction-row {
+    transition: opacity 0.3s ease;
+}
+
+.transaction-row.hidden {
+    display: none;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    background: #4a5568;
+}
+
+.badge.positive {
+    background: #38a169;
+}
+
+.badge.negative {
+    background: #e53e3e;
+}
+
+.badge.neutral {
+    background: #3182ce;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.filter-btn.active {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.stat-value {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-value.neutral {
+    color: #3182ce;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    background: rgba(72, 187, 120, 0.1);
+    border: 1px solid rgba(72, 187, 120, 0.3);
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function filterTransactions(type) {
+    const rows = document.querySelectorAll('.transaction-row');
+    const buttons = document.querySelectorAll('.filter-btn');
+    
+    // Remove active class from all buttons
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+    
+    // Show/hide rows based on filter
+    rows.forEach(row => {
+        if (type === 'all' || row.dataset.type === type) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %} 

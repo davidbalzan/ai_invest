@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis for GOOGL shows a strong upside trend with the stock trading above both the 20-day and 50-day moving averages. The RSI is slightly overbought but not at extreme levels yet. The positive news sentiment also supports holding onto the stock. However, with a P&L of +4.59%, it may be a good idea to monitor the stock closely and potentially sell if it approaches the take profit threshold of 20%.\n[AI Analysis: 14:31:58 UTC]",
+  "cached_at": "2025-07-15T14:32:00.640367+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "aa38ab3bc6a92e84796620ed5d1ce45d",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 182.61810302734375,
+    "rsi": 75.10144539446368,
+    "sentiment": "positive",
+    "sentiment_score": 0.46682000000000007,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 174.6,
+    "quantity": 1.0
+  }
+}

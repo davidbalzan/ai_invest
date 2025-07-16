@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical indicators show a bullish trend with the stock trading above both the 20-day and 50-day moving averages, and the RSI signaling overbought conditions. The news sentiment is positive with a moderately high sentiment score. With a current P&L of +4.81%, it may be prudent to hold onto the shares for now and closely monitor the stock's performance against the stop loss and take profit thresholds. Consider taking profits if the stock continues to rise or consider selling if it reverses and hits the stop loss threshold.\n[AI Analysis: 14:56:03 UTC]",
+  "cached_at": "2025-07-15T14:56:05.643993+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "3ace8068c22c5c7fba90008797dc1ab6",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 182.99000549316406,
+    "rsi": 75.39135876783138,
+    "sentiment": "positive",
+    "sentiment_score": 0.46682000000000007,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 174.6,
+    "quantity": 1.0
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 170.73129272460938,
+    "rsi": 81.61243106108878,
+    "ma_20": 155.50556564331055,
+    "ma_50": 141.8084959411621,
+    "macd": 7.360570529977309,
+    "signal": 6.7975446966095285,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-15T14:10:44.094712+00:00",
+    "calculation_timestamp": "2025-07-15T14:10:44.261859+00:00",
+    "symbol": "NVDA",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:10:44.261909+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "NVDA",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "2afdf35cc8e635195d13ff23b7c0a1d1",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 251,
+    "last_price": 170.73129272460938
+  }
+}

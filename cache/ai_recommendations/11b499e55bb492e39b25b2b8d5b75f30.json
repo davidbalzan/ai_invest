@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows a relatively stable price with an RSI at a neutral level and moving averages close to the current price. The positive news sentiment suggests a favorable outlook for the stock. With a stop-loss threshold of -10% and take-profit threshold of 20%, holding onto the shares at the current value could be a reasonable decision, especially considering the positive portfolio performance. However, investors could consider taking some profits if the stock continues to rise.\n[AI Analysis: 14:56:07 UTC]",
+  "cached_at": "2025-07-15T14:56:09.379737+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "11b499e55bb492e39b25b2b8d5b75f30",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 88.86000061035156,
+    "rsi": 53.699986495981975,
+    "sentiment": "positive",
+    "sentiment_score": 0.44528,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 82.3,
+    "quantity": 1.02
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T13:01:47.551087+00:00",
+  "symbol": "INTC",
+  "current_price": 23.299999237060547,
+  "cost_basis": 20.92,
+  "quantity": 2.1,
+  "current_value": 48.92999839782715,
+  "total_cost": 43.932,
+  "profit_loss": 4.997998397827146,
+  "profit_loss_percent": 11.376669393214845,
+  "technical": {
+    "rsi": 63.79084188378238,
+    "ma_20": 22.228999900817872,
+    "ma_50": 21.331799926757814,
+    "macd": 0.6660992201450036,
+    "signal": 0.557377946623939
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.20728,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - \nThe technical analysis shows that INTC is trading above both its 20-day and 50-day moving averages, with a relatively strong RSI. The positive news sentiment also suggests a favorable outlook. However, considering the data freshness and existing holdings, holding the shares for now would be prudent. Watch for any signs of a potential reversal in the technical indicators or a shift in sentiment before making a decision to buy or sell.\n[AI Analysis: 13:01:41 UTC]",
+    "recommendation_type": "BUY",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

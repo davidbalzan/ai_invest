@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - Based on the technical analysis, the current price is trading around the 20-day MA and the RSI is neutral, indicating a sideways trend. The positive news sentiment adds some support to the overall outlook. With a relatively small current holding, it may be prudent to hold and monitor for clearer buy or sell signals.\n\nThe risk management parameters suggest a -10.0% stop loss threshold, providing downside protection, and a 20.0% take profit threshold for potential gains. Given the current position is slightly in the green, holding allows for potential profit without taking on excessive risk.\n\nIf holding shares, consider setting a stop loss at -10.0% to protect gains and reassess the position as new data becomes available. Keep an eye on any significant changes in technical indicators or news sentiment for potential buying or selling opportunities.\n[AI Analysis: 14:56:11 UTC]",
+  "cached_at": "2025-07-15T14:56:15.268120+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "META",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "637a8d579c20f89e2b22284a54e2c82c",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 714.7999877929688,
+    "rsi": 51.26482377742807,
+    "sentiment": "positive",
+    "sentiment_score": 0.62288,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 674.31,
+    "quantity": 0.08
+  }
+}

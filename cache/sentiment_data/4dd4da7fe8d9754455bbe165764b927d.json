@@ -1,0 +1,19 @@
+{
+  "data": {
+    "sentiment": "positive",
+    "score": 0.18144,
+    "articles_analyzed": 10,
+    "retrieval_timestamp": "2025-07-15T14:56:22.367921+00:00",
+    "latest_news_timestamp": "2024-12-31T12:36:47+00:00",
+    "news_age_minutes": 282379,
+    "symbol": "RUM",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:56:23.202914+00:00",
+  "data_type": "sentiment_data",
+  "identifier": "RUM",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "4dd4da7fe8d9754455bbe165764b927d",
+  "expiration_minutes": 30,
+  "kwargs": {}
+}

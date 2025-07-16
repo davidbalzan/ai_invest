@@ -1,0 +1,2249 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - AI Investment Tool{% endblock %}
+
+{% block breadcrumb_items %}
+<li><a href="/dashboard">Dashboard</a></li>
+<li class="current">Settings</li>
+{% endblock %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <a href="/dashboard" class="btn btn-secondary">
+        <i class="icon">←</i>
+        Back to Dashboard
+    </a>
+    <button class="btn btn-primary" disabled>
+        <i class="icon">✎</i>
+        Edit Settings (Coming Soon)
+    </button>
+</div>
+{% endblock %}
+
+{% block status_indicator %}
+<div class="status-indicator">
+    <span class="status-dot status-info"></span>
+    <span>Read-Only Mode</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-header">
+        <h1>System Settings</h1>
+        <p class="settings-description">
+            Current environment configuration. These settings are read-only and loaded from environment variables.
+            <br><small>Future versions will allow editing selected settings through the web interface.</small>
+        </p>
+    </div>
+
+    <div class="settings-tabs">
+        <button class="tab-button active" onclick="showTab('api-config')">API Configuration</button>
+        <button class="tab-button" onclick="showTab('portfolio-config')">Portfolio Settings</button>
+        <button class="tab-button" onclick="showTab('portfolio-management')">Portfolio Management</button>
+        <button class="tab-button" onclick="showTab('backtesting')">Backtesting</button>
+        <button class="tab-button" onclick="showTab('market-config')">Market & Scheduling</button>
+        <button class="tab-button" onclick="showTab('cache-config')">Caching</button>
+        <button class="tab-button" onclick="showTab('risk-config')">Risk Management</button>
+        <button class="tab-button" onclick="showTab('notification-config')">Notifications</button>
+        <button class="tab-button" onclick="showTab('system-config')">System</button>
+    </div>
+
+    <!-- API Configuration -->
+    <div id="api-config" class="tab-content active">
+        <div class="settings-section">
+            <h2>API Configuration</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>OpenAI API Key</label>
+                    <div class="setting-value">
+                        <input type="password" value="{{ settings.OPENAI_API_KEY or 'Not configured' }}" readonly>
+                        <small>Required for AI analysis and recommendations</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Finnhub API Key</label>
+                    <div class="setting-value">
+                        <input type="password" value="{{ settings.FINNHUB_API_KEY or 'Not configured' }}" readonly>
+                        <small>Used for market sentiment analysis and news data</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Configuration -->
+    <div id="portfolio-config" class="tab-content">
+        <div class="settings-section">
+            <h2>Portfolio Configuration</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Portfolio Mode</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.PORTFOLIO_MODE else 'Disabled' }}" readonly>
+                        <small>Enable portfolio-based analysis</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Run Once Mode</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.RUN_ONCE_MODE else 'Disabled' }}" readonly>
+                        <small>Run analysis once instead of continuous monitoring</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Portfolio Holdings</label>
+                    <div class="setting-value">
+                        <textarea readonly rows="3">{{ settings.PORTFOLIO_HOLDINGS or 'Not configured' }}</textarea>
+                        <small>Format: SYMBOL:QUANTITY:COST_BASIS (comma-separated)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Management -->
+    <div id="portfolio-management" class="tab-content">
+        <div class="settings-section">
+            <h2>Portfolio Management</h2>
+            <p class="section-description">Create and manage multiple portfolios with different strategies and risk profiles.</p>
+            
+            <div class="portfolio-actions">
+                <button class="btn btn-primary" onclick="showCreatePortfolioForm()">
+                    <i class="icon">+</i>
+                    Create New Portfolio
+                </button>
+                <button class="btn btn-secondary" onclick="refreshPortfolios()">
+                    <i class="icon">↻</i>
+                    Refresh
+                </button>
+            </div>
+
+            <!-- Portfolio List -->
+            <div class="portfolio-list" id="portfolioList">
+                <div class="portfolio-item">
+                    <div class="portfolio-header">
+                        <h3>Loading portfolios...</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create/Edit Portfolio Form (Initially Hidden) -->
+            <div class="portfolio-form-container" id="portfolioFormContainer" style="display: none;">
+                <div class="portfolio-form">
+                    <h3 id="formTitle">Create New Portfolio</h3>
+                    <form id="portfolioForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="portfolioName">Portfolio Name*</label>
+                                <input type="text" id="portfolioName" name="name" required placeholder="e.g., Retirement Fund, Growth Portfolio">
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolioDescription">Description</label>
+                                <textarea id="portfolioDescription" name="description" rows="2" placeholder="Brief description of this portfolio's purpose"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="portfolioStrategy">Investment Strategy*</label>
+                                <select id="portfolioStrategy" name="strategy" required>
+                                    <option value="">Select Strategy</option>
+                                    <option value="conservative_growth">Conservative Growth</option>
+                                    <option value="balanced_growth">Balanced Growth</option>
+                                    <option value="aggressive_growth">Aggressive Growth</option>
+                                </select>
+                                <small>Strategy determines risk tolerance and investment approach</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolioRiskLevel">Risk Level*</label>
+                                <select id="portfolioRiskLevel" name="risk_level" required>
+                                    <option value="">Select Risk Level</option>
+                                    <option value="low">Low Risk (1-3)</option>
+                                    <option value="moderate">Moderate Risk (4-6)</option>
+                                    <option value="high">High Risk (7-10)</option>
+                                </select>
+                                <small>Risk level affects position sizing and stop-loss settings</small>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="portfolioCashBalance">Initial Cash Balance</label>
+                                <input type="number" id="portfolioCashBalance" name="cash_balance" step="0.01" min="0" placeholder="0.00">
+                                <small>Starting cash amount for this portfolio</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolioMaxPosition">Max Position Size (%)</label>
+                                <input type="number" id="portfolioMaxPosition" name="max_position_percent" step="0.1" min="0.1" max="100" placeholder="10.0">
+                                <small>Maximum percentage of portfolio for single position</small>
+                            </div>
+                        </div>
+
+                        <!-- Risk Management Settings -->
+                        <div class="risk-settings">
+                            <h4>Risk Management Settings</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="portfolioStopLoss">Stop Loss (%)</label>
+                                    <input type="number" id="portfolioStopLoss" name="stop_loss_percent" step="0.1" placeholder="-10.0">
+                                    <small>Automatic stop loss trigger (negative value)</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="portfolioTakeProfit">Take Profit (%)</label>
+                                    <input type="number" id="portfolioTakeProfit" name="take_profit_percent" step="0.1" placeholder="20.0">
+                                    <small>Automatic profit taking trigger</small>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="portfolioDailyLimit">Daily Loss Limit ($)</label>
+                                    <input type="number" id="portfolioDailyLimit" name="daily_loss_limit" step="1" min="0" placeholder="500">
+                                    <small>Maximum daily loss before trading halt</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="portfolioRebalanceFreq">Rebalance Frequency</label>
+                                    <select id="portfolioRebalanceFreq" name="rebalance_frequency">
+                                        <option value="never">Never</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly" selected>Monthly</option>
+                                        <option value="quarterly">Quarterly</option>
+                                    </select>
+                                    <small>How often to rebalance this portfolio</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <span id="submitText">Create Portfolio</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelPortfolioForm()">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Backtesting -->
+    <div id="backtesting" class="tab-content">
+        <div class="settings-section">
+            <h2>Backtesting & Strategy Validation</h2>
+            <p class="section-description">
+                Validate investment strategies using historical data and AI analysis results. 
+                Test different approaches and compare performance metrics to optimize your investment decisions.
+            </p>
+
+            <div class="backtesting-nav">
+                <button class="btn btn-secondary bt-nav-btn active" onclick="showBacktestSection('run-backtest')">
+                    📊 Run Backtest
+                </button>
+                <button class="btn btn-secondary bt-nav-btn" onclick="showBacktestSection('analysis-history')">
+                    📚 Analysis History
+                </button>
+                <button class="btn btn-secondary bt-nav-btn" onclick="showBacktestSection('strategy-comparison')">
+                    ⚖️ Strategy Comparison
+                </button>
+                <button class="btn btn-secondary bt-nav-btn" onclick="showBacktestSection('performance-metrics')">
+                    📈 Performance Metrics
+                </button>
+            </div>
+
+            <!-- Run Backtest Section -->
+            <div id="run-backtest" class="backtest-section active">
+                <h3>Configure Backtest</h3>
+                <form id="backtestForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="backtestPortfolio">Portfolio</label>
+                            <select id="backtestPortfolio" name="portfolio_id" required>
+                                <option value="">Select Portfolio</option>
+                            </select>
+                            <small>Portfolio to backtest strategies against</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="backtestStrategy">Strategy</label>
+                            <select id="backtestStrategy" name="strategy" required>
+                                <option value="">Select Strategy</option>
+                                <option value="conservative_growth">Conservative Growth</option>
+                                <option value="balanced_growth">Balanced Growth</option>
+                                <option value="aggressive_growth">Aggressive Growth</option>
+                                <option value="current_strategy">Current Portfolio Strategy</option>
+                            </select>
+                            <small>Investment strategy to test</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="backtestStartDate">Start Date</label>
+                            <input type="date" id="backtestStartDate" name="start_date" required>
+                            <small>Beginning of backtest period</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="backtestEndDate">End Date</label>
+                            <input type="date" id="backtestEndDate" name="end_date" required>
+                            <small>End of backtest period</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="backtestCapital">Initial Capital</label>
+                            <input type="number" id="backtestCapital" name="initial_capital" step="0.01" min="1000" value="10000" required>
+                            <small>Starting capital for backtest</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="backtestBenchmark">Benchmark</label>
+                            <select id="backtestBenchmark" name="benchmark">
+                                <option value="SPY">S&P 500 (SPY)</option>
+                                <option value="QQQ">NASDAQ 100 (QQQ)</option>
+                                <option value="IWM">Russell 2000 (IWM)</option>
+                                <option value="VTI">Total Stock Market (VTI)</option>
+                            </select>
+                            <small>Benchmark for performance comparison</small>
+                        </div>
+                    </div>
+
+                    <div class="advanced-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="includeAISignals" name="include_ai_signals" checked>
+                            Include AI Trading Signals
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="includeSentiment" name="include_sentiment" checked>
+                            Include Sentiment Analysis
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="includeTransactionCosts" name="include_transaction_costs">
+                            Include Transaction Costs
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="enableRebalancing" name="enable_rebalancing">
+                            Enable Portfolio Rebalancing
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            🚀 Run Backtest
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="loadQuickBacktest()">
+                            ⚡ Quick Test (Last 30 Days)
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Backtest Results -->
+                <div id="backtestResults" class="backtest-results" style="display: none;">
+                    <h3>Backtest Results</h3>
+                    <div class="results-summary">
+                        <div class="metric-card">
+                            <div class="metric-label">Total Return</div>
+                            <div class="metric-value" id="totalReturn">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Annualized Return</div>
+                            <div class="metric-value" id="annualizedReturn">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Max Drawdown</div>
+                            <div class="metric-value" id="maxDrawdown">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Sharpe Ratio</div>
+                            <div class="metric-value" id="sharpeRatio">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Win Rate</div>
+                            <div class="metric-value" id="winRate">-</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Total Trades</div>
+                            <div class="metric-value" id="totalTrades">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-chart">
+                        <canvas id="backtestChart" width="800" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analysis History Section -->
+            <div id="analysis-history" class="backtest-section">
+                <h3>Historical Analysis Data</h3>
+                <div class="analysis-filters">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="historyPortfolio">Portfolio</label>
+                            <select id="historyPortfolio" name="portfolio_id">
+                                <option value="">All Portfolios</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="historyDateRange">Date Range</label>
+                            <select id="historyDateRange" name="date_range">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 90 days</option>
+                                <option value="365">Last year</option>
+                                <option value="all">All time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="analysisType">Analysis Type</label>
+                            <select id="analysisType" name="analysis_type">
+                                <option value="">All Types</option>
+                                <option value="comprehensive">Comprehensive</option>
+                                <option value="quick">Quick Analysis</option>
+                                <option value="sentiment">Sentiment Analysis</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="loadAnalysisHistory()">
+                        🔍 Load Analysis History
+                    </button>
+                </div>
+
+                <div id="analysisHistoryList" class="analysis-history-list">
+                    <div class="loading-message">Click "Load Analysis History" to view historical data</div>
+                </div>
+            </div>
+
+            <!-- Strategy Comparison Section -->
+            <div id="strategy-comparison" class="backtest-section">
+                <h3>Strategy Performance Comparison</h3>
+                <div class="comparison-setup">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="comparisonPortfolio">Portfolio</label>
+                            <select id="comparisonPortfolio" name="portfolio_id">
+                                <option value="">Select Portfolio</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="comparisonPeriod">Comparison Period</label>
+                            <select id="comparisonPeriod" name="period">
+                                <option value="30">Last 30 days</option>
+                                <option value="90" selected>Last 90 days</option>
+                                <option value="180">Last 6 months</option>
+                                <option value="365">Last year</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="strategy-selection">
+                        <h4>Select Strategies to Compare</h4>
+                        <div class="strategy-checkboxes">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="conservative_growth" checked>
+                                Conservative Growth
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="balanced_growth" checked>
+                                Balanced Growth
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="aggressive_growth" checked>
+                                Aggressive Growth
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="buy_and_hold">
+                                Buy & Hold
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="runStrategyComparison()">
+                        📊 Compare Strategies
+                    </button>
+                </div>
+
+                <div id="comparisonResults" class="comparison-results" style="display: none;">
+                    <div class="comparison-chart">
+                        <canvas id="comparisonChart" width="800" height="400"></canvas>
+                    </div>
+                    <div id="comparisonTable" class="comparison-table"></div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Section -->
+            <div id="performance-metrics" class="backtest-section">
+                <h3>Detailed Performance Metrics</h3>
+                <div class="metrics-dashboard">
+                    <div class="metric-category">
+                        <h4>Return Metrics</h4>
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <span class="metric-name">Total Return:</span>
+                                <span class="metric-detail" id="detailTotalReturn">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Annualized Return:</span>
+                                <span class="metric-detail" id="detailAnnualizedReturn">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">CAGR:</span>
+                                <span class="metric-detail" id="detailCAGR">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-category">
+                        <h4>Risk Metrics</h4>
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <span class="metric-name">Volatility:</span>
+                                <span class="metric-detail" id="detailVolatility">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Max Drawdown:</span>
+                                <span class="metric-detail" id="detailMaxDrawdown">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Beta:</span>
+                                <span class="metric-detail" id="detailBeta">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-category">
+                        <h4>Risk-Adjusted Returns</h4>
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <span class="metric-name">Sharpe Ratio:</span>
+                                <span class="metric-detail" id="detailSharpeRatio">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Sortino Ratio:</span>
+                                <span class="metric-detail" id="detailSortinoRatio">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Calmar Ratio:</span>
+                                <span class="metric-detail" id="detailCalmarRatio">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-category">
+                        <h4>Trading Statistics</h4>
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <span class="metric-name">Total Trades:</span>
+                                <span class="metric-detail" id="detailTotalTrades">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Win Rate:</span>
+                                <span class="metric-detail" id="detailWinRate">-</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-name">Avg Win/Loss:</span>
+                                <span class="metric-detail" id="detailAvgWinLoss">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market & Scheduling Configuration -->
+    <div id="market-config" class="tab-content">
+        <div class="settings-section">
+            <h2>Market & Scheduling Configuration</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Market Timezone</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.MARKET_TIMEZONE or 'America/New_York' }}" readonly>
+                        <small>Timezone for market hours calculation</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Strategic Scheduling</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.ENABLE_STRATEGIC_SCHEDULING else 'Disabled' }}" readonly>
+                        <small>Enable intelligent analysis scheduling</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Scheduling Strategy</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.SCHEDULING_STRATEGY or 'balanced' }}" readonly>
+                        <small>Analysis frequency strategy: aggressive, balanced, or conservative</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Schedule Time</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.SCHEDULE_TIME or '09:00' }}" readonly>
+                        <small>Default daily analysis time</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Immediate Analysis</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.RUN_IMMEDIATE_ANALYSIS else 'Disabled' }}" readonly>
+                        <small>Run analysis immediately based on market session</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Auto-Detect Analysis Type</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.AUTO_DETECT_ANALYSIS_TYPE else 'Disabled' }}" readonly>
+                        <small>Automatically detect best analysis type for current time</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Caching Configuration -->
+    <div id="cache-config" class="tab-content">
+        <div class="settings-section">
+            <h2>Caching Configuration</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Enable Caching</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.ENABLE_CACHING else 'Disabled' }}" readonly>
+                        <small>Enable intelligent caching system to reduce API costs</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Cache Directory</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.CACHE_DIRECTORY or 'cache' }}" readonly>
+                        <small>Directory for cache files</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Cleanup on Start</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.CACHE_CLEANUP_ON_START else 'Disabled' }}" readonly>
+                        <small>Clean expired cache files on startup</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Show Stats on Start</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.CACHE_STATS_ON_START else 'Disabled' }}" readonly>
+                        <small>Display cache statistics on startup</small>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Market Hours Cache Policies (minutes)</h3>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Stock Data (Market Hours)</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.CACHE_STOCK_DATA_MARKET_HOURS or '5' }}" readonly>
+                        <small>Cache duration during market hours (9:30 AM - 4:00 PM ET)</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Sentiment (Market Hours)</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.CACHE_SENTIMENT_MARKET_HOURS or '30' }}" readonly>
+                        <small>Sentiment data cache during market hours</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>AI Recommendations (Market Hours)</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.CACHE_AI_RECOMMENDATIONS_MARKET_HOURS or '10' }}" readonly>
+                        <small>AI analysis cache during market hours</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Management -->
+    <div id="risk-config" class="tab-content">
+        <div class="settings-section">
+            <h2>Risk Management</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Stop Loss Percentage</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.STOP_LOSS_PERCENT or '-10.0' }}%" readonly>
+                        <small>Automatic stop loss trigger percentage</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Take Profit Percentage</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.TAKE_PROFIT_PERCENT or '20.0' }}%" readonly>
+                        <small>Automatic profit taking trigger percentage</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Max Position Size</label>
+                    <div class="setting-value">
+                        <input type="text" value="${{ settings.MAX_POSITION_SIZE or '1000' }}" readonly>
+                        <small>Maximum position size per trade</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Daily Loss Limit</label>
+                    <div class="setting-value">
+                        <input type="text" value="${{ settings.DAILY_LOSS_LIMIT or '500' }}" readonly>
+                        <small>Maximum daily loss limit</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>RSI Oversold Level</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.RSI_OVERSOLD or '30' }}" readonly>
+                        <small>RSI level indicating oversold conditions</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>RSI Overbought Level</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.RSI_OVERBOUGHT or '70' }}" readonly>
+                        <small>RSI level indicating overbought conditions</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification-config" class="tab-content">
+        <div class="settings-section">
+            <h2>Notification Settings</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Enable Notifications</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.ENABLE_NOTIFICATIONS else 'Disabled' }}" readonly>
+                        <small>Enable system notifications</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Notification Type</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.NOTIFICATION_TYPE or 'none' }}" readonly>
+                        <small>Notification method: discord, slack, email, or none</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Discord Webhook URL</label>
+                    <div class="setting-value">
+                        <input type="password" value="{{ settings.DISCORD_WEBHOOK_URL or 'Not configured' }}" readonly>
+                        <small>Discord webhook for notifications</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Slack Channel</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.SLACK_CHANNEL or 'Not configured' }}" readonly>
+                        <small>Slack channel for notifications</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Email SMTP Server</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.EMAIL_SMTP_SERVER or 'Not configured' }}" readonly>
+                        <small>SMTP server for email notifications</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Configuration -->
+    <div id="system-config" class="tab-content">
+        <div class="settings-section">
+            <h2>System Configuration</h2>
+            <div class="settings-grid">
+                <div class="setting-item">
+                    <label>Database URL</label>
+                    <div class="setting-value">
+                        <input type="password" value="{{ settings.DATABASE_URL or 'Not configured' }}" readonly>
+                        <small>PostgreSQL database connection string</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Debug Mode</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.DEBUG else 'Disabled' }}" readonly>
+                        <small>Enable debug logging and verbose output</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Report Output Directory</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ settings.REPORT_OUTPUT_DIR or 'reports' }}" readonly>
+                        <small>Directory for generated reports</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Generate PDF Reports</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.GENERATE_PDF_REPORTS else 'Disabled' }}" readonly>
+                        <small>Generate PDF versions of analysis reports</small>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label>Include Individual Charts</label>
+                    <div class="setting-value">
+                        <input type="text" value="{{ 'Enabled' if settings.INCLUDE_INDIVIDUAL_CHARTS else 'Disabled' }}" readonly>
+                        <small>Include individual stock charts in reports</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.settings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.settings-header {
+    margin-bottom: 30px;
+}
+
+.settings-header h1 {
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.settings-description {
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.tab-button {
+    padding: 12px 20px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color-light);
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.settings-section {
+    background: var(--card-background);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.settings-section h2 {
+    color: var(--text-color);
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.settings-section h3 {
+    color: var(--text-color);
+    margin: 30px 0 15px 0;
+    font-size: 16px;
+    font-weight: 600;
+    border-top: 1px solid var(--border-color);
+    padding-top: 20px;
+}
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.setting-item label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.setting-value input,
+.setting-value textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--input-background);
+    color: var(--text-color);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.setting-value input[type="password"] {
+    font-family: monospace;
+    letter-spacing: 2px;
+}
+
+.setting-value input:focus,
+.setting-value textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.setting-value input[readonly],
+.setting-value textarea[readonly] {
+    background: var(--background-secondary);
+    cursor: not-allowed;
+}
+
+.setting-value small {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.page-actions .btn[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Portfolio Management Styles */
+.section-description {
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.portfolio-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-color-dark);
+}
+
+.btn-secondary {
+    background: var(--background-secondary);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.portfolio-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.portfolio-item {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+}
+
+.portfolio-item:hover {
+    border-color: var(--primary-color-light);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.portfolio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.portfolio-header h3 {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.portfolio-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.portfolio-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.portfolio-meta-item .label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.portfolio-meta-item .value {
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.strategy-badge {
+    display: inline-flex;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.strategy-conservative {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.strategy-balanced {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.strategy-aggressive {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.risk-indicator {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.risk-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border-color);
+}
+
+.risk-dot.active.low {
+    background: #28a745;
+}
+
+.risk-dot.active.moderate {
+    background: #ffc107;
+}
+
+.risk-dot.active.high {
+    background: #dc3545;
+}
+
+.portfolio-actions-mini {
+    display: flex;
+    gap: 8px;
+}
+
+.portfolio-form-container {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.portfolio-form {
+    background: var(--card-background);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.portfolio-form h3 {
+    color: var(--text-color);
+    margin: 0 0 24px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--input-background);
+    color: var(--text-color);
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group small {
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.risk-settings {
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.risk-settings h4 {
+    color: var(--text-color);
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .settings-tabs {
+        overflow-x: auto;
+    }
+    
+    .tab-button {
+        white-space: nowrap;
+        min-width: 120px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .portfolio-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .portfolio-meta {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .portfolio-actions-mini {
+        width: 100%;
+    }
+    
+    .portfolio-form {
+        margin: 10px;
+        padding: 24px;
+    }
+}
+
+/* Backtesting Styles */
+.backtesting-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.bt-nav-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    border: 1px solid var(--border-color);
+    background: var(--card-background);
+    color: var(--text-secondary);
+}
+
+.bt-nav-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.backtest-section {
+    display: none;
+}
+
+.backtest-section.active {
+    display: block;
+}
+
+.advanced-options {
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--background-secondary);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.backtest-results {
+    margin-top: 32px;
+    padding: 24px;
+    background: var(--card-background);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.results-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.metric-card {
+    padding: 16px;
+    background: var(--background-secondary);
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.metric-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.metric-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.results-chart {
+    margin-top: 24px;
+    padding: 16px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.analysis-filters {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--card-background);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.analysis-history-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+}
+
+.analysis-item {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s ease;
+}
+
+.analysis-item:hover {
+    background: var(--background-secondary);
+}
+
+.analysis-item:last-child {
+    border-bottom: none;
+}
+
+.analysis-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.analysis-title {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.analysis-details {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.analysis-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-small {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.comparison-setup {
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--card-background);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.strategy-selection {
+    margin-top: 20px;
+}
+
+.strategy-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.comparison-results {
+    margin-top: 24px;
+}
+
+.comparison-chart {
+    margin-bottom: 24px;
+    padding: 16px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+.comparison-table {
+    overflow-x: auto;
+}
+
+.comparison-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-background);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.comparison-table th {
+    background: var(--background-secondary);
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.metrics-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.metric-category {
+    padding: 20px;
+    background: var(--card-background);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.metric-category h4 {
+    margin: 0 0 16px 0;
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.metric-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.metric-name {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.metric-detail {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.loading-message {
+    padding: 40px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .backtesting-nav {
+        flex-direction: column;
+    }
+    
+    .bt-nav-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .results-summary {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .strategy-checkboxes {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-dashboard {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function showTab(tabId) {
+    // Hide all tab contents
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    
+    // Show selected tab content
+    document.getElementById(tabId).classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+    
+    // Load portfolios if switching to portfolio management tab
+    if (tabId === 'portfolio-management') {
+        loadPortfolios();
+    }
+    
+    // Load portfolios for backtesting if switching to backtesting tab
+    if (tabId === 'backtesting') {
+        loadPortfoliosForBacktesting();
+    }
+}
+
+// Portfolio Management Functions
+let currentEditingPortfolio = null;
+
+async function loadPortfolios() {
+    const portfolioList = document.getElementById('portfolioList');
+    portfolioList.innerHTML = '<div class="portfolio-item"><div class="portfolio-header"><h3>Loading portfolios...</h3></div></div>';
+    
+    try {
+        const response = await fetch('/api/portfolios');
+        const portfolios = await response.json();
+        
+        if (portfolios.length === 0) {
+            portfolioList.innerHTML = `
+                <div class="portfolio-item">
+                    <div class="portfolio-header">
+                        <h3>No portfolios found</h3>
+                    </div>
+                    <p>Create your first portfolio to get started with investment tracking and analysis.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        portfolioList.innerHTML = portfolios.map(portfolio => renderPortfolioItem(portfolio)).join('');
+    } catch (error) {
+        console.error('Error loading portfolios:', error);
+        portfolioList.innerHTML = `
+            <div class="portfolio-item">
+                <div class="portfolio-header">
+                    <h3>Error loading portfolios</h3>
+                </div>
+                <p>Please check your connection and try again.</p>
+            </div>
+        `;
+    }
+}
+
+function renderPortfolioItem(portfolio) {
+    const strategy = portfolio.strategy || 'balanced_growth';
+    const riskLevel = portfolio.risk_level || 'moderate';
+    const strategyDisplay = strategy.replace('_', ' ');
+    const cashBalance = portfolio.cash_balance || 0;
+    const totalValue = portfolio.total_value || 0;
+    
+    // Create risk indicator dots
+    const riskDots = Array.from({length: 10}, (_, i) => {
+        let active = false;
+        let riskClass = '';
+        
+        if (riskLevel === 'low' && i < 3) {
+            active = true;
+            riskClass = 'low';
+        } else if (riskLevel === 'moderate' && i >= 3 && i < 6) {
+            active = true;
+            riskClass = 'moderate';
+        } else if (riskLevel === 'high' && i >= 6) {
+            active = true;
+            riskClass = 'high';
+        }
+        
+        return `<div class="risk-dot ${active ? 'active ' + riskClass : ''}"></div>`;
+    }).join('');
+    
+    return `
+        <div class="portfolio-item">
+            <div class="portfolio-header">
+                <div>
+                    <h3>${portfolio.name}</h3>
+                    <p style="margin: 4px 0; color: var(--text-secondary); font-size: 14px;">${portfolio.description || 'No description'}</p>
+                </div>
+                <div class="portfolio-actions-mini">
+                    <button class="btn btn-secondary" onclick="editPortfolio('${portfolio.id}')">
+                        <i class="icon">✎</i>
+                        Edit
+                    </button>
+                    <button class="btn btn-danger" onclick="deletePortfolio('${portfolio.id}', '${portfolio.name}')">
+                        <i class="icon">🗑</i>
+                        Delete
+                    </button>
+                </div>
+            </div>
+            
+            <div class="portfolio-meta">
+                <div class="portfolio-meta-item">
+                    <div class="label">Strategy</div>
+                    <div class="value">
+                        <span class="strategy-badge strategy-${strategy.split('_')[0]}">${strategyDisplay}</span>
+                    </div>
+                </div>
+                <div class="portfolio-meta-item">
+                    <div class="label">Risk Level</div>
+                    <div class="value">
+                        <div class="risk-indicator">${riskDots}</div>
+                    </div>
+                </div>
+                <div class="portfolio-meta-item">
+                    <div class="label">Cash Balance</div>
+                    <div class="value">$${Number(cashBalance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                </div>
+                <div class="portfolio-meta-item">
+                    <div class="label">Total Value</div>
+                    <div class="value">$${Number(totalValue).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                </div>
+                <div class="portfolio-meta-item">
+                    <div class="label">Holdings</div>
+                    <div class="value">${portfolio.holdings_count || 0} positions</div>
+                </div>
+                <div class="portfolio-meta-item">
+                    <div class="label">Created</div>
+                    <div class="value">${new Date(portfolio.created_at).toLocaleDateString()}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function showCreatePortfolioForm() {
+    currentEditingPortfolio = null;
+    document.getElementById('formTitle').textContent = 'Create New Portfolio';
+    document.getElementById('submitText').textContent = 'Create Portfolio';
+    document.getElementById('portfolioForm').reset();
+    document.getElementById('portfolioFormContainer').style.display = 'flex';
+}
+
+async function editPortfolio(portfolioId) {
+    try {
+        const response = await fetch(`/api/portfolios/${portfolioId}`);
+        const portfolio = await response.json();
+        
+        currentEditingPortfolio = portfolioId;
+        document.getElementById('formTitle').textContent = 'Edit Portfolio';
+        document.getElementById('submitText').textContent = 'Update Portfolio';
+        
+        // Populate form with portfolio data
+        document.getElementById('portfolioName').value = portfolio.name || '';
+        document.getElementById('portfolioDescription').value = portfolio.description || '';
+        document.getElementById('portfolioStrategy').value = portfolio.strategy || '';
+        document.getElementById('portfolioRiskLevel').value = portfolio.risk_level || '';
+        document.getElementById('portfolioCashBalance').value = portfolio.cash_balance || '';
+        document.getElementById('portfolioMaxPosition').value = portfolio.max_position_percent || '';
+        document.getElementById('portfolioStopLoss').value = portfolio.stop_loss_percent || '';
+        document.getElementById('portfolioTakeProfit').value = portfolio.take_profit_percent || '';
+        document.getElementById('portfolioDailyLimit').value = portfolio.daily_loss_limit || '';
+        document.getElementById('portfolioRebalanceFreq').value = portfolio.rebalance_frequency || 'monthly';
+        
+        document.getElementById('portfolioFormContainer').style.display = 'flex';
+    } catch (error) {
+        console.error('Error loading portfolio for editing:', error);
+        alert('Error loading portfolio details. Please try again.');
+    }
+}
+
+async function deletePortfolio(portfolioId, portfolioName) {
+    if (!confirm(`Are you sure you want to delete the portfolio "${portfolioName}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/portfolios/${portfolioId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            await loadPortfolios();
+        } else {
+            const error = await response.json();
+            alert(`Error deleting portfolio: ${error.detail || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error deleting portfolio:', error);
+        alert('Error deleting portfolio. Please try again.');
+    }
+}
+
+function cancelPortfolioForm() {
+    document.getElementById('portfolioFormContainer').style.display = 'none';
+    currentEditingPortfolio = null;
+}
+
+function refreshPortfolios() {
+    loadPortfolios();
+}
+
+// Handle portfolio form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const portfolioForm = document.getElementById('portfolioForm');
+    if (portfolioForm) {
+        portfolioForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(portfolioForm);
+            const portfolioData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                strategy: formData.get('strategy'),
+                risk_level: formData.get('risk_level'),
+                cash_balance: parseFloat(formData.get('cash_balance')) || 0,
+                max_position_percent: parseFloat(formData.get('max_position_percent')) || null,
+                stop_loss_percent: parseFloat(formData.get('stop_loss_percent')) || null,
+                take_profit_percent: parseFloat(formData.get('take_profit_percent')) || null,
+                daily_loss_limit: parseFloat(formData.get('daily_loss_limit')) || null,
+                rebalance_frequency: formData.get('rebalance_frequency')
+            };
+            
+            try {
+                const url = currentEditingPortfolio 
+                    ? `/api/portfolios/${currentEditingPortfolio}`
+                    : '/api/portfolios';
+                
+                const method = currentEditingPortfolio ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(portfolioData)
+                });
+                
+                if (response.ok) {
+                    cancelPortfolioForm();
+                    await loadPortfolios();
+                } else {
+                    const error = await response.json();
+                    alert(`Error ${currentEditingPortfolio ? 'updating' : 'creating'} portfolio: ${error.detail || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error submitting portfolio form:', error);
+                alert('Error submitting form. Please try again.');
+            }
+        });
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('portfolioFormContainer').addEventListener('click', function(e) {
+        if (e.target === this) {
+            cancelPortfolioForm();
+        }
+    });
+    
+    // Backtest form submission
+    const backtestForm = document.getElementById('backtestForm');
+    if (backtestForm) {
+        backtestForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await runBacktest();
+        });
+    }
+    
+    // Set default dates for backtesting
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    const startDateInput = document.getElementById('backtestStartDate');
+    const endDateInput = document.getElementById('backtestEndDate');
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.value = thirtyDaysAgo.toISOString().split('T')[0];
+        endDateInput.value = today.toISOString().split('T')[0];
+    }
+});
+
+// Backtesting Functions
+function showBacktestSection(sectionId) {
+    // Hide all backtest sections
+    document.querySelectorAll('.backtest-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Remove active class from all nav buttons
+    document.querySelectorAll('.bt-nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(sectionId).classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+    
+    // Load data for specific sections
+    if (sectionId === 'analysis-history') {
+        loadAnalysisHistory();
+    } else if (sectionId === 'performance-metrics') {
+        loadPerformanceMetrics();
+    }
+}
+
+async function loadPortfoliosForBacktesting() {
+    try {
+        const response = await fetch('/api/portfolios');
+        const portfolios = await response.json();
+        
+        // Populate all portfolio dropdowns
+        const portfolioSelects = [
+            'backtestPortfolio',
+            'historyPortfolio', 
+            'comparisonPortfolio'
+        ];
+        
+        portfolioSelects.forEach(selectId => {
+            const select = document.getElementById(selectId);
+            if (select) {
+                // Clear existing options except the first one
+                while (select.children.length > 1) {
+                    select.removeChild(select.lastChild);
+                }
+                
+                // Add portfolio options
+                portfolios.forEach(portfolio => {
+                    const option = document.createElement('option');
+                    option.value = portfolio.id;
+                    option.textContent = portfolio.name;
+                    select.appendChild(option);
+                });
+            }
+        });
+    } catch (error) {
+        console.error('Error loading portfolios for backtesting:', error);
+    }
+}
+
+async function runBacktest() {
+    const form = document.getElementById('backtestForm');
+    const formData = new FormData(form);
+    const resultsDiv = document.getElementById('backtestResults');
+    
+    // Show loading state
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<h3>Running Backtest...</h3><p>This may take a few moments...</p>';
+    
+    try {
+        const backtestData = {
+            portfolio_id: formData.get('portfolio_id'),
+            strategy: formData.get('strategy'),
+            start_date: formData.get('start_date'),
+            end_date: formData.get('end_date'),
+            initial_capital: parseFloat(formData.get('initial_capital')),
+            benchmark: formData.get('benchmark'),
+            include_ai_signals: formData.get('include_ai_signals') === 'on',
+            include_sentiment: formData.get('include_sentiment') === 'on',
+            include_transaction_costs: formData.get('include_transaction_costs') === 'on',
+            enable_rebalancing: formData.get('enable_rebalancing') === 'on'
+        };
+        
+        const response = await fetch('/api/backtesting/run', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(backtestData)
+        });
+        
+        if (response.ok) {
+            const results = await response.json();
+            displayBacktestResults(results);
+        } else {
+            const error = await response.json();
+            resultsDiv.innerHTML = `<h3>Backtest Failed</h3><p>Error: ${error.detail || 'Unknown error'}</p>`;
+        }
+    } catch (error) {
+        console.error('Error running backtest:', error);
+        resultsDiv.innerHTML = '<h3>Backtest Failed</h3><p>Please check your connection and try again.</p>';
+    }
+}
+
+function displayBacktestResults(results) {
+    const resultsDiv = document.getElementById('backtestResults');
+    
+    // Update metric cards
+    document.getElementById('totalReturn').textContent = `${results.total_return.toFixed(2)}%`;
+    document.getElementById('annualizedReturn').textContent = `${results.annualized_return.toFixed(2)}%`;
+    document.getElementById('maxDrawdown').textContent = `${results.max_drawdown.toFixed(2)}%`;
+    document.getElementById('sharpeRatio').textContent = results.sharpe_ratio.toFixed(2);
+    document.getElementById('winRate').textContent = `${results.win_rate.toFixed(1)}%`;
+    document.getElementById('totalTrades').textContent = results.total_trades;
+    
+    // Color code metrics
+    const totalReturnEl = document.getElementById('totalReturn');
+    totalReturnEl.style.color = results.total_return >= 0 ? '#28a745' : '#dc3545';
+    
+    const annualizedReturnEl = document.getElementById('annualizedReturn');
+    annualizedReturnEl.style.color = results.annualized_return >= 0 ? '#28a745' : '#dc3545';
+    
+    // Create performance chart
+    drawBacktestChart(results.daily_returns, results.benchmark_returns);
+    
+    // Show results
+    resultsDiv.style.display = 'block';
+}
+
+function drawBacktestChart(portfolioReturns, benchmarkReturns) {
+    const canvas = document.getElementById('backtestChart');
+    const ctx = canvas.getContext('2d');
+    
+    // Simple chart implementation - in production you'd use Chart.js
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw placeholder chart
+    ctx.fillStyle = '#f8f9fa';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#666';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Portfolio Performance vs Benchmark', canvas.width / 2, canvas.height / 2);
+    ctx.fillText('(Chart.js integration recommended for production)', canvas.width / 2, canvas.height / 2 + 25);
+}
+
+async function loadQuickBacktest() {
+    // Set dates to last 30 days
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    document.getElementById('backtestStartDate').value = thirtyDaysAgo.toISOString().split('T')[0];
+    document.getElementById('backtestEndDate').value = today.toISOString().split('T')[0];
+    
+    // Run backtest if portfolio is selected
+    const portfolioSelect = document.getElementById('backtestPortfolio');
+    if (portfolioSelect.value) {
+        await runBacktest();
+    } else {
+        alert('Please select a portfolio first');
+    }
+}
+
+async function loadAnalysisHistory() {
+    const historyList = document.getElementById('analysisHistoryList');
+    const portfolioId = document.getElementById('historyPortfolio').value;
+    const dateRange = document.getElementById('historyDateRange').value;
+    const analysisType = document.getElementById('analysisType').value;
+    
+    historyList.innerHTML = '<div class="loading-message">Loading analysis history...</div>';
+    
+    try {
+        const params = new URLSearchParams();
+        if (portfolioId) params.append('portfolio_id', portfolioId);
+        if (dateRange !== 'all') params.append('days', dateRange);
+        if (analysisType) params.append('analysis_type', analysisType);
+        
+        const response = await fetch(`/api/analysis-sessions/history?${params}`);
+        const sessions = await response.json();
+        
+        if (sessions.length === 0) {
+            historyList.innerHTML = '<div class="loading-message">No analysis sessions found for the selected criteria.</div>';
+            return;
+        }
+        
+        historyList.innerHTML = sessions.map(session => renderAnalysisHistoryItem(session)).join('');
+    } catch (error) {
+        console.error('Error loading analysis history:', error);
+        historyList.innerHTML = '<div class="loading-message">Error loading analysis history. Please try again.</div>';
+    }
+}
+
+function renderAnalysisHistoryItem(session) {
+    const date = new Date(session.started_at).toLocaleDateString();
+    const time = new Date(session.started_at).toLocaleTimeString();
+    const hasRawData = session.market_data_snapshot || session.ai_recommendations;
+    
+    return `
+        <div class="analysis-item">
+            <div class="analysis-meta">
+                <div class="analysis-title">${session.analysis_type} - ${session.portfolio_name || 'Portfolio'}</div>
+                <div class="analysis-details">
+                    ${date} at ${time} • ${session.status} • ${session.execution_time_ms || 0}ms
+                    ${hasRawData ? '• Raw data available' : '• No raw data'}
+                </div>
+            </div>
+            <div class="analysis-actions">
+                ${hasRawData ? `<button class="btn btn-small btn-primary" onclick="viewAnalysisData('${session.id}')">View Data</button>` : ''}
+                ${hasRawData ? `<button class="btn btn-small btn-secondary" onclick="useForBacktest('${session.id}')">Use for Backtest</button>` : ''}
+                ${session.report_path ? `<button class="btn btn-small btn-secondary" onclick="viewReport('${session.report_path}')">View Report</button>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+async function viewAnalysisData(sessionId) {
+    try {
+        const response = await fetch(`/api/analysis-sessions/${sessionId}/raw-data`);
+        const data = await response.json();
+        
+        // Create a modal or new window to display the raw data
+        const dataWindow = window.open('', '_blank', 'width=800,height=600');
+        dataWindow.document.write(`
+            <html>
+                <head><title>Analysis Data - ${sessionId}</title></head>
+                <body>
+                    <h2>Raw Analysis Data</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                </body>
+            </html>
+        `);
+    } catch (error) {
+        console.error('Error viewing analysis data:', error);
+        alert('Error loading analysis data');
+    }
+}
+
+async function useForBacktest(sessionId) {
+    // Switch to run-backtest section and pre-populate with session data
+    showBacktestSection('run-backtest');
+    
+    try {
+        const response = await fetch(`/api/analysis-sessions/${sessionId}`);
+        const session = await response.json();
+        
+        // Pre-populate form with session data
+        document.getElementById('backtestPortfolio').value = session.portfolio_id;
+        
+        // Set date range around the analysis date
+        const analysisDate = new Date(session.started_at);
+        const startDate = new Date(analysisDate);
+        startDate.setDate(analysisDate.getDate() - 30);
+        const endDate = new Date(analysisDate);
+        endDate.setDate(analysisDate.getDate() + 1);
+        
+        document.getElementById('backtestStartDate').value = startDate.toISOString().split('T')[0];
+        document.getElementById('backtestEndDate').value = endDate.toISOString().split('T')[0];
+        
+        // Enable AI signals since we have the data
+        document.getElementById('includeAISignals').checked = true;
+        document.getElementById('includeSentiment').checked = true;
+        
+        alert('Backtest form populated with analysis session data. Review settings and run backtest.');
+    } catch (error) {
+        console.error('Error using session for backtest:', error);
+        alert('Error loading session data');
+    }
+}
+
+function viewReport(reportPath) {
+    window.open(`/reports/${reportPath}`, '_blank');
+}
+
+async function runStrategyComparison() {
+    const portfolioId = document.getElementById('comparisonPortfolio').value;
+    const period = document.getElementById('comparisonPeriod').value;
+    
+    if (!portfolioId) {
+        alert('Please select a portfolio');
+        return;
+    }
+    
+    // Get selected strategies
+    const selectedStrategies = Array.from(document.querySelectorAll('.strategy-checkboxes input:checked'))
+        .map(cb => cb.value);
+    
+    if (selectedStrategies.length < 2) {
+        alert('Please select at least 2 strategies to compare');
+        return;
+    }
+    
+    const resultsDiv = document.getElementById('comparisonResults');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '<p>Running strategy comparison...</p>';
+    
+    try {
+        const response = await fetch('/api/backtesting/compare-strategies', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                portfolio_id: portfolioId,
+                strategies: selectedStrategies,
+                period_days: parseInt(period)
+            })
+        });
+        
+        if (response.ok) {
+            const results = await response.json();
+            displayStrategyComparison(results);
+        } else {
+            const error = await response.json();
+            resultsDiv.innerHTML = `<p>Error: ${error.detail || 'Unknown error'}</p>`;
+        }
+    } catch (error) {
+        console.error('Error running strategy comparison:', error);
+        resultsDiv.innerHTML = '<p>Error running comparison. Please try again.</p>';
+    }
+}
+
+function displayStrategyComparison(results) {
+    const resultsDiv = document.getElementById('comparisonResults');
+    
+    // Draw comparison chart
+    drawComparisonChart(results.strategy_performance);
+    
+    // Create comparison table
+    const tableHtml = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Strategy</th>
+                    <th>Total Return</th>
+                    <th>Annualized Return</th>
+                    <th>Max Drawdown</th>
+                    <th>Sharpe Ratio</th>
+                    <th>Win Rate</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${results.strategy_performance.map(strategy => `
+                    <tr>
+                        <td>${strategy.name}</td>
+                        <td style="color: ${strategy.total_return >= 0 ? '#28a745' : '#dc3545'}">${strategy.total_return.toFixed(2)}%</td>
+                        <td>${strategy.annualized_return.toFixed(2)}%</td>
+                        <td>${strategy.max_drawdown.toFixed(2)}%</td>
+                        <td>${strategy.sharpe_ratio.toFixed(2)}</td>
+                        <td>${strategy.win_rate.toFixed(1)}%</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    document.getElementById('comparisonTable').innerHTML = tableHtml;
+    resultsDiv.style.display = 'block';
+}
+
+function drawComparisonChart(strategies) {
+    const canvas = document.getElementById('comparisonChart');
+    const ctx = canvas.getContext('2d');
+    
+    // Simple chart placeholder
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#f8f9fa';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#666';
+    ctx.font = '16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Strategy Performance Comparison Chart', canvas.width / 2, canvas.height / 2);
+    ctx.fillText('(Chart.js integration recommended)', canvas.width / 2, canvas.height / 2 + 25);
+}
+
+async function loadPerformanceMetrics() {
+    // Load detailed performance metrics from the last backtest
+    // This would typically load from the most recent backtest results
+    // For now, show placeholder data
+    
+    const metrics = {
+        totalReturn: '12.5%',
+        annualizedReturn: '15.2%',
+        cagr: '14.8%',
+        volatility: '18.3%',
+        maxDrawdown: '-8.7%',
+        beta: '1.15',
+        sharpeRatio: '0.85',
+        sortinoRatio: '1.12',
+        calmarRatio: '1.7',
+        totalTrades: '24',
+        winRate: '62.5%',
+        avgWinLoss: '1.8'
+    };
+    
+    // Update metric displays
+    Object.keys(metrics).forEach(key => {
+        const element = document.getElementById(`detail${key.charAt(0).toUpperCase() + key.slice(1)}`);
+        if (element) {
+            element.textContent = metrics[key];
+            
+            // Color code returns and ratios
+            if (key.includes('Return') || key.includes('Ratio')) {
+                const value = parseFloat(metrics[key]);
+                if (!isNaN(value)) {
+                    element.style.color = value >= 0 ? '#28a745' : '#dc3545';
+                }
+            }
+        }
+    });
+}
+</script>
+{% endblock %} 

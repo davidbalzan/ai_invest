@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - Although the technical indicators are slightly bearish with the stock trading below both its 20-day and 50-day moving averages, the RSI suggests it is not yet oversold. The positive sentiment in the news coupled with a modest profit from current holdings should warrant holding onto the shares for now. Keep a close eye on the stop loss threshold to manage risk effectively.\n[AI Analysis: 14:56:23 UTC]",
+  "cached_at": "2025-07-15T14:56:24.833177+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "RUM",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "c5e232ecbd86e34748e09f1d55aa0b7c",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 8.944999694824219,
+    "rsi": 54.18501894184464,
+    "sentiment": "positive",
+    "sentiment_score": 0.18144,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 8.5,
+    "quantity": 3.0
+  }
+}

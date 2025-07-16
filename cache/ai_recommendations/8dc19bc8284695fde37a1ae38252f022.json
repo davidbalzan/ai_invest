@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows that GOOGL is currently overbought with a high RSI, indicating a possible short-term correction. However, the overall positive news sentiment suggests a positive outlook for the stock. With a small profit already realized and a relatively tight stop loss threshold, it may be prudent to hold the current position and monitor for potential opportunities to increase or exit the position in line with risk management parameters.\n[AI Analysis: 15:09:55 UTC]",
+  "cached_at": "2025-07-15T15:09:58.394037+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "8dc19bc8284695fde37a1ae38252f022",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 183.36700439453125,
+    "rsi": 75.67843462026784,
+    "sentiment": "positive",
+    "sentiment_score": 0.46682000000000007,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 174.6,
+    "quantity": 1.0
+  }
+}

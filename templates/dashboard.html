@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Investment Tool{% endblock %}
+{% block page_title %}📊 Portfolio Dashboard{% endblock %}
+{% block page_subtitle %}Real-time portfolio performance and analytics{% endblock %}
+
+{% block page_actions %}
+{% if current_portfolio %}
+<div class="page-actions">
+    <a href="/portfolio/{{ current_portfolio.id }}/analysis" class="btn btn-primary">📈 Run Analysis</a>
+    <a href="/portfolio/{{ current_portfolio.id }}" class="btn btn-secondary">💼 View Portfolio</a>
+    <a href="/portfolio/{{ current_portfolio.id }}/transactions" class="btn btn-secondary">💳 Transactions</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block status_indicator %}
+{% if portfolio_summary and portfolio_summary.cache_info %}
+    {% if portfolio_summary.cache_info.fresh_data %}
+    <span class="status-indicator status-live">🟢 Live Data</span>
+    {% else %}
+    <span class="status-indicator status-cached">🟡 Cached</span>
+    {% endif %}
+{% else %}
+<span class="status-indicator status-live">🟢 Live</span>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- User Info -->
+{% if user %}
+<div class="card">
+    <h2>Welcome back, {{ user.first_name or user.username }}! 👋</h2>
+    <p>Last updated: {{ user.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+</div>
+{% endif %}
+
+<!-- Portfolio Overview -->
+{% if portfolio_summary %}
+<div class="card">
+    <h2>💼 {{ portfolio_summary.portfolio.name }}</h2>
+    <p>{{ portfolio_summary.portfolio.description or "Main investment portfolio" }}</p>
+    
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value positive">${{ portfolio_summary.summary.total_value | round(2) }}</div>
+            <div class="stat-label">Total Value</div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-value">${{ portfolio_summary.summary.total_invested | round(2) }}</div>
+            <div class="stat-label">Total Invested</div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-value {{ 'positive' if portfolio_summary.summary.total_return_amount > 0 else 'negative' }}">
+                ${{ portfolio_summary.summary.total_return_amount | round(2) }}
+            </div>
+            <div class="stat-label">Total Return</div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-value {{ 'positive' if portfolio_summary.summary.total_return_percent > 0 else 'negative' }}">
+                {{ portfolio_summary.summary.total_return_percent | round(2) }}%
+            </div>
+            <div class="stat-label">Return %</div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-value">{{ portfolio_summary.holdings | length }}</div>
+            <div class="stat-label">Holdings</div>
+        </div>
+        
+        <div class="stat-item">
+            <div class="stat-value">${{ portfolio_summary.portfolio.cash_balance | round(2) }}</div>
+            <div class="stat-label">Cash Balance</div>
+        </div>
+    </div>
+</div>
+
+<!-- Holdings Summary -->
+<div class="card">
+    <h2>📈 Current Holdings</h2>
+    {% if portfolio_summary.holdings %}
+    <div class="table-container" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <thead>
+                <tr style="background-color: rgba(102, 126, 234, 0.1);">
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Symbol</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Shares</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Avg Cost</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Current Price</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Market Value</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Gain/Loss</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Return %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for holding in portfolio_summary.holdings %}
+                <tr style="border-bottom: 1px solid rgba(102, 126, 234, 0.1);">
+                    <td style="padding: 12px;"><strong>{{ holding.symbol }}</strong></td>
+                    <td style="padding: 12px;">{{ holding.shares }}</td>
+                    <td style="padding: 12px;">${{ holding.average_cost | round(2) }}</td>
+                    <td style="padding: 12px;">
+                        {% if holding.current_price %}
+                            ${{ holding.current_price | round(2) }}
+                        {% else %}
+                            <span style="color: #6c757d;">Not available</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if holding.current_price %}
+                            ${{ (holding.shares * holding.current_price) | round(2) }}
+                        {% else %}
+                            <span style="color: #6c757d;">--</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if holding.current_price %}
+                            {% set gain_loss = (holding.shares * holding.current_price) - (holding.shares * holding.average_cost) %}
+                            <span class="{{ 'positive' if gain_loss > 0 else 'negative' }}">
+                                ${{ gain_loss | round(2) }}
+                            </span>
+                        {% else %}
+                            <span style="color: #6c757d;">--</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        {% if holding.current_price %}
+                            {% set return_pct = ((holding.current_price - holding.average_cost) / holding.average_cost * 100) %}
+                            <span class="{{ 'positive' if return_pct > 0 else 'negative' }}">
+                                {{ return_pct | round(2) }}%
+                            </span>
+                        {% else %}
+                            <span style="color: #6c757d;">--</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: #6c757d; text-align: center; padding: 20px;">No holdings found. Add some positions to get started.</p>
+    {% endif %}
+</div>
+
+<!-- Analysis History -->
+{% if recent_analyses %}
+<div class="card">
+    <h2>📊 Recent Analysis History</h2>
+    <div class="table-container" style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+            <thead>
+                <tr style="background-color: rgba(102, 126, 234, 0.1);">
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Date</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Type</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Status</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid rgba(102, 126, 234, 0.1);">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for analysis in recent_analyses %}
+                <tr style="border-bottom: 1px solid rgba(102, 126, 234, 0.1);">
+                    <td style="padding: 12px;">
+                        {{ analysis.started_at.strftime('%Y-%m-%d %H:%M') if analysis.started_at else 'N/A' }}
+                    </td>
+                    <td style="padding: 12px;">{{ analysis.analysis_type.title() }}</td>
+                    <td style="padding: 12px;">
+                        {% if analysis.status == 'COMPLETED' %}
+                            <span class="positive">✅ {{ analysis.status }}</span>
+                        {% elif analysis.status == 'RUNNING' %}
+                            <span style="color: #ed8936;">🔄 {{ analysis.status }}</span>
+                        {% elif analysis.status == 'FAILED' %}
+                            <span class="negative">❌ {{ analysis.status }}</span>
+                        {% else %}
+                            <span class="neutral">⏳ {{ analysis.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px;">
+                        <a href="/portfolio/{{ current_portfolio.id }}/analysis/results/{{ analysis.id }}" 
+                           style="color: #667eea; text-decoration: none;">
+                            📊 View Results
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<!-- No Portfolio -->
+<div class="card">
+    <h2>Welcome to AI Investment Tool</h2>
+    <p>No portfolio found. Please set up your portfolio to get started with investment analysis.</p>
+    <div style="margin-top: 20px;">
+        <a href="/api/docs" class="btn btn-primary" target="_blank">📚 View API Documentation</a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+{% if current_portfolio %}
+<div class="card">
+    <h2>⚡ Quick Actions</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+        <a href="/portfolio/{{ current_portfolio.id }}/analysis" 
+           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.3s;"
+           onmouseover="this.style.transform='translateY(-2px)'" 
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 24px; margin-bottom: 8px;">📈</div>
+            <div style="font-weight: bold;">Run Analysis</div>
+            <div style="font-size: 14px; opacity: 0.9;">Get AI recommendations</div>
+        </a>
+        
+        <a href="/portfolio/{{ current_portfolio.id }}" 
+           style="background: linear-gradient(135deg, #48bb78 0%, #38b2ac 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.3s;"
+           onmouseover="this.style.transform='translateY(-2px)'" 
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 24px; margin-bottom: 8px;">💼</div>
+            <div style="font-weight: bold;">Portfolio Details</div>
+            <div style="font-size: 14px; opacity: 0.9;">View holdings & performance</div>
+        </a>
+        
+        <a href="/portfolio/{{ current_portfolio.id }}/transactions" 
+           style="background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.3s;"
+           onmouseover="this.style.transform='translateY(-2px)'" 
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 24px; margin-bottom: 8px;">💳</div>
+            <div style="font-weight: bold;">Transactions</div>
+            <div style="font-size: 14px; opacity: 0.9;">Transaction history</div>
+        </a>
+        
+        <a href="/api/docs" target="_blank"
+           style="background: linear-gradient(135deg, #6b46c1 0%, #553c9a 100%); color: white; padding: 20px; border-radius: 10px; text-decoration: none; text-align: center; transition: transform 0.3s;"
+           onmouseover="this.style.transform='translateY(-2px)'" 
+           onmouseout="this.style.transform='translateY(0)'">
+            <div style="font-size: 24px; margin-bottom: 8px;">📚</div>
+            <div style="font-weight: bold;">API Docs</div>
+            <div style="font-size: 14px; opacity: 0.9;">Developer resources</div>
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_head %}
+<style>
+.badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+</style>
+{% endblock %} 

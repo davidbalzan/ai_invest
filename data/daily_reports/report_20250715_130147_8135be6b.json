@@ -1,0 +1,330 @@
+{
+  "report_id": "report_20250715_130147_8135be6b",
+  "timestamp": "2025-07-15T13:01:47.551087+00:00",
+  "date": "2025-07-15",
+  "time": "13:01:47",
+  "metadata": {
+    "version": "2.2",
+    "analysis_type": "portfolio",
+    "total_symbols": 6,
+    "analysis_timestamp": "2025-07-15T13:01:47.551058+00:00",
+    "trading_window_status": "\ud83c\udf05 PRE-MARKET ACTIVE - Next market open in 25h 24m",
+    "trading_urgency": "HIGH",
+    "timing_context": "Pre-market Report",
+    "scheduled_analysis_type": "manual",
+    "market_session": "unknown",
+    "is_scheduled": false
+  },
+  "strategy": {
+    "name": "Balanced Growth",
+    "description": "Moderate-risk strategy balancing growth and stability with diversified portfolio",
+    "risk_profile": "Moderate",
+    "active": true,
+    "created_date": "2025-07-15T14:21:29.250112",
+    "last_modified": "2025-07-15T14:21:29.251458",
+    "risk_management": {
+      "stop_loss": "-10.0%",
+      "take_profit": "+20.0%",
+      "max_position_size": "15.0%",
+      "cash_reserve": "10.0%"
+    },
+    "technical_analysis": {
+      "rsi_thresholds": "30.0-70.0",
+      "moving_averages": [
+        20,
+        50
+      ],
+      "use_macd": true
+    },
+    "sentiment_analysis": {
+      "weight": "30.0%",
+      "min_buy_score": 0.1,
+      "min_articles": 5
+    },
+    "portfolio_management": {
+      "rebalancing": "weekly",
+      "auto_rebalancing": false,
+      "target_positions": 10
+    },
+    "performance_targets": {
+      "annual_return": "12.0%",
+      "max_drawdown": "-15.0%",
+      "sharpe_ratio": 1.0
+    }
+  },
+  "portfolio": {
+    "total_value": 566.9854044723511,
+    "total_invested": 516.9276,
+    "total_profit_loss": 50.05780447235111,
+    "total_return_percent": 9.683716727903697,
+    "position_count": 6,
+    "profitable_positions": 6,
+    "holdings_summary": {
+      "NVDA": {
+        "quantity": 0.98,
+        "cost_basis": 137.76
+      },
+      "GOOGL": {
+        "quantity": 1.0,
+        "cost_basis": 174.6
+      },
+      "NDAQ": {
+        "quantity": 1.02,
+        "cost_basis": 82.3
+      },
+      "META": {
+        "quantity": 0.08,
+        "cost_basis": 674.31
+      },
+      "INTC": {
+        "quantity": 2.1,
+        "cost_basis": 20.92
+      },
+      "RUM": {
+        "quantity": 3.0,
+        "cost_basis": 8.5
+      }
+    }
+  },
+  "stocks": {
+    "NVDA": {
+      "symbol": "NVDA",
+      "current_price": 164.07000732421875,
+      "cost_basis": 137.76,
+      "quantity": 0.98,
+      "current_value": 160.78860717773438,
+      "total_cost": 135.0048,
+      "profit_loss": 25.78380717773439,
+      "profit_loss_percent": 19.098437372400383,
+      "technical": {
+        "rsi": 79.98797875173088,
+        "ma_20": 154.06750106811523,
+        "ma_50": 140.6259150695801,
+        "macd": 6.954302636325565,
+        "signal": 6.656788238258576
+      },
+      "sentiment": {
+        "overall": "positive",
+        "score": 0.6592,
+        "articles_analyzed": 10
+      },
+      "ai_analysis": {
+        "recommendation": "RECOMMENDATION: HOLD - The technical indicators for NVDA show a bullish trend with the stock price above both the 20-day and 50-day moving averages, and a high RSI indicating overbought conditions. The positive news sentiment also suggests a favorable outlook for the stock. However, with a stop loss threshold of -10.0% and take profit threshold of 20.0%, current shareholders may consider taking some profits off the table while maintaining a portion of their position to ride out potential further upside.\n[AI Analysis: 13:01:23 UTC]",
+        "recommendation_type": "HOLD",
+        "confidence": 0
+      },
+      "risk": {
+        "volatility": 0,
+        "beta": 1.0,
+        "risk_level": "MEDIUM"
+      }
+    },
+    "GOOGL": {
+      "symbol": "GOOGL",
+      "current_price": 181.55999755859375,
+      "cost_basis": 174.6,
+      "quantity": 1.0,
+      "current_value": 181.55999755859375,
+      "total_cost": 174.6,
+      "profit_loss": 6.959997558593756,
+      "profit_loss_percent": 3.9862528972472826,
+      "technical": {
+        "rsi": 75.50638358574452,
+        "ma_20": 174.9719985961914,
+        "ma_50": 169.98208312988282,
+        "macd": 2.6029712416082873,
+        "signal": 2.2925817901450967
+      },
+      "sentiment": {
+        "overall": "positive",
+        "score": 0.46682000000000007,
+        "articles_analyzed": 10
+      },
+      "ai_analysis": {
+        "recommendation": "RECOMMENDATION: HOLD - The technical analysis shows that the stock is currently trading at a relatively high RSI, indicating overbought conditions, but also above both the 20-day and 50-day moving averages. The positive news sentiment further supports holding the position. With a positive profit and loss percentage, it may be prudent to continue holding the current shares, closely monitoring for any signs of a trend reversal.\n[AI Analysis: 13:01:27 UTC]",
+        "recommendation_type": "HOLD",
+        "confidence": 0
+      },
+      "risk": {
+        "volatility": 0,
+        "beta": 1.0,
+        "risk_level": "MEDIUM"
+      }
+    },
+    "NDAQ": {
+      "symbol": "NDAQ",
+      "current_price": 89.66000366210938,
+      "cost_basis": 82.3,
+      "quantity": 1.02,
+      "current_value": 91.45320373535156,
+      "total_cost": 83.946,
+      "profit_loss": 7.507203735351567,
+      "profit_loss_percent": 8.942896308759877,
+      "technical": {
+        "rsi": 63.833801735236335,
+        "ma_20": 88.3890007019043,
+        "ma_50": 84.41429946899414,
+        "macd": 1.6656602870734787,
+        "signal": 1.84748015183076
+      },
+      "sentiment": {
+        "overall": "positive",
+        "score": 0.44528,
+        "articles_analyzed": 10
+      },
+      "ai_analysis": {
+        "recommendation": "RECOMMENDATION: HOLD - The technical indicators suggest a bullish momentum with the RSI at a healthy level and MACD above the signal line. The positive news sentiment also adds support. However, with a relatively high stop loss threshold, it may be prudent to hold onto the shares for now and reassess as the price continues to fluctuate within the risk thresholds.\n[AI Analysis: 13:01:30 UTC]",
+        "recommendation_type": "HOLD",
+        "confidence": 0
+      },
+      "risk": {
+        "volatility": 0,
+        "beta": 1.0,
+        "risk_level": "LOW"
+      }
+    },
+    "META": {
+      "symbol": "META",
+      "current_price": 720.9199829101562,
+      "cost_basis": 674.31,
+      "quantity": 0.08,
+      "current_value": 57.6735986328125,
+      "total_cost": 53.944799999999994,
+      "profit_loss": 3.728798632812506,
+      "profit_loss_percent": 6.9122485073862645,
+      "technical": {
+        "rsi": 60.146798410532135,
+        "ma_20": 713.3152496337891,
+        "ma_50": 671.6138806152344,
+        "macd": 15.384902692457104,
+        "signal": 18.35118086219617
+      },
+      "sentiment": {
+        "overall": "positive",
+        "score": 0.62288,
+        "articles_analyzed": 10
+      },
+      "ai_analysis": {
+        "recommendation": "RECOMMENDATION: BUY - Technical indicators like the 20-day and 50-day moving averages showing an upward trend, along with a positive RSI and MACD, suggest bullish momentum for META. Additionally, the overall positive sentiment in news articles analyzed supports a potential uptrend. With a stop loss threshold at -10.0% and take profit at 20.0%, the risk/reward ratio seems favorable for a buy position. Consider adding to your current holdings or initiating a new position in META.\n[AI Analysis: 13:01:33 UTC]",
+        "recommendation_type": "BUY",
+        "confidence": 0
+      },
+      "risk": {
+        "volatility": 0,
+        "beta": 1.0,
+        "risk_level": "LOW"
+      }
+    },
+    "INTC": {
+      "symbol": "INTC",
+      "current_price": 23.299999237060547,
+      "cost_basis": 20.92,
+      "quantity": 2.1,
+      "current_value": 48.92999839782715,
+      "total_cost": 43.932,
+      "profit_loss": 4.997998397827146,
+      "profit_loss_percent": 11.376669393214845,
+      "technical": {
+        "rsi": 63.79084188378238,
+        "ma_20": 22.228999900817872,
+        "ma_50": 21.331799926757814,
+        "macd": 0.6660992201450036,
+        "signal": 0.557377946623939
+      },
+      "sentiment": {
+        "overall": "positive",
+        "score": 0.20728,
+        "articles_analyzed": 10
+      },
+      "ai_analysis": {
+        "recommendation": "RECOMMENDATION: HOLD - \nThe technical analysis shows that INTC is trading above both its 20-day and 50-day moving averages, with a relatively strong RSI. The positive news sentiment also suggests a favorable outlook. However, considering the data freshness and existing holdings, holding the shares for now would be prudent. Watch for any signs of a potential reversal in the technical indicators or a shift in sentiment before making a decision to buy or sell.\n[AI Analysis: 13:01:41 UTC]",
+        "recommendation_type": "BUY",
+        "confidence": 0
+      },
+      "risk": {
+        "volatility": 0,
+        "beta": 1.0,
+        "risk_level": "LOW"
+      }
+    },
+    "RUM": {
+      "symbol": "RUM",
+      "current_price": 8.859999656677246,
+      "cost_basis": 8.5,
+      "quantity": 3.0,
+      "current_value": 26.57999897003174,
+      "total_cost": 25.5,
+      "profit_loss": 1.0799989700317383,
+      "profit_loss_percent": 4.2352900785558365,
+      "technical": {
+        "rsi": 58.06450785922435,
+        "ma_20": 8.972999906539917,
+        "ma_50": 9.041999988555908,
+        "macd": 0.03425971164683084,
+        "signal": 0.04847572157011268
+      },
+      "sentiment": {
+        "overall": "positive",
+        "score": 0.18144,
+        "articles_analyzed": 10
+      },
+      "ai_analysis": {
+        "recommendation": "RECOMMENDATION: HOLD - The technical indicators show a slightly bearish trend with the 20-day and 50-day moving averages being below the current price. However, the RSI is in neutral territory, and the MACD is showing a slight uptrend. The positive news sentiment supports holding the position. With a small P&L gain and a risk management strategy in place, it may be prudent to hold onto your current position for now and reassess future developments.\n[AI Analysis: 13:01:45 UTC]",
+        "recommendation_type": "HOLD",
+        "confidence": 0
+      },
+      "risk": {
+        "volatility": 0,
+        "beta": 1.0,
+        "risk_level": "LOW"
+      }
+    }
+  },
+  "market_analysis": {
+    "sentiment_distribution": {
+      "positive": 6,
+      "neutral": 0,
+      "negative": 0
+    },
+    "technical_overview": {
+      "average_rsi": 66.88838537104176,
+      "overbought_count": 2,
+      "oversold_count": 0
+    },
+    "recommendations_summary": {
+      "buy_signals": 2,
+      "hold_signals": 4,
+      "sell_signals": 0
+    }
+  },
+  "performance": {
+    "best_performer": {
+      "symbol": "NVDA",
+      "return_percent": 19.098437372400383
+    },
+    "worst_performer": {
+      "symbol": "GOOGL",
+      "return_percent": 3.9862528972472826
+    },
+    "highest_rsi": {
+      "symbol": "NVDA",
+      "rsi": 79.98797875173088
+    },
+    "lowest_rsi": {
+      "symbol": "RUM",
+      "rsi": 58.06450785922435
+    },
+    "risk_alerts": [
+      {
+        "symbol": "NVDA",
+        "reason": "High RSI",
+        "value": 79.98797875173088
+      },
+      {
+        "symbol": "GOOGL",
+        "reason": "High RSI",
+        "value": 75.50638358574452
+      }
+    ]
+  }
+}

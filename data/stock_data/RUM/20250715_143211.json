@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:32:11.169975+00:00",
+  "symbol": "RUM",
+  "current_price": 8.9399995803833,
+  "cost_basis": 8.5,
+  "quantity": 3.0,
+  "current_value": 26.819998741149902,
+  "total_cost": 25.5,
+  "profit_loss": 1.3199987411499023,
+  "profit_loss_percent": 5.176465651568245,
+  "technical": {
+    "rsi": 54.11764243894872,
+    "ma_20": 8.987499904632568,
+    "ma_50": 9.065199975967408,
+    "macd": 0.02263586256938588,
+    "signal": 0.043307749769967326
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.18144,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis shows that the stock is currently trading near its 20-day and 50-day moving averages, with a neutral RSI and MACD. The positive news sentiment suggests potential upside, but the sentiment data is quite old. Considering your current portfolio context, it may be prudent to hold onto your existing shares for now and monitor for any significant developments before making a decision to buy or sell.\n[AI Analysis: 14:32:09 UTC]",
+    "recommendation_type": "BUY",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

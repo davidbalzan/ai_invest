@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:25:49.739601+00:00",
+  "symbol": "NDAQ",
+  "current_price": 89.37000274658203,
+  "cost_basis": 82.3,
+  "quantity": 1.02,
+  "current_value": 91.15740280151367,
+  "total_cost": 83.946,
+  "profit_loss": 7.211402801513671,
+  "profit_loss_percent": 8.590525816017049,
+  "technical": {
+    "rsi": 56.58587606140171,
+    "ma_20": 88.57800102233887,
+    "ma_50": 84.68363082885742,
+    "macd": 1.554137104595597,
+    "signal": 1.7888115406719098
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.44528,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical indicators for NDAQ show a positive trend with the stock currently trading above both the 20-day and 50-day moving averages, as well as a slightly bullish MACD. The news sentiment is also positive, indicating a favorable market outlook. Given the current risk management parameters and the stock's performance in the portfolio, it would be advisable to hold onto the shares for now. However, continue to monitor the stock closely for any potential profit-taking opportunities.\n[AI Analysis: 14:25:39 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

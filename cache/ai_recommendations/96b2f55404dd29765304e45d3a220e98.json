@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows that NDAQ is trading above both its 20-day and 50-day moving averages, with a positive MACD signal. The news sentiment is also positive, indicating a potentially favorable outlook. The risk management parameters suggest holding onto the current position to capture potential gains while maintaining a -10% stop loss threshold to protect against downside risk.\n[AI Analysis: 14:32:04 UTC]",
+  "cached_at": "2025-07-15T14:32:06.473469+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "96b2f55404dd29765304e45d3a220e98",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 89.20999908447266,
+    "rsi": 55.64764406101612,
+    "sentiment": "positive",
+    "sentiment_score": 0.44528,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 82.3,
+    "quantity": 1.02
+  }
+}

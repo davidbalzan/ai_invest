@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 23.398099899291992,
+    "rsi": 56.638127555643806,
+    "ma_20": 22.39190492630005,
+    "ma_50": 21.400161933898925,
+    "macd": 0.6603168266189741,
+    "signal": 0.5779657226229461,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-15T15:09:58.394792+00:00",
+    "calculation_timestamp": "2025-07-15T15:09:58.568104+00:00",
+    "symbol": "INTC",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T15:09:58.568149+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "INTC",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "86e1cad159456731300aa1d6bebc1626",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 251,
+    "last_price": 23.398099899291992
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical indicators for META suggest a neutral stance with the stock price hovering around the 20-day moving average and RSI indicating a moderate level of buying pressure. The overall positive sentiment in news articles also supports a hold position. However, it is important to closely monitor the stock for any significant fluctuations and adjust the stop loss threshold accordingly to protect profits. Consider taking profits if the stock reaches the take profit threshold.\n[AI Analysis: 14:32:02 UTC]",
+  "cached_at": "2025-07-15T14:32:04.223395+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "META",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "336534a65edfe03dbcffde4960e76dc7",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 715.1500244140625,
+    "rsi": 51.440012155772656,
+    "sentiment": "positive",
+    "sentiment_score": 0.62288,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 674.31,
+    "quantity": 0.08
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical indicators show a slightly bearish trend with the 20-day and 50-day moving averages being below the current price. However, the RSI is in neutral territory, and the MACD is showing a slight uptrend. The positive news sentiment supports holding the position. With a small P&L gain and a risk management strategy in place, it may be prudent to hold onto your current position for now and reassess future developments.\n[AI Analysis: 13:01:45 UTC]",
+  "cached_at": "2025-07-15T13:01:47.550699+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "RUM",
+  "market_session_when_cached": "pre_post_market",
+  "cache_key": "50911dffca244f219890b14121bb7825",
+  "expiration_minutes": 30,
+  "kwargs": {
+    "current_price": 8.859999656677246,
+    "rsi": 58.06450785922435,
+    "sentiment": "positive",
+    "sentiment_score": 0.18144,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-14",
+    "cost_basis": 8.5,
+    "quantity": 3.0
+  }
+}

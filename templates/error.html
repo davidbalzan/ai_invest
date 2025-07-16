@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Error - AI Investment Tool{% endblock %}
+
+{% block page_title %}❌ Error{% endblock %}
+{% block page_subtitle %}Something went wrong with your request{% endblock %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <a href="/dashboard" class="btn btn-primary">🏠 Go to Dashboard</a>
+    <a href="javascript:history.back()" class="btn btn-secondary">← Go Back</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>❌ Oops! Something went wrong</h2>
+    <p>{{ error_message or "An unexpected error occurred while processing your request." }}</p>
+    <div style="margin-top: 20px;">
+        <a href="/dashboard" class="btn btn-primary">🏠 Return to Dashboard</a>
+        <a href="javascript:history.back()" class="btn btn-secondary">← Go Back</a>
+    </div>
+</div>
+{% endblock %} 

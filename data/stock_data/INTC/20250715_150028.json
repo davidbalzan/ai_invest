@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T15:00:28.787819+00:00",
+  "symbol": "INTC",
+  "current_price": 23.364999771118164,
+  "cost_basis": 20.92,
+  "quantity": 2.1,
+  "current_value": 49.06649951934815,
+  "total_cost": 43.932,
+  "profit_loss": 5.134499519348147,
+  "profit_loss_percent": 11.687379403050501,
+  "technical": {
+    "rsi": 56.41227653937707,
+    "ma_20": 22.390249919891357,
+    "ma_50": 21.39949993133545,
+    "macd": 0.6576763605638263,
+    "signal": 0.5774376294119165
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.20728,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis indicates a slightly bullish trend with the stock price above its 20-day and 50-day moving averages, as well as a positive MACD signal. Additionally, the news sentiment is positive, albeit slightly outdated. With a P&L of 11.69% on current holdings, it may be a good idea to hold onto the shares for now, but keep a close eye on the stop loss and take profit thresholds for risk management.\n[AI Analysis: 14:57:31 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

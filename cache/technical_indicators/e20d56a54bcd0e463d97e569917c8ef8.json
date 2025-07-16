@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 88.86000061035156,
+    "rsi": 53.699986495981975,
+    "ma_20": 88.55250091552735,
+    "ma_50": 84.67343078613281,
+    "macd": 1.513453173654412,
+    "signal": 1.7806747544836727,
+    "data_timestamp": "1970-01-01T00:00:00.000000250",
+    "retrieval_timestamp": "2025-07-15T14:56:05.645629+00:00",
+    "calculation_timestamp": "2025-07-15T14:57:35.548716+00:00",
+    "symbol": "NDAQ",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:57:35.548759+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "e20d56a54bcd0e463d97e569917c8ef8",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "1970-01-01",
+    "data_length": 251,
+    "last_price": 88.86000061035156
+  }
+}

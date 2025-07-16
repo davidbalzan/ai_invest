@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:56:24.833903+00:00",
+  "symbol": "NVDA",
+  "current_price": 171.2550048828125,
+  "cost_basis": 137.76,
+  "quantity": 0.98,
+  "current_value": 167.82990478515626,
+  "total_cost": 135.0048,
+  "profit_loss": 32.82510478515627,
+  "profit_loss_percent": 24.31402793467808,
+  "technical": {
+    "rsi": 81.87528895293867,
+    "ma_20": 155.5317512512207,
+    "ma_50": 141.81897018432616,
+    "macd": 7.402348137875123,
+    "signal": 6.805900218181886
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.6592,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - Based on the technical analysis, NVDA is currently trading at a relatively high price with an overbought RSI, indicating a potential short-term pullback. However, the positive news sentiment and strong historical performance suggest a long-term positive outlook. \nConsidering the risk management parameters, it may be advisable to hold the current shares but monitor closely for any signs of a trend reversal. Consider taking profits if the stock reaches the take profit threshold or implementing a tighter stop loss to protect gains.\n[AI Analysis: 14:55:57 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "MEDIUM"
+  }
+}

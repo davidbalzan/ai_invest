@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 504.9100036621094,
+    "rsi": 68.70574440428757,
+    "ma_20": 493.3279998779297,
+    "ma_50": 470.8354345703125,
+    "macd": 10.529458950524656,
+    "signal": 11.222069686013318,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-15T14:10:43.551863+00:00",
+    "calculation_timestamp": "2025-07-15T14:10:43.912108+00:00",
+    "symbol": "MSFT",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:10:43.912153+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "MSFT",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "79c39b0751e5144df049c9e5506f3435",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 251,
+    "last_price": 504.9100036621094
+  }
+}

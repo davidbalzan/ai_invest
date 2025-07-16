@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - Intel (INTC) is currently trading above both its 20-day and 50-day moving averages, indicating a bullish trend. The RSI is neutral, suggesting the stock is not overbought. News sentiment is positive, but the sentiment data is quite old. Considering your current P&L and risk management thresholds, it may be best to hold onto your current shares for now and reevaluate as the market develops.\n[AI Analysis: 14:25:32 UTC]",
+  "cached_at": "2025-07-15T14:25:33.859334+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "INTC",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "bbdba9e7f3a9ffabca448355ff695cd0",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 23.520000457763672,
+    "rsi": 57.45008373580036,
+    "sentiment": "positive",
+    "sentiment_score": 0.20728,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 20.92,
+    "quantity": 2.1
+  }
+}

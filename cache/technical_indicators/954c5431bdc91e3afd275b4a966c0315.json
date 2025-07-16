@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 182.99000549316406,
+    "rsi": 75.39135876783138,
+    "ma_20": 175.38799896240235,
+    "ma_50": 170.4197839355469,
+    "macd": 2.871814488628644,
+    "signal": 2.408428329841597,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-15T14:55:59.469100+00:00",
+    "calculation_timestamp": "2025-07-15T14:56:01.478906+00:00",
+    "symbol": "GOOGL",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:56:01.478957+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "GOOGL",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "954c5431bdc91e3afd275b4a966c0315",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 251,
+    "last_price": 182.99000549316406
+  }
+}

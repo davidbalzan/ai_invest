@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows a relatively neutral position with the stock trading around its 20-day moving average. The positive news sentiment is a good sign, but the sentiment data is quite old. Given the current portfolio context with a modest profit, it may be prudent to hold on to the shares for now and closely monitor any changes in technical signals and news sentiment for potential future actions.\n[AI Analysis: 15:10:03 UTC]",
+  "cached_at": "2025-07-15T15:10:06.166088+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "de9e6e6370c7a6eeaf40e128a3d3e43f",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 88.94000244140625,
+    "rsi": 54.13306056212916,
+    "sentiment": "positive",
+    "sentiment_score": 0.44528,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 82.3,
+    "quantity": 1.02
+  }
+}

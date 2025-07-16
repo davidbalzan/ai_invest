@@ -1,0 +1,552 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio Analysis - {{ portfolio.name }}{% endblock %}
+
+{% block breadcrumb_items %}
+<span>▶</span>
+<a href="/portfolio/{{ portfolio.id }}">💼 {{ portfolio.name }}</a>
+<span>▶</span>
+<span class="current">📈 Analysis</span>
+{% endblock %}
+
+{% block page_title %}📈 Portfolio Analysis{% endblock %}
+{% block page_subtitle %}{{ portfolio.name }} - AI-powered investment analysis{% endblock %}
+
+{% block page_actions %}
+<div class="page-actions">
+    <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">💼 Back to Portfolio</a>
+    <a href="/dashboard" class="btn btn-secondary">🏠 Dashboard</a>
+</div>
+{% endblock %}
+
+{% block status_indicator %}
+{% if market_status %}
+    {% if market_status.current_session == 'MARKET_OPEN' %}
+    <span class="status-indicator status-live">🟢 Market Open</span>
+    {% else %}
+    <span class="status-indicator status-cached">🟡 {{ market_status.current_session.replace('_', ' ').title() }}</span>
+    {% endif %}
+{% else %}
+<span class="status-indicator status-live">🟢 Live</span>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Market Status -->
+<div class="card">
+    <h2>📊 Market Status</h2>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{ market_status.current_session.title() }}</div>
+            <div class="stat-label">Current Session</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ "Yes" if market_status.is_trading_day else "No" }}</div>
+            <div class="stat-label">Trading Day</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ market_status.market_timezone }}</div>
+            <div class="stat-label">Timezone</div>
+        </div>
+        {% if market_status.get('next_event') %}
+        <div class="stat-item">
+            <div class="stat-value">{{ market_status.time_to_next_event }}</div>
+            <div class="stat-label">{{ market_status.next_event }}</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Run Analysis -->
+<div class="card">
+    <h2>🚀 Run New Analysis</h2>
+    <p>Generate a comprehensive AI-powered analysis of your portfolio with current market data and sentiment analysis.</p>
+    
+    <!-- Analysis Controls -->
+    <div id="analysisControls" style="margin-top: 20px;">
+        <div class="form-group">
+            <label class="form-label" for="analysis_type">Analysis Type</label>
+            <select name="analysis_type" id="analysis_type" class="form-select">
+                <option value="comprehensive">Comprehensive Analysis</option>
+                <option value="quick">Quick Overview</option>
+                <option value="technical">Technical Analysis</option>
+                <option value="sentiment">Sentiment Analysis</option>
+            </select>
+        </div>
+        
+        <div class="alert alert-info" style="margin: 15px 0;">
+            <strong>Analysis Features:</strong>
+            <ul style="margin: 10px 0 0 20px;">
+                <li>Real-time stock data and technical indicators</li>
+                <li>AI-powered news sentiment analysis</li>
+                <li>Risk assessment and recommendations</li>
+                <li>PDF report generation with charts</li>
+                <li>Intelligent caching to minimize API costs</li>
+            </ul>
+        </div>
+        
+        <button type="button" id="startAnalysisBtn" class="btn" onclick="startAnalysis()">
+            🔍 Start Analysis
+        </button>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div id="analysisProgress" class="progress-container" style="display: none; margin-top: 20px;">
+        <div class="progress-header">
+            <h3 id="progressTitle">🔄 Starting Analysis...</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+        
+        <div class="progress-details">
+            <div class="progress-status" id="progressStatus">Initializing analysis session...</div>
+            <div class="progress-meta">
+                <span id="progressTime">Elapsed: 0s</span>
+                <span id="progressEta">ETA: Calculating...</span>
+            </div>
+        </div>
+        
+        <div class="progress-log" id="progressLog">
+            <div class="log-entry">📋 Analysis started</div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="analysisResults" style="display: none; margin-top: 20px;">
+        <div class="alert alert-success">
+            <h3>✅ Analysis Complete!</h3>
+            <p>Your portfolio analysis has been completed successfully.</p>
+            <a id="viewResultsBtn" href="#" class="btn" style="margin-top: 10px;">📊 View Results</a>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="analysisError" style="display: none; margin-top: 20px;">
+        <div class="alert alert-danger">
+            <h3>❌ Analysis Failed</h3>
+            <p id="errorMessage">An error occurred during analysis.</p>
+            <button class="btn btn-secondary" onclick="resetAnalysis()" style="margin-top: 10px;">🔄 Try Again</button>
+        </div>
+    </div>
+</div>
+
+<!-- Analysis History -->
+<div class="card">
+    <h2>📈 Analysis History</h2>
+    {% if analysis_history %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in analysis_history %}
+                    <tr>
+                        <td>
+                            {% if session.started_at %}
+                                {% if session.started_at is string %}
+                                    {{ session.started_at[:19].replace('T', ' ') }}
+                                {% else %}
+                                    {{ session.started_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-info">{{ session.analysis_type.title() }}</span>
+                        </td>
+                        <td>
+                            {% if session.status == 'COMPLETED' %}
+                                <span class="badge badge-success">✅ Completed</span>
+                            {% elif session.status == 'RUNNING' %}
+                                <span class="badge badge-warning">🔄 Running</span>
+                            {% elif session.status == 'FAILED' %}
+                                <span class="badge badge-error">❌ Failed</span>
+                            {% else %}
+                                <span class="badge">{{ session.status.title() }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if session.completed_at and session.started_at %}
+                                {% if session.completed_at is string and session.started_at is string %}
+                                    {% set completed_time = session.completed_at[:19] | strptime('%Y-%m-%dT%H:%M:%S') %}
+                                    {% set started_time = session.started_at[:19] | strptime('%Y-%m-%dT%H:%M:%S') %}
+                                    {% set duration = (completed_time - started_time).total_seconds() %}
+                                    {{ "%.1f" | format(duration) }}s
+                                {% elif session.completed_at is string or session.started_at is string %}
+                                    -
+                                {% else %}
+                                    {% set duration = (session.completed_at - session.started_at).total_seconds() %}
+                                    {{ "%.1f" | format(duration) }}s
+                                {% endif %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if session.status == 'COMPLETED' %}
+                                <a href="/portfolio/{{ portfolio.id }}/analysis/results/{{ session.id }}" class="btn btn-secondary">
+                                    📊 View Results
+                                </a>
+                            {% elif session.status == 'RUNNING' %}
+                                <span class="text-muted">In progress...</span>
+                            {% else %}
+                                <span class="text-muted">No results</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>No analysis history yet. Run your first analysis to get started!</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+    <h2>⚡ Quick Actions</h2>
+    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">
+            📊 View Portfolio
+        </a>
+        <a href="/api/analysis/market-status" target="_blank" class="btn btn-secondary">
+            🕐 Market Status API
+        </a>
+        <a href="/api/docs#/analysis" target="_blank" class="btn btn-secondary">
+            📚 Analysis API Docs
+        </a>
+    </div>
+</div>
+
+<style>
+.badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge-success {
+    background-color: rgba(72, 187, 120, 0.2);
+    color: #48bb78;
+}
+
+.badge-warning {
+    background-color: rgba(237, 137, 54, 0.2);
+    color: #ed8936;
+}
+
+.badge-error {
+    background-color: rgba(245, 101, 101, 0.2);
+    color: #f56565;
+}
+
+.badge-info {
+    background-color: rgba(102, 126, 234, 0.2);
+    color: #667eea;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.text-muted {
+    color: #718096;
+    font-style: italic;
+}
+
+/* Progress Tracking Styles */
+.progress-container {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-header {
+    margin-bottom: 15px;
+}
+
+.progress-header h3 {
+    color: #4fd1c7;
+    margin-bottom: 10px;
+}
+
+.progress-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(45deg, #4fd1c7, #38a169);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-details {
+    margin: 15px 0;
+}
+
+.progress-status {
+    color: #e2e8f0;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.progress-meta {
+    display: flex;
+    justify-content: space-between;
+    color: #a0aec0;
+    font-size: 0.9em;
+}
+
+.progress-log {
+    max-height: 150px;
+    overflow-y: auto;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85em;
+}
+
+.log-entry {
+    color: #e2e8f0;
+    margin: 2px 0;
+    padding: 2px 0;
+}
+
+.log-entry.success {
+    color: #68d391;
+}
+
+.log-entry.error {
+    color: #fc8181;
+}
+
+.log-entry.warning {
+    color: #f6e05e;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.progress-fill {
+    animation: pulse 2s infinite;
+}
+</style>
+
+<script>
+let currentSessionId = null;
+let progressInterval = null;
+let startTime = null;
+
+async function startAnalysis() {
+    const analysisType = document.getElementById('analysis_type').value;
+    const btn = document.getElementById('startAnalysisBtn');
+    
+    // Disable button and show progress
+    btn.disabled = true;
+    btn.textContent = '⏳ Starting...';
+    
+    try {
+        // Start analysis via API
+        const response = await fetch('/api/v1/analysis/run', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                portfolio_id: '{{ portfolio.id }}',
+                analysis_type: analysisType
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const session = await response.json();
+        currentSessionId = session.id;
+        startTime = new Date();
+        
+        // Show progress UI
+        showProgress();
+        
+        // Start polling for updates
+        progressInterval = setInterval(checkProgress, 2000);
+        
+    } catch (error) {
+        console.error('Failed to start analysis:', error);
+        showError('Failed to start analysis: ' + error.message);
+        resetAnalysis();
+    }
+}
+
+function showProgress() {
+    document.getElementById('analysisControls').style.display = 'none';
+    document.getElementById('analysisProgress').style.display = 'block';
+    document.getElementById('analysisResults').style.display = 'none';
+    document.getElementById('analysisError').style.display = 'none';
+    
+    addLogEntry('📋 Analysis session created');
+    addLogEntry('🔄 Starting portfolio analysis...');
+}
+
+async function checkProgress() {
+    if (!currentSessionId) return;
+    
+    try {
+        const response = await fetch(`/api/v1/analysis/sessions/${currentSessionId}`);
+        if (!response.ok) return;
+        
+        const session = await response.json();
+        updateProgress(session);
+        
+        if (session.status === 'COMPLETED') {
+            clearInterval(progressInterval);
+            showResults(session);
+        } else if (session.status === 'FAILED') {
+            clearInterval(progressInterval);
+            showError(session.error_message || 'Analysis failed');
+        }
+        
+    } catch (error) {
+        console.error('Error checking progress:', error);
+    }
+}
+
+function updateProgress(session) {
+    const elapsed = startTime ? Math.floor((new Date() - startTime) / 1000) : 0;
+    
+    // Update progress based on status
+    let progress = 0;
+    let statusText = '';
+    
+    switch (session.status) {
+        case 'PENDING':
+            progress = 5;
+            statusText = 'Waiting to start...';
+            break;
+        case 'RUNNING':
+            // Simulate progress over time (estimation)
+            progress = Math.min(85, 20 + (elapsed * 2));
+            statusText = 'Analyzing portfolio data and market conditions...';
+            break;
+        case 'COMPLETED':
+            progress = 100;
+            statusText = 'Analysis complete!';
+            break;
+        case 'FAILED':
+            progress = 0;
+            statusText = 'Analysis failed';
+            break;
+    }
+    
+    // Update UI
+    document.getElementById('progressFill').style.width = progress + '%';
+    document.getElementById('progressText').textContent = Math.round(progress) + '%';
+    document.getElementById('progressStatus').textContent = statusText;
+    document.getElementById('progressTime').textContent = `Elapsed: ${elapsed}s`;
+    
+    // Estimate completion time
+    if (progress > 10 && progress < 100) {
+        const eta = Math.max(0, Math.round((100 - progress) * elapsed / progress));
+        document.getElementById('progressEta').textContent = `ETA: ${eta}s`;
+    }
+    
+    // Add log entries for status changes
+    if (session.status === 'RUNNING' && elapsed > 10 && elapsed % 15 === 0) {
+        const messages = [
+            '📊 Fetching stock data...',
+            '🤖 Running AI analysis...',
+            '📈 Calculating technical indicators...',
+            '📰 Analyzing market sentiment...',
+            '📝 Generating recommendations...'
+        ];
+        const msg = messages[Math.floor(Math.random() * messages.length)];
+        addLogEntry(msg);
+    }
+}
+
+function showResults(session) {
+    document.getElementById('analysisProgress').style.display = 'none';
+    document.getElementById('analysisResults').style.display = 'block';
+    
+    // Set up view results link
+    const viewBtn = document.getElementById('viewResultsBtn');
+    viewBtn.href = `/portfolio/{{ portfolio.id }}/analysis/results/${session.id}`;
+    
+    addLogEntry('✅ Analysis completed successfully!', 'success');
+}
+
+function showError(message) {
+    document.getElementById('analysisProgress').style.display = 'none';
+    document.getElementById('analysisError').style.display = 'block';
+    document.getElementById('errorMessage').textContent = message;
+    
+    addLogEntry('❌ ' + message, 'error');
+}
+
+function resetAnalysis() {
+    // Reset state
+    currentSessionId = null;
+    startTime = null;
+    if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+    }
+    
+    // Reset UI
+    document.getElementById('analysisControls').style.display = 'block';
+    document.getElementById('analysisProgress').style.display = 'none';
+    document.getElementById('analysisResults').style.display = 'none';
+    document.getElementById('analysisError').style.display = 'none';
+    
+    const btn = document.getElementById('startAnalysisBtn');
+    btn.disabled = false;
+    btn.textContent = '🔍 Start Analysis';
+    
+    // Clear progress log
+    document.getElementById('progressLog').innerHTML = '';
+}
+
+function addLogEntry(message, type = 'info') {
+    const log = document.getElementById('progressLog');
+    const entry = document.createElement('div');
+    entry.className = `log-entry ${type}`;
+    entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+}
+</script>
+{% endblock %} 

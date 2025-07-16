@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T13:02:24.698365+00:00",
+  "symbol": "INTC",
+  "current_price": 23.299999237060547,
+  "cost_basis": 20.92,
+  "quantity": 2.1,
+  "current_value": 48.92999839782715,
+  "total_cost": 43.932,
+  "profit_loss": 4.997998397827146,
+  "profit_loss_percent": 11.376669393214845,
+  "technical": {
+    "rsi": 63.79084188378238,
+    "ma_20": 22.228999900817872,
+    "ma_50": 21.331799926757814,
+    "macd": 0.6660992201450036,
+    "signal": 0.557377946623939
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.20728,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - INTC is currently trading above both its 20-day and 50-day moving averages, and the MACD indicator is showing a positive trend. The news sentiment is positive, which could potentially support the stock price. With a moderate risk profile, it may be prudent to hold onto existing shares and monitor for further developments.\n\nIn terms of risk/reward assessment, the stock has shown a modest gain since your initial investment, but it is important to consider the stop loss and take profit thresholds. Given the current market conditions and the stock's performance, holding onto the shares could be a balanced approach.\n\nIf currently holding shares, consider setting a stop loss at -10% to protect against downside risks and a take profit threshold at 20% to secure potential gains. Regularly review technical indicators and news sentiment for any significant changes that may warrant a reassessment of the holding position.\n[AI Analysis: 13:02:20 UTC]",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

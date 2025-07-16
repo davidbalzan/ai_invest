@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T14:32:11.169975+00:00",
+  "symbol": "GOOGL",
+  "current_price": 182.61810302734375,
+  "cost_basis": 174.6,
+  "quantity": 1.0,
+  "current_value": 182.61810302734375,
+  "total_cost": 174.6,
+  "profit_loss": 8.018103027343756,
+  "profit_loss_percent": 4.592269775110972,
+  "technical": {
+    "rsi": 75.10144539446368,
+    "ma_20": 175.36940383911133,
+    "ma_50": 170.41234588623047,
+    "macd": 2.842147052843302,
+    "signal": 2.4024948392224563
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0.46682000000000007,
+    "articles_analyzed": 10
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - The technical analysis for GOOGL shows a strong upside trend with the stock trading above both the 20-day and 50-day moving averages. The RSI is slightly overbought but not at extreme levels yet. The positive news sentiment also supports holding onto the stock. However, with a P&L of +4.59%, it may be a good idea to monitor the stock closely and potentially sell if it approaches the take profit threshold of 20%.\n[AI Analysis: 14:31:58 UTC]",
+    "recommendation_type": "SELL",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "MEDIUM"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-07-15T12:31:59.718097+00:00",
+  "symbol": "META",
+  "current_price": 720.9199829101562,
+  "cost_basis": 674.31,
+  "quantity": 0.08,
+  "current_value": 57.6735986328125,
+  "total_cost": 53.944799999999994,
+  "profit_loss": 3.728798632812506,
+  "profit_loss_percent": 6.9122485073862645,
+  "technical": {
+    "rsi": 60.146798410532135,
+    "ma_20": 713.3152496337891,
+    "ma_50": 671.6138806152344,
+    "macd": 0,
+    "signal": 0
+  },
+  "sentiment": {
+    "overall": "positive",
+    "score": 0,
+    "articles_analyzed": 0
+  },
+  "ai_analysis": {
+    "recommendation": "RECOMMENDATION: HOLD - Based on the technical analysis, META's current price is slightly above the 20-day MA and RSI is at a neutral level. The positive sentiment in news articles suggests a potential upside. With a moderate risk-reward profile and current holding at a slight profit, it may be prudent to hold onto existing shares unless there is a significant shift in market conditions.\n\nSpecific action if holding shares: Hold onto your current position but monitor closely for any changes in technical indicators or news sentiment that may warrant a different action in the future.",
+    "recommendation_type": "HOLD",
+    "confidence": 0
+  },
+  "risk": {
+    "volatility": 0,
+    "beta": 1.0,
+    "risk_level": "LOW"
+  }
+}

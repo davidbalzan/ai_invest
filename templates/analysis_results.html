@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - {{ session.analysis_type.title() }}{% endblock %}
+
+{% block breadcrumb_items %}
+<span>▶</span>
+{% if portfolio %}
+<a href="/portfolio/{{ portfolio.id }}">💼 {{ portfolio.name }}</a>
+<span>▶</span>
+<a href="/portfolio/{{ portfolio.id }}/analysis">📈 Analysis</a>
+<span>▶</span>
+{% endif %}
+<span class="current">📊 Results</span>
+{% endblock %}
+
+{% block page_title %}📊 Analysis Results{% endblock %}
+{% block page_subtitle %}
+{{ session.analysis_type.title() }} - 
+{% if session.started_at %}
+    {% if session.started_at is string %}
+        {{ session.started_at[:19].replace('T', ' ') }}
+    {% else %}
+        {{ session.started_at.strftime('%Y-%m-%d %H:%M:%S') }}
+    {% endif %}
+{% else %}
+    N/A
+{% endif %}
+{% endblock %}
+
+{% block page_actions %}
+<div class="page-actions">
+    {% if portfolio %}
+    <a href="/portfolio/{{ portfolio.id }}/analysis" class="btn btn-primary">🔄 Run New Analysis</a>
+    {% if session.report_path %}
+    <a href="/portfolio/{{ portfolio.id }}/analysis/results/{{ session.id }}/download" class="btn btn-success">📄 Download PDF</a>
+    {% endif %}
+    <a href="/portfolio/{{ portfolio.id }}" class="btn btn-secondary">💼 Back to Portfolio</a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block status_indicator %}
+{% if session.status == 'COMPLETED' %}
+<span class="status-indicator status-live">✅ Complete</span>
+{% elif session.status == 'RUNNING' %}
+<span class="status-indicator status-cached">🔄 Running</span>
+{% elif session.status == 'FAILED' %}
+<span class="status-indicator" style="background: #ef4444; color: white;">❌ Failed</span>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Session Summary -->
+<div class="card">
+    <h2>🔍 Analysis Summary</h2>
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">{{ session.analysis_type.title() }}</div>
+            <div class="stat-label">Analysis Type</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">
+                {% if session.status == 'COMPLETED' %}
+                    <span class="positive">✅ Completed</span>
+                {% elif session.status == 'RUNNING' %}
+                    <span style="color: #ed8936;">🔄 Running</span>
+                {% elif session.status == 'FAILED' %}
+                    <span class="negative">❌ Failed</span>
+                {% endif %}
+            </div>
+            <div class="stat-label">Status</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">
+                {% if session.started_at %}
+                    {% if session.started_at is string %}
+                        {{ session.started_at[:10] }}
+                    {% else %}
+                        {{ session.started_at.strftime('%Y-%m-%d') }}
+                    {% endif %}
+                {% else %}
+                    N/A
+                {% endif %}
+            </div>
+            <div class="stat-label">Date</div>
+        </div>
+        {% if session.execution_time_ms %}
+        <div class="stat-item">
+            <div class="stat-value">{{ (session.execution_time_ms / 1000) | round(1) }}s</div>
+            <div class="stat-label">Execution Time</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Display Results Content -->
+{% if html_content %}
+    {{ html_content | safe }}
+{% elif session.status == 'COMPLETED' %}
+    <div class="card">
+        <h2>📈 Analysis Complete</h2>
+        <p>Your analysis has completed successfully. The detailed results are being prepared.</p>
+        {% if session.report_path %}
+        <div style="margin-top: 20px;">
+            <a href="/portfolio/{{ portfolio.id if portfolio else portfolio_id }}/analysis/results/{{ session.id }}/download" class="btn btn-success">
+                📄 Download Full Report
+            </a>
+        </div>
+        {% endif %}
+    </div>
+{% elif session.status == 'RUNNING' %}
+    <div class="card">
+        <h2>⏳ Analysis in Progress</h2>
+        <p>Your analysis is currently running. Please wait for completion.</p>
+        <div class="loading" style="margin: 20px auto; display: block;"></div>
+        <script>
+            // Auto-refresh when running
+            setTimeout(() => location.reload(), 5000);
+        </script>
+    </div>
+{% elif session.status == 'FAILED' %}
+    <div class="card">
+        <h2>❌ Analysis Failed</h2>
+        <p>There was an error during analysis execution.</p>
+        {% if session.error_message %}
+        <div style="background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 15px 0; border-radius: 5px;">
+            <strong>Error:</strong> {{ session.error_message }}
+        </div>
+        {% endif %}
+        <div style="margin-top: 20px;">
+            <a href="/portfolio/{{ portfolio.id if portfolio else portfolio_id }}/analysis" class="btn btn-primary">
+                🔄 Try Again
+            </a>
+        </div>
+    </div>
+{% else %}
+    <div class="card">
+        <h2>⏳ Analysis Pending</h2>
+        <p>Your analysis request is pending. Please wait for it to start.</p>
+    </div>
+{% endif %}
+
+{% endblock %} 

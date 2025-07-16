@@ -1,0 +1,26 @@
+{
+  "data": {
+    "current_price": 209.85000610351562,
+    "rsi": 68.7622647256149,
+    "ma_20": 205.46000061035156,
+    "ma_50": 203.7618994140625,
+    "macd": 2.4023948254689174,
+    "signal": 1.9441717366319957,
+    "data_timestamp": "2025-07-15T00:00:00-04:00",
+    "retrieval_timestamp": "2025-07-15T14:10:41.875228+00:00",
+    "calculation_timestamp": "2025-07-15T14:10:43.022616+00:00",
+    "symbol": "AAPL",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:10:43.022659+00:00",
+  "data_type": "technical_indicators",
+  "identifier": "AAPL",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "c21ee22309f636d57a39d8da94b40616",
+  "expiration_minutes": 5,
+  "kwargs": {
+    "last_date": "2025-07-15",
+    "data_length": 251,
+    "last_price": 209.85000610351562
+  }
+}

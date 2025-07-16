@@ -1,0 +1,21 @@
+{
+  "enabled": true,
+  "name": "Milestone Commit & Push",
+  "description": "Automatically commits and pushes changes when major features are completed or milestones are reached, but only after verifying the project is in a working state",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "app/**/*.py",
+      "*.py",
+      "requirements.txt",
+      "docker-compose.yml",
+      "README.md",
+      "prd.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A major feature or milestone appears to have been completed based on recent file changes. Before committing and pushing these changes, please:\n\n1. First, verify the project is in a working state by:\n   - Running any available tests\n   - Checking that the application starts without errors\n   - Validating that core functionality works as expected\n\n2. If the project is working correctly, then:\n   - Stage all changes with `git add .`\n   - Create a meaningful commit message describing the milestone/feature completed\n   - Push the changes to the remote repository with `git push`\n\n3. If there are any issues or broken functionality:\n   - Do NOT commit the changes\n   - Report what needs to be fixed before the code can be safely committed\n\nRemember: Never commit broken code. Only proceed with the commit and push if you can confirm the project is in a stable, working state."
+  }
+}

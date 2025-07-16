@@ -1,0 +1,19 @@
+{
+  "data": {
+    "sentiment": "positive",
+    "score": 0.44528,
+    "articles_analyzed": 10,
+    "retrieval_timestamp": "2025-07-15T14:56:06.857425+00:00",
+    "latest_news_timestamp": "2024-12-31T08:48:21+00:00",
+    "news_age_minutes": 282607,
+    "symbol": "NDAQ",
+    "cached": false
+  },
+  "cached_at": "2025-07-15T14:56:07.779986+00:00",
+  "data_type": "sentiment_data",
+  "identifier": "NDAQ",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "55b0adb857a9b100ead263984ecb0823",
+  "expiration_minutes": 30,
+  "kwargs": {}
+}

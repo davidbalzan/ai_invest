@@ -1,0 +1,20 @@
+{
+  "data": "RECOMMENDATION: HOLD - The technical analysis shows that NVDA is currently overbought with a high RSI and trading well above its moving averages. However, the overall positive news sentiment and your current profit of 24.30% suggest that holding onto your shares could still be beneficial. Keep a close eye on the stock and consider taking profits if it reaches your 20% threshold, while also monitoring for any signs of weakness to implement your stop loss if necessary.\n[AI Analysis: 15:10:06 UTC]",
+  "cached_at": "2025-07-15T15:10:09.165959+00:00",
+  "data_type": "ai_recommendations",
+  "identifier": "NVDA",
+  "market_session_when_cached": "market_hours",
+  "cache_key": "aa2b6fb3dd4f736891b68fd702ca4416",
+  "expiration_minutes": 10,
+  "kwargs": {
+    "current_price": 171.24000549316406,
+    "rsi": 81.86786514756491,
+    "sentiment": "positive",
+    "sentiment_score": 0.6592,
+    "stop_loss_percent": -10.0,
+    "take_profit_percent": 20.0,
+    "data_timestamp": "2025-07-15",
+    "cost_basis": 137.76,
+    "quantity": 0.98
+  }
+}
