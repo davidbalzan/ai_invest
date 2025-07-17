@@ -292,17 +292,21 @@ class AnalysisService:
                             import re
                             recommendation = "HOLD"  # Default
                             
-                            # Look for "RECOMMENDATION: [ACTION]" pattern at start of response
+                            # Look for "RECOMMENDATION: [ACTION]" pattern first (most reliable)
                             rec_match = re.search(r'RECOMMENDATION:\s*(BUY|SELL|HOLD)', ai_rec_raw.upper())
                             if rec_match:
                                 recommendation = rec_match.group(1)
+                                print(f"REGEX MATCH FOUND for {symbol}: {recommendation}")
                             else:
-                                # Fallback: Look for standalone recommendation words only if they appear early in response
-                                first_100_chars = ai_rec_raw[:100].upper()
-                                if "BUY" in first_100_chars and "SELL" not in first_100_chars:
+                                # Fallback: Look for standalone recommendation words (whole words only)
+                                first_200_chars = ai_rec_raw[:200].upper()
+                                if re.search(r'\bBUY\b', first_200_chars) and not re.search(r'\bSELL\b', first_200_chars):
                                     recommendation = "BUY"
-                                elif "SELL" in first_100_chars and "BUY" not in first_100_chars:
+                                    print(f"FALLBACK BUY for {symbol}")
+                                elif re.search(r'\bSELL\b', first_200_chars) and not re.search(r'\bBUY\b', first_200_chars):
                                     recommendation = "SELL"
+                                    print(f"FALLBACK SELL for {symbol}")
+                                print(f"FINAL RECOMMENDATION for {symbol}: {recommendation}")
                             
                             # ENHANCED: Extract confidence from AI response if available
                             confidence = 50.0  # Default moderate confidence instead of hardcoded 70%
