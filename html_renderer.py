@@ -1491,6 +1491,9 @@ class HTMLReportRenderer:
         for symbol, stock in stocks.items():
             chart_data = stock.get('chart_data')
             if chart_data and chart_data.get('dates') and chart_data.get('prices'):
+                volumes = chart_data.get('volumes', [])
+                print(f"DEBUG {symbol} chart_data keys: {list(chart_data.keys())}")
+                print(f"DEBUG {symbol} volume data: {len(volumes)} volumes, sample: {volumes[:3] if volumes else []}")
                 cost_basis = stock.get('cost_basis', 0)
                 current_price = stock.get('current_price', 0)
                 
