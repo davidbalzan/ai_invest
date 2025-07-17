@@ -288,12 +288,21 @@ class AnalysisService:
                         )
                         # Convert string response to dictionary format with improved parsing
                         if isinstance(ai_rec_raw, str):
-                            # Extract recommendation from string
+                            # Extract recommendation from string - FIXED: Look for exact recommendation format
+                            import re
                             recommendation = "HOLD"  # Default
-                            if "BUY" in ai_rec_raw.upper():
-                                recommendation = "BUY"
-                            elif "SELL" in ai_rec_raw.upper():
-                                recommendation = "SELL"
+                            
+                            # Look for "RECOMMENDATION: [ACTION]" pattern at start of response
+                            rec_match = re.search(r'RECOMMENDATION:\s*(BUY|SELL|HOLD)', ai_rec_raw.upper())
+                            if rec_match:
+                                recommendation = rec_match.group(1)
+                            else:
+                                # Fallback: Look for standalone recommendation words only if they appear early in response
+                                first_100_chars = ai_rec_raw[:100].upper()
+                                if "BUY" in first_100_chars and "SELL" not in first_100_chars:
+                                    recommendation = "BUY"
+                                elif "SELL" in first_100_chars and "BUY" not in first_100_chars:
+                                    recommendation = "SELL"
                             
                             # ENHANCED: Extract confidence from AI response if available
                             confidence = 50.0  # Default moderate confidence instead of hardcoded 70%
