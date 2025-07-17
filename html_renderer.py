@@ -1521,6 +1521,10 @@ class HTMLReportRenderer:
                     y_min = None
                     y_max = None
                 
+                # Get volume data and calculate scaling
+                volumes = chart_data.get('volumes', [])[-90:]
+                volume_max = max([v for v in volumes if v is not None]) if any(v is not None for v in volumes) else 1
+                
                 stock_charts_js += """
                 // %s stock chart with volume
                 const %sCtx = document.getElementById('stockChart_%s');
@@ -1570,6 +1574,16 @@ class HTMLReportRenderer:
                                     borderDash: [5, 5],
                                     yAxisID: 'y',
                                     pointRadius: 0
+                                },
+                                {
+                                    label: 'Volume',
+                                    data: %s,
+                                    type: 'bar',
+                                    backgroundColor: 'rgba(255, 159, 64, 0.3)',
+                                    borderColor: 'rgba(255, 159, 64, 0.8)',
+                                    borderWidth: 1,
+                                    yAxisID: 'y1',
+                                    order: 2
                                 }
                             ]
                         },
@@ -1603,6 +1617,16 @@ class HTMLReportRenderer:
                                     title: { display: true, text: 'Price ($)' },
                                     min: %s,
                                     max: %s
+                                },
+                                y1: {
+                                    type: 'linear',
+                                    display: true,
+                                    position: 'right',
+                                    title: { display: true, text: 'Volume' },
+                                    max: %d,
+                                    grid: {
+                                        drawOnChartArea: false
+                                    }
                                 }
                             }
                         }
@@ -1615,9 +1639,11 @@ class HTMLReportRenderer:
                     json.dumps(chart_data.get('ma_20', [])[-90:]),
                     json.dumps(chart_data.get('ma_50', [])[-90:]),
                     len(chart_data['dates'][-90:]), cost_basis,
+                    json.dumps(volumes),
                     symbol,
                     y_min if y_min is not None else "null",
-                    y_max if y_max is not None else "null"
+                    y_max if y_max is not None else "null",
+                    int(volume_max * 1.1) if volume_max else 1000000
                 )
 
         # Return JavaScript content without f-strings
